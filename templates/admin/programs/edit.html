@@ -1,0 +1,407 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Chỉnh sửa chương trình - Admin{% endblock %}
+{% block page_title %}Chỉnh sửa chương trình học{% endblock %}
+{% block page_description %}Cập nhật thông tin chương trình giáo dục{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <form method="POST" enctype="multipart/form-data" class="space-y-6">
+        <div class="admin-card p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-6">Thông tin chương trình</h2>
+            
+            <div class="grid grid-cols-1 gap-6">
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
+                        Tên chương trình <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="name" name="name" required value="{{ program.name }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                           placeholder="Ví dụ: Lớp Mầm (18-24 tháng)">
+                </div>
+                
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
+                        Mô tả chương trình <span class="text-red-500">*</span>
+                    </label>
+                    <textarea id="description" name="description" rows="5" required
+                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                              placeholder="Mô tả chi tiết về chương trình học, mục tiêu và phương pháp giảng dạy...">{{ program.description }}</textarea>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="age_group" class="block text-sm font-medium text-gray-700 mb-2">
+                            Độ tuổi <span class="text-red-500">*</span>
+                        </label>
+                        <select id="age_group" name="age_group" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                            <option value="">Chọn độ tuổi</option>
+                            <option value="18-24 tháng" {% if program.age_group == '18-24 tháng' %}selected{% endif %}>18-24 tháng</option>
+                            <option value="2-3 tuổi" {% if program.age_group == '2-3 tuổi' %}selected{% endif %}>2-3 tuổi</option>
+                            <option value="3-4 tuổi" {% if program.age_group == '3-4 tuổi' %}selected{% endif %}>3-4 tuổi</option>
+                            <option value="4-5 tuổi" {% if program.age_group == '4-5 tuổi' %}selected{% endif %}>4-5 tuổi</option>
+                            <option value="5-6 tuổi" {% if program.age_group == '5-6 tuổi' %}selected{% endif %}>5-6 tuổi</option>
+                            <option value="Đa tuổi" {% if program.age_group == 'Đa tuổi' %}selected{% endif %}>Đa tuổi</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="duration" class="block text-sm font-medium text-gray-700 mb-2">
+                            Thời gian học <span class="text-red-500">*</span>
+                        </label>
+                        <select id="duration" name="duration" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                            <option value="">Chọn thời gian</option>
+                            <option value="Cả năm học" {% if program.duration == 'Cả năm học' %}selected{% endif %}>Cả năm học</option>
+                            <option value="6 tháng" {% if program.duration == '6 tháng' %}selected{% endif %}>6 tháng</option>
+                            <option value="3 tháng" {% if program.duration == '3 tháng' %}selected{% endif %}>3 tháng</option>
+                            <option value="1 tháng" {% if program.duration == '1 tháng' %}selected{% endif %}>1 tháng</option>
+                            <option value="2 buổi/tuần" {% if program.duration == '2 buổi/tuần' %}selected{% endif %}>2 buổi/tuần</option>
+                            <option value="3 buổi/tuần" {% if program.duration == '3 buổi/tuần' %}selected{% endif %}>3 buổi/tuần</option>
+                            <option value="5 buổi/tuần" {% if program.duration == '5 buổi/tuần' %}selected{% endif %}>5 buổi/tuần</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="price" class="block text-sm font-medium text-gray-700 mb-2">
+                        Học phí <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <input type="text" id="price" name="price" required value="{{ program.price }}"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 pr-20"
+                               placeholder="2,500,000">
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                            <span class="text-gray-500 sm:text-sm">VNĐ/tháng</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">Ví dụ: 2,500,000 hoặc Miễn phí</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="admin-card p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-6">Hình ảnh chương trình</h2>
+            
+            <div class="space-y-4">
+                {% if program.featured_image %}
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Hình ảnh hiện tại</label>
+                    <div class="border border-gray-300 rounded-lg p-4 bg-white">
+                        <img src="/static/{{ program.featured_image }}" alt="{{ program.name }}" class="max-w-full h-48 object-cover rounded-lg">
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div>
+                    <label for="featured_image" class="block text-sm font-medium text-gray-700 mb-2">
+                        {% if program.featured_image %}Thay đổi hình ảnh{% else %}Hình ảnh đại diện{% endif %}
+                    </label>
+                    <div class="flex items-center justify-center w-full">
+                        <label for="featured_image" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6" id="upload-placeholder">
+                                <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
+                                <p class="mb-2 text-sm text-gray-500">
+                                    <span class="font-semibold">Nhấp để tải lên</span> hoặc kéo thả
+                                </p>
+                                <p class="text-xs text-gray-500">PNG, JPG, JPEG (MAX. 16MB)</p>
+                            </div>
+                            <input id="featured_image" name="featured_image" type="file" class="hidden" 
+                                   accept="image/*">
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Image Preview -->
+                <div id="image-preview-container" class="hidden">
+                    <div class="border border-gray-300 rounded-lg p-4 bg-white">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Xem trước hình ảnh mới</h3>
+                        <div class="max-w-full max-h-96 overflow-hidden">
+                            <img id="image-preview" class="max-w-full rounded-lg" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="admin-card p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-6">Cài đặt</h2>
+            
+            <div class="space-y-4">
+                <div class="flex items-center">
+                    <input id="is_active" name="is_active" type="checkbox" {% if program.is_active %}checked{% endif %}
+                           class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded">
+                    <label for="is_active" class="ml-2 block text-sm text-gray-900">
+                        Kích hoạt và hiển thị trên website
+                    </label>
+                </div>
+                
+                <div class="flex items-center">
+                    <input id="is_featured" name="is_featured" type="checkbox" {% if program.is_featured %}checked{% endif %}
+                           class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded">
+                    <label for="is_featured" class="ml-2 block text-sm text-gray-900">
+                        <span class="font-semibold text-orange-600">Hiển thị nổi bật trên trang chủ</span>
+                        <span class="block text-xs text-gray-500 mt-1">Chỉ tối đa 6 chương trình được hiển thị trên trang chủ</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="flex items-center justify-between pt-6">
+            <a href="{{ url_for('admin_programs') }}" 
+               class="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition duration-200">
+                <i class="fas fa-arrow-left mr-2"></i>Quay lại
+            </a>
+            
+            <button type="submit"
+                    class="btn-primary px-6 py-3 rounded-lg hover:bg-orange-600 transition duration-200">
+                <i class="fas fa-save mr-2"></i>Cập nhật chương trình
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Crop Modal -->
+<div id="cropModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between p-6 border-b">
+            <h3 class="text-xl font-semibold text-gray-800">
+                <i class="fas fa-crop mr-2 text-orange-600"></i>
+                Cắt hình ảnh chương trình
+            </h3>
+            <button type="button" onclick="closeCropModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        
+        <!-- Aspect Ratio Controls -->
+        <div class="p-4 border-b bg-gray-50">
+            <div class="flex items-center justify-center space-x-2">
+                <span class="text-sm font-medium text-gray-700 mr-4">Tỷ lệ:</span>
+                <button type="button" onclick="setAspectRatio(16/9)" class="aspect-btn active px-3 py-1 text-sm bg-orange-600 text-white rounded-full hover:bg-orange-700 transition-colors">
+                    16:9 (Chương trình)
+                </button>
+                <button type="button" onclick="setAspectRatio(4/3)" class="aspect-btn px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded-full hover:bg-gray-300 transition-colors">
+                    4:3
+                </button>
+                <button type="button" onclick="setAspectRatio(1)" class="aspect-btn px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded-full hover:bg-gray-300 transition-colors">
+                    1:1 (Vuông)
+                </button>
+                <button type="button" onclick="setAspectRatio(0)" class="aspect-btn px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded-full hover:bg-gray-300 transition-colors">
+                    Tự do
+                </button>
+            </div>
+        </div>
+        
+        <!-- Crop Area -->
+        <div class="p-6">
+            <div class="overflow-hidden bg-gray-100 rounded-lg" style="height: 400px;">
+                <img id="cropImage" src="" alt="Crop" class="max-w-full max-h-full">
+            </div>
+        </div>
+        
+        <!-- Modal Footer -->
+        <div class="flex items-center justify-between p-6 border-t bg-gray-50">
+            <div class="text-sm text-gray-600">
+                <i class="fas fa-info-circle mr-1"></i>
+                Kéo để di chuyển, kéo góc để thay đổi kích thước
+            </div>
+            <div class="flex space-x-3">
+                <button type="button" onclick="window.closeCropModal()" 
+                        class="px-4 py-2 bg-gray-400 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-500 hover:text-white transition-all duration-200">
+                    <i class="fas fa-times mr-2"></i>Hủy
+                </button>
+                <button type="button" onclick="window.applyCrop()" 
+                        class="px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold rounded-lg hover:from-green-600 hover:to-green-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl">
+                    <i class="fas fa-check mr-2"></i>Áp dụng
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Cropper.js CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+<!-- Cropper.js JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+
+<style>
+.aspect-btn.active {
+    background-color: #ea580c !important;
+    color: white !important;
+}
+
+.aspect-btn:not(.active):hover {
+    background-color: #d1d5db !important;
+}
+
+#cropModal .cropper-container {
+    max-height: 400px !important;
+    height: 400px !important;
+}
+
+#cropModal .cropper-canvas {
+    max-height: 400px !important;
+}
+
+#cropModal .cropper-crop-box,
+#cropModal .cropper-wrap-box,
+#cropModal .cropper-drag-box {
+    max-height: 400px !important;
+}
+</style>
+
+<script>
+let programCropper = null;
+let programOriginalFile = null;
+
+function previewImage(input, previewId) {
+    const file = input.files[0];
+    if (file) {
+        programOriginalFile = file;
+        openCropModal(file);
+    }
+}
+
+function openCropModal(file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        document.getElementById('cropImage').src = e.target.result;
+        document.getElementById('cropModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        
+        // Initialize cropper
+        const image = document.getElementById('cropImage');
+        if (programCropper) {
+            programCropper.destroy();
+        }
+        
+        programCropper = new Cropper(image, {
+            aspectRatio: 16 / 9, // Default to 16:9 for programs
+            viewMode: 0, // Allow image to extend beyond container
+            dragMode: 'move',
+            autoCropArea: 0.7,
+            restore: false,
+            guides: true,
+            center: true,
+            highlight: false,
+            cropBoxMovable: true,
+            cropBoxResizable: true,
+            toggleDragModeOnDblclick: false,
+            scalable: true,
+            zoomable: true,
+            zoomOnTouch: true,
+            zoomOnWheel: true,
+            wheelZoomRatio: 0.1,
+            minContainerWidth: 400,
+            minContainerHeight: 400,
+        });
+    };
+    reader.readAsDataURL(file);
+}
+
+function closeCropModal() {
+    document.getElementById('cropModal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+    if (programCropper) {
+        programCropper.destroy();
+        programCropper = null;
+    }
+    // Reset file input
+    document.getElementById('featured_image').value = '';
+}
+
+function setAspectRatio(ratio) {
+    if (programCropper) {
+        programCropper.setAspectRatio(ratio);
+    }
+    
+    // Update active button
+    document.querySelectorAll('.aspect-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+}
+
+function applyCrop() {
+    if (programCropper) {
+        const canvas = programCropper.getCroppedCanvas({
+            width: 1200,
+            height: 675, // 16:9 ratio
+            imageSmoothingEnabled: true,
+            imageSmoothingQuality: 'high',
+        });
+        
+        canvas.toBlob(function(blob) {
+            // Create new file from cropped image
+            const croppedFile = new File([blob], programOriginalFile.name, {
+                type: programOriginalFile.type,
+                lastModified: Date.now(),
+            });
+            
+            // Update file input
+            const dt = new DataTransfer();
+            dt.items.add(croppedFile);
+            document.getElementById('featured_image').files = dt.files;
+            
+            // Show preview
+            showCroppedPreview(canvas.toDataURL());
+            
+            // Close modal
+            closeCropModal();
+        }, programOriginalFile.type, 0.9);
+    }
+}
+
+function showCroppedPreview(dataUrl) {
+    const preview = document.getElementById('image-preview');
+    const container = document.getElementById('image-preview-container');
+    const placeholder = document.getElementById('upload-placeholder');
+    
+    preview.src = dataUrl;
+    container.classList.remove('hidden');
+    placeholder.innerHTML = `
+        <i class="fas fa-check-circle text-4xl text-green-500 mb-4"></i>
+        <p class="text-sm text-green-600 font-medium">
+            <i class="fas fa-crop mr-1"></i>Đã cắt & sẽ thay thế: ${programOriginalFile.name}
+        </p>
+        <p class="text-xs text-gray-500">Nhấp để cắt lại</p>
+        <button type="button" onclick="recropImage()" class="mt-2 text-xs text-blue-600 hover:text-blue-800">
+            <i class="fas fa-crop mr-1"></i>Cắt lại
+        </button>
+    `;
+}
+
+function recropImage() {
+    if (programOriginalFile) {
+        openCropModal(programOriginalFile);
+    }
+}
+
+// Close modal on ESC key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && !document.getElementById('cropModal').classList.contains('hidden')) {
+        closeCropModal();
+    }
+});
+
+// Close modal when clicking outside
+document.getElementById('cropModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeCropModal();
+    }
+});
+
+// Add event listener for file input
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('featured_image');
+    if (fileInput) {
+        fileInput.addEventListener('change', function() {
+            previewImage(this, 'image-preview');
+        });
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin - Trường Mầm non Hoa Hướng Dương{% endblock %}</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .sidebar-item:hover { background: linear-gradient(90deg, #ff6b35, #f7931e); }
+        .admin-card { 
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+        }
+        .btn-primary {
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            border: none;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #e55a2b, #e0821a);
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="w-64 bg-white shadow-lg flex flex-col">
+            <!-- Logo -->
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-gradient-to-r from-orange-400 to-yellow-400 rounded-lg flex items-center justify-center mr-3">
+                        <i class="fas fa-seedling text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold text-gray-800">Admin Panel</h1>
+                        <p class="text-sm text-gray-500">Hoa Hướng Dương</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Navigation -->
+            <nav class="flex-1 p-4">
+                <div class="space-y-2">
+                    <a href="{{ url_for('admin_dashboard') }}" 
+                       class="sidebar-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:text-white transition duration-200 {{ 'bg-gradient-to-r from-orange-400 to-yellow-400 text-white' if request.endpoint == 'admin_dashboard' }}">
+                        <i class="fas fa-chart-line mr-3"></i>
+                        <span>Tổng quan</span>
+                    </a>
+                    
+                    <a href="{{ url_for('admin_posts') }}" 
+                       class="sidebar-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:text-white transition duration-200 {{ 'bg-gradient-to-r from-orange-400 to-yellow-400 text-white' if 'posts' in request.endpoint }}">
+                        <i class="fas fa-edit mr-3"></i>
+                        <span>Bài viết</span>
+                    </a>
+                    
+                    <a href="{{ url_for('admin_news') }}" 
+                       class="sidebar-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:text-white transition duration-200 {{ 'bg-gradient-to-r from-orange-400 to-yellow-400 text-white' if 'news' in request.endpoint }}">
+                        <i class="fas fa-newspaper mr-3"></i>
+                        <span>Tin tức</span>
+                    </a>
+                    
+                    <a href="{{ url_for('admin_programs') }}" 
+                       class="sidebar-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:text-white transition duration-200 {{ 'bg-gradient-to-r from-orange-400 to-yellow-400 text-white' if 'programs' in request.endpoint }}">
+                        <i class="fas fa-graduation-cap mr-3"></i>
+                        <span>Chương trình</span>
+                    </a>
+                    
+                    <a href="{{ url_for('admin_slider') }}" 
+                       class="sidebar-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:text-white transition duration-200 {{ 'bg-gradient-to-r from-orange-400 to-yellow-400 text-white' if 'slider' in request.endpoint }}">
+                        <i class="fas fa-sliders-h mr-3"></i>
+                        <span>Slider</span>
+                    </a>
+                    
+                    <a href="{{ url_for('admin_gallery') }}" 
+                       class="sidebar-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:text-white transition duration-200 {{ 'bg-gradient-to-r from-orange-400 to-yellow-400 text-white' if 'gallery' in request.endpoint }}">
+                        <i class="fas fa-images mr-3"></i>
+                        <span>Thư viện ảnh</span>
+                    </a>
+                    
+                    <a href="{{ url_for('admin_events') }}" 
+                       class="sidebar-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:text-white transition duration-200 {{ 'bg-gradient-to-r from-orange-400 to-yellow-400 text-white' if 'events' in request.endpoint }}">
+                        <i class="fas fa-calendar-alt mr-3"></i>
+                        <span>Sự kiện</span>
+                    </a>
+                    
+                    <div class="relative">
+                        <button id="contacts-dropdown-btn" 
+                                class="sidebar-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:text-white transition duration-200 w-full text-left {{ 'bg-gradient-to-r from-orange-400 to-yellow-400 text-white' if 'contacts' in request.endpoint }}">
+                            <i class="fas fa-envelope mr-3"></i>
+                            <span>Liên hệ</span>
+                            {% if unread_contacts > 0 %}
+                            <span class="bg-red-500 text-white text-xs px-2 py-1 rounded-full">{{ unread_contacts }}</span>
+                            {% endif %}
+                            <i id="contacts-chevron" class="fas fa-chevron-down ml-auto text-xs transition-transform"></i>
+                        </button>
+                        
+                        <!-- Submenu -->
+                        <div id="contacts-submenu" class="ml-4 mt-1 space-y-1 hidden">
+                            <a href="{{ url_for('admin_contacts') }}" 
+                               class="flex items-center px-4 py-2 text-sm text-gray-600 rounded-lg hover:bg-gray-100 transition duration-200 {{ 'bg-gray-100' if request.endpoint == 'admin_contacts' }}">
+                                <i class="fas fa-inbox mr-2 text-xs"></i>
+                                <span>Tin nhắn</span>
+                                {% if unread_contacts > 0 %}
+                                <span class="ml-auto bg-red-500 text-white text-xs px-1 py-0.5 rounded-full">{{ unread_contacts }}</span>
+                                {% endif %}
+                            </a>
+                            <a href="{{ url_for('admin_contact_settings') }}" 
+                               class="flex items-center px-4 py-2 text-sm text-gray-600 rounded-lg hover:bg-gray-100 transition duration-200 {{ 'bg-gray-100' if 'contact_settings' in request.endpoint }}">
+                                <i class="fas fa-cog mr-2 text-xs"></i>
+                                <span>Cài đặt liên hệ</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-8 pt-4 border-t border-gray-200">
+                    <div class="space-y-2">
+                        <a href="{{ url_for('admin_settings') }}" 
+                           class="sidebar-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:text-white transition duration-200">
+                            <i class="fas fa-cog mr-3"></i>
+                            <span>Cài đặt</span>
+                        </a>
+                        
+                        <a href="{{ url_for('index') }}" target="_blank"
+                           class="sidebar-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:text-white transition duration-200">
+                            <i class="fas fa-external-link-alt mr-3"></i>
+                            <span>Xem website</span>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+            
+            <!-- User Info -->
+            <div class="p-4 border-t border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 bg-gradient-to-r from-orange-400 to-yellow-400 rounded-full flex items-center justify-center mr-3">
+                            <i class="fas fa-user text-white text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-800">{{ current_user.username }}</p>
+                            <p class="text-xs text-gray-500">Administrator</p>
+                        </div>
+                    </div>
+                    <a href="{{ url_for('admin_logout') }}" 
+                       class="text-gray-400 hover:text-red-500 transition"
+                       title="Đăng xuất">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Header -->
+            <header class="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800">{% block page_title %}Dashboard{% endblock %}</h1>
+                        <p class="text-gray-600">{% block page_description %}Quản lý nội dung website{% endblock %}</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <button class="p-2 text-gray-400 hover:text-gray-600 relative">
+                                <i class="fas fa-bell text-lg"></i>
+                                <span class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+                            </button>
+                        </div>
+                        <div class="text-sm text-gray-600">
+                            <i class="fas fa-clock mr-1"></i>
+                            <span id="current-time"></span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Content -->
+            <main class="flex-1 overflow-auto p-6">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="mb-6">
+                            {% for category, message in messages %}
+                                <div class="alert mb-4 p-4 rounded-lg flex items-center {{ 'bg-green-50 text-green-800 border border-green-200' if category == 'success' else 'bg-red-50 text-red-800 border border-red-200' }}">
+                                    <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-circle' }} mr-3"></i>
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+                
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <!-- Modals and Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+    <script>
+        // Update current time
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('vi-VN', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('current-time').textContent = timeString;
+        }
+        
+        updateTime();
+        setInterval(updateTime, 1000);
+        
+        // Contacts dropdown functionality
+        const contactsDropdownBtn = document.getElementById('contacts-dropdown-btn');
+        const contactsSubmenu = document.getElementById('contacts-submenu');
+        const contactsChevron = document.getElementById('contacts-chevron');
+        
+        if (contactsDropdownBtn && contactsSubmenu) {
+            // Check if we're on a contacts page and show submenu by default
+            if (window.location.pathname.includes('/admin/contacts') || window.location.pathname.includes('/admin/contact-settings')) {
+                contactsSubmenu.classList.remove('hidden');
+                contactsChevron.classList.add('rotate-180');
+            }
+            
+            contactsDropdownBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                if (contactsSubmenu.classList.contains('hidden')) {
+                    contactsSubmenu.classList.remove('hidden');
+                    contactsChevron.classList.add('rotate-180');
+                } else {
+                    contactsSubmenu.classList.add('hidden');
+                    contactsChevron.classList.remove('rotate-180');
+                }
+            });
+        }
+        
+        // Auto-hide alerts
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                alert.style.transition = 'opacity 0.5s';
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 500);
+            });
+        }, 5000);
+        
+        // Confirm delete actions
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('delete-btn') || e.target.closest('.delete-btn')) {
+                if (!confirm('Bạn có chắc chắn muốn xóa không? Hành động này không thể hoàn tác.')) {
+                    e.preventDefault();
+                }
+            }
+        });
+        
+        // Image cropper functionality
+        let cropper = null;
+        
+        function initImageCropper(input, previewId, aspectRatio = 16/9) {
+            if (cropper) {
+                cropper.destroy();
+                cropper = null;
+            }
+            
+            const file = input.files[0];
+            if (file) {
+                const preview = document.getElementById(previewId);
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    
+                    cropper = new Cropper(preview, {
+                        aspectRatio: aspectRatio,
+                        viewMode: 2,
+                        autoCropArea: 1,
+                        responsive: true,
+                        background: false,
+                        guides: true,
+                        center: true,
+                        highlight: false,
+                        cropBoxMovable: true,
+                        cropBoxResizable: true,
+                        toggleDragModeOnDblclick: false
+                    });
+                };
+                
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        function getCroppedImage(callback) {
+            if (cropper) {
+                const canvas = cropper.getCroppedCanvas({
+                    width: 800,
+                    height: 450,
+                    imageSmoothingEnabled: true,
+                    imageSmoothingQuality: 'high'
+                });
+                
+                canvas.toBlob(callback, 'image/jpeg', 0.9);
+            }
+        }
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

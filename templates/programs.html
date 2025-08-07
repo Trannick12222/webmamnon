@@ -1,0 +1,536 @@
+{% extends "base.html" %}
+
+{% block title %}Chương trình học - Trường Mầm non Hoa Hướng Dương{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="relative py-20 md:py-32 flex items-center justify-center overflow-hidden">
+    <!-- Animated Background -->
+    <div class="absolute inset-0 bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500"></div>
+    
+    <!-- Floating Elements -->
+    <div class="absolute top-20 left-20 w-16 h-16 bg-white/20 rounded-full animate-float"></div>
+    <div class="absolute top-40 right-32 w-12 h-12 bg-yellow-300/30 rounded-full animate-float-delay-1"></div>
+    <div class="absolute bottom-32 left-16 w-20 h-20 bg-pink-300/25 rounded-full animate-float-delay-2"></div>
+    <div class="absolute bottom-20 right-20 w-14 h-14 bg-blue-300/30 rounded-full animate-float-delay-3"></div>
+    <div class="absolute top-1/2 left-10 w-8 h-8 bg-green-300/40 rounded-full animate-float"></div>
+    <div class="absolute top-1/3 right-10 w-10 h-10 bg-purple-300/35 rounded-full animate-float-delay-1"></div>
+    
+    <!-- Content -->
+    <div class="container mx-auto px-4 relative z-10 text-center">
+        <div class="max-w-4xl mx-auto">
+            <!-- Badge -->
+            <div class="inline-flex items-center px-6 py-3 bg-white/20 backdrop-blur-sm rounded-full text-white mb-8 animate-fade-in-up">
+                <i class="fas fa-graduation-cap mr-2"></i>
+                <span class="font-medium">Chương trình giáo dục chất lượng cao</span>
+            </div>
+            
+            <!-- Main Title -->
+            <h1 class="text-6xl md:text-7xl lg:text-8xl font-bold text-white mb-8 animate-fade-in-up animation-delay-200">
+                <span class="bg-gradient-to-r from-white to-yellow-200 bg-clip-text text-transparent font-patrick">
+                    Chương trình học
+                </span>
+            </h1>
+            
+            <!-- Subtitle -->
+            <p class="text-xl md:text-2xl lg:text-3xl text-white/95 max-w-4xl mx-auto leading-relaxed mb-12 animate-fade-in-up animation-delay-400">
+                Các chương trình giáo dục đa dạng được thiết kế phù hợp với từng độ tuổi, 
+                <span class="text-yellow-200 font-semibold">nuôi dưỡng tâm hồn và phát triển tài năng</span>
+            </p>
+            
+            <!-- CTA Buttons -->
+            <div class="flex flex-col sm:flex-row gap-6 justify-center animate-fade-in-up animation-delay-600">
+                <a href="#programs" class="group bg-white text-gray-800 px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-100 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
+                    <i class="fas fa-arrow-down mr-2 group-hover:animate-bounce"></i>
+                    Khám phá ngay
+                </a>
+                <a href="/lien-he" class="group border-2 border-white text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-white hover:text-gray-800 transition-all duration-300 transform hover:scale-105">
+                    <i class="fas fa-phone mr-2"></i>
+                    Tư vấn miễn phí
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Programs Grid -->
+<section id="programs" class="py-20 bg-gradient-to-b from-gray-50 to-white">
+    <div class="container mx-auto px-4">
+        <!-- Section Header -->
+        <div class="text-center mb-16">
+            <div class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full mb-6">
+                <i class="fas fa-star mr-2"></i>
+                <span class="font-medium">Chương trình đào tạo</span>
+            </div>
+            <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6 font-patrick">
+                Lựa chọn <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">hoàn hảo</span> cho bé
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Mỗi chương trình được thiết kế riêng biệt để phát triển tối đa tiềm năng của trẻ
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for program in programs %}
+            <div class="group bg-white rounded-3xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100 relative">
+                <!-- Popular Badge -->
+                {% if program.is_featured %}
+                <div class="absolute top-4 right-4 z-10">
+                    <span class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+                        <i class="fas fa-crown mr-1"></i>Phổ biến
+                    </span>
+                </div>
+                {% endif %}
+                
+                <!-- Image -->
+                {% if program.featured_image %}
+                <div class="relative overflow-hidden">
+                    <img src="/static/{{ program.featured_image }}" 
+                         alt="{{ program.name }}" 
+                         class="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-500 relative z-30">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-20 pointer-events-none"></div>
+                    <!-- Fallback if image fails -->
+                    <div class="w-full h-56 bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500 flex items-center justify-center relative overflow-hidden" style="display: none;">
+                        <i class="fas fa-graduation-cap text-white text-5xl relative z-10"></i>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                        <div class="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="w-full h-56 bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500 flex items-center justify-center relative overflow-hidden">
+                    <i class="fas fa-graduation-cap text-white text-5xl relative z-10"></i>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                    <div class="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
+                </div>
+                {% endif %}
+                
+                <div class="p-8">
+                    <!-- Age & Price -->
+                    <div class="flex items-center justify-between mb-6">
+                        <span class="bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 px-4 py-2 rounded-full text-sm font-bold border border-blue-200">
+                            <i class="fas fa-child mr-1"></i>{{ program.age_group }}
+                        </span>
+                        <span class="text-2xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
+                            {{ program.price }}
+                        </span>
+                    </div>
+                    
+                    <!-- Title -->
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4 group-hover:text-blue-600 transition-colors">
+                        {{ program.name }}
+                    </h3>
+                    
+                    <!-- Description -->
+                    <p class="text-gray-600 mb-6 leading-relaxed line-clamp-3">
+                        {{ program.description }}
+                    </p>
+                    
+                    <!-- Features -->
+                    <div class="space-y-3 mb-6">
+                        <div class="flex items-center text-gray-600 group-hover:text-gray-700 transition-colors">
+                            <div class="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center mr-3">
+                                <i class="fas fa-clock text-white text-sm"></i>
+                            </div>
+                            <span class="font-medium">{{ program.duration }}</span>
+                        </div>
+                        <div class="flex items-center text-gray-600 group-hover:text-gray-700 transition-colors">
+                            <div class="w-8 h-8 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full flex items-center justify-center mr-3">
+                                <i class="fas fa-users text-white text-sm"></i>
+                            </div>
+                            <span class="font-medium">Lớp học nhỏ (8-12 trẻ)</span>
+                        </div>
+                        <div class="flex items-center text-gray-600 group-hover:text-gray-700 transition-colors">
+                            <div class="w-8 h-8 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mr-3">
+                                <i class="fas fa-certificate text-white text-sm"></i>
+                            </div>
+                            <span class="font-medium">Giáo viên có chứng chỉ</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Button -->
+                    <div class="flex justify-center">
+                        <a href="/lien-he" 
+                           class="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-6 rounded-full font-bold text-center hover:from-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                            <i class="fas fa-phone mr-2"></i>Đăng ký ngay
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Program Features -->
+                <div class="px-8 pb-8">
+                    <div class="border-t border-gray-200 pt-6">
+                        <h4 class="text-sm font-bold text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-sparkles text-yellow-500 mr-2"></i>Điểm nổi bật
+                        </h4>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium border border-green-200">
+                                <i class="fas fa-check-circle mr-1"></i>Phát triển toàn diện
+                            </span>
+                            <span class="bg-gradient-to-r from-purple-100 to-pink-100 text-purple-800 px-3 py-1 rounded-full text-xs font-medium border border-purple-200">
+                                <i class="fas fa-gamepad mr-1"></i>Học qua chơi
+                            </span>
+                            <span class="bg-gradient-to-r from-orange-100 to-yellow-100 text-orange-800 px-3 py-1 rounded-full text-xs font-medium border border-orange-200">
+                                <i class="fas fa-shield-alt mr-1"></i>Môi trường an toàn
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Empty State -->
+        {% if not programs %}
+        <div class="text-center py-16">
+            <div class="w-24 h-24 bg-gradient-to-r from-blue-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-graduation-cap text-3xl text-blue-500"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-800 mb-4">Chưa có chương trình nào</h3>
+            <p class="text-gray-600 mb-6">Các chương trình học sẽ được cập nhật sớm nhất có thể.</p>
+            <a href="/lien-he" class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-3 rounded-full font-bold hover:from-blue-600 hover:to-purple-700 transition-all duration-300">
+                Liên hệ tư vấn
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Age Groups Guide -->
+<section class="py-20 bg-blue-50">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold text-gray-800 mb-6 font-patrick text-primary">
+                Hướng dẫn chọn chương trình
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Chọn chương trình phù hợp với độ tuổi và nhu cầu phát triển của bé
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="bg-white rounded-2xl p-6 shadow-lg text-center">
+                <div class="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-baby text-pink-600 text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800 mb-2">18-24 tháng</h3>
+                <h4 class="text-primary font-semibold mb-3">Lớp Mầm</h4>
+                <ul class="text-sm text-gray-600 space-y-1">
+                    <li>• Phát triển vận động cơ bản</li>
+                    <li>• Học tự lập trong ăn uống</li>
+                    <li>• Giao tiếp đơn giản</li>
+                    <li>• Khám phá thế giới xung quanh</li>
+                </ul>
+            </div>
+            
+            <div class="bg-white rounded-2xl p-6 shadow-lg text-center">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-seedling text-green-600 text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800 mb-2">2-3 tuổi</h3>
+                <h4 class="text-primary font-semibold mb-3">Lớp Chồi</h4>
+                <ul class="text-sm text-gray-600 space-y-1">
+                    <li>• Phân biệt màu sắc, hình khối</li>
+                    <li>• Học quy tắc xã hội cơ bản</li>
+                    <li>• Phát triển từ vựng</li>
+                    <li>• Hoạt động nghệ thuật đơn giản</li>
+                </ul>
+            </div>
+            
+            <div class="bg-white rounded-2xl p-6 shadow-lg text-center">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-leaf text-blue-600 text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800 mb-2">3-4 tuổi</h3>
+                <h4 class="text-primary font-semibold mb-3">Lớp Lá</h4>
+                <ul class="text-sm text-gray-600 space-y-1">
+                    <li>• Học đếm số cơ bản</li>
+                    <li>• Kể chuyện và nghe hiểu</li>
+                    <li>• Hoạt động nhóm</li>
+                    <li>• Rèn luyện tính kỷ luật</li>
+                </ul>
+            </div>
+            
+            <div class="bg-white rounded-2xl p-6 shadow-lg text-center">
+                <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-graduation-cap text-yellow-600 text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800 mb-2">4-5 tuổi</h3>
+                <h4 class="text-primary font-semibold mb-3">Lớp Lúa</h4>
+                <ul class="text-sm text-gray-600 space-y-1">
+                    <li>• Chuẩn bị vào lớp 1</li>
+                    <li>• Học chữ cái, số đếm</li>
+                    <li>• Kỹ năng tự phục vụ</li>
+                    <li>• Phát triển tư duy logic</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Special Programs -->
+<section class="py-20 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold text-gray-800 mb-6 font-patrick text-primary">
+                Chương trình đặc biệt
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Các lớp học bổ trợ giúp phát triển tài năng và kỹ năng đặc biệt
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-6 border border-blue-200">
+                <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center mb-4">
+                    <i class="fas fa-language text-white text-xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-3">Tiếng Anh cho trẻ em</h3>
+                <p class="text-gray-600 mb-4">
+                    Học tiếng Anh qua các hoạt động vui chơi, bài hát và trò chơi tương tác.
+                </p>
+                <div class="space-y-2 text-sm text-gray-600">
+                    <div>• Giáo viên bản ngữ</div>
+                    <div>• Lớp học nhỏ (6-8 trẻ)</div>
+                    <div>• Phương pháp TPR</div>
+                </div>
+            </div>
+            
+            <div class="bg-gradient-to-br from-green-50 to-yellow-50 rounded-2xl p-6 border border-green-200">
+                <div class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center mb-4">
+                    <i class="fas fa-paint-brush text-white text-xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-3">Mỹ thuật sáng tạo</h3>
+                <p class="text-gray-600 mb-4">
+                    Phát triển khả năng sáng tạo và thẩm mỹ qua các hoạt động vẽ, nặn, thủ công.
+                </p>
+                <div class="space-y-2 text-sm text-gray-600">
+                    <div>• Vật liệu an toàn cho trẻ</div>
+                    <div>• Kỹ thuật đa dạng</div>
+                    <div>• Triển lãm tác phẩm</div>
+                </div>
+            </div>
+            
+            <div class="bg-gradient-to-br from-pink-50 to-red-50 rounded-2xl p-6 border border-pink-200">
+                <div class="w-12 h-12 bg-pink-500 rounded-lg flex items-center justify-center mb-4">
+                    <i class="fas fa-music text-white text-xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-3">Âm nhạc & Múa</h3>
+                <p class="text-gray-600 mb-4">
+                    Phát triển năng khiếu âm nhạc và vận động thông qua các bài hát, điệu múa.
+                </p>
+                <div class="space-y-2 text-sm text-gray-600">
+                    <div>• Nhạc cụ phù hợp trẻ em</div>
+                    <div>• Múa dân gian & hiện đại</div>
+                    <div>• Biểu diễn cuối khóa</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Enrollment CTA -->
+<section class="py-20 bg-gradient-to-r from-primary to-secondary">
+    <div class="container mx-auto px-4 text-center">
+        <h2 class="text-4xl font-bold text-white mb-6 font-patrick">
+            Sẵn sàng đăng ký cho bé?
+        </h2>
+        <p class="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+            Liên hệ với chúng tôi để được tư vấn chi tiết về chương trình học 
+            phù hợp nhất cho bé yêu của bạn
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="/lien-he" class="bg-white text-primary px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition">
+                <i class="fas fa-phone mr-2"></i>
+                Liên hệ tư vấn
+            </a>
+            <a href="/gioi-thieu" class="border-2 border-white text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-white hover:text-primary transition">
+                <i class="fas fa-info-circle mr-2"></i>
+                Tìm hiểu thêm
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Floating Animations */
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-10px) rotate(1deg); }
+    66% { transform: translateY(5px) rotate(-1deg); }
+}
+
+@keyframes float-delay-1 {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-15px) rotate(-1deg); }
+    66% { transform: translateY(8px) rotate(1deg); }
+}
+
+@keyframes float-delay-2 {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-8px) rotate(1deg); }
+    66% { transform: translateY(12px) rotate(-1deg); }
+}
+
+@keyframes float-delay-3 {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-12px) rotate(-1deg); }
+    66% { transform: translateY(6px) rotate(1deg); }
+}
+
+@keyframes fade-in-up {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+.animate-float {
+    animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-delay-1 {
+    animation: float-delay-1 8s ease-in-out infinite;
+}
+
+.animate-float-delay-2 {
+    animation: float-delay-2 7s ease-in-out infinite;
+}
+
+.animate-float-delay-3 {
+    animation: float-delay-3 9s ease-in-out infinite;
+}
+
+.animate-fade-in-up {
+    animation: fade-in-up 0.8s ease-out forwards;
+    opacity: 0;
+}
+
+.animation-delay-200 {
+    animation-delay: 0.2s;
+}
+
+.animation-delay-400 {
+    animation-delay: 0.4s;
+}
+
+.animation-delay-600 {
+    animation-delay: 0.6s;
+}
+
+/* Gradient Text Animation */
+.gradient-text {
+    background: linear-gradient(-45deg, #ff6b35, #f7931e, #ff6b35, #f7931e);
+    background-size: 400% 400%;
+    animation: gradient-shift 3s ease infinite;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Card Hover Effects */
+.card-hover {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Glassmorphism Effect */
+.glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Smooth Scroll */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(45deg, #ff6b35, #f7931e);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(45deg, #e55a2b, #e0821a);
+}
+
+/* Button Hover Effects */
+.btn-gradient {
+    background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+    transition: all 0.3s ease;
+}
+
+.btn-gradient:hover {
+    background: linear-gradient(45deg, #764ba2 0%, #667eea 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+}
+
+/* Pulse Animation for Important Elements */
+@keyframes pulse-glow {
+    0%, 100% {
+        box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.8), 0 0 30px rgba(59, 130, 246, 0.6);
+    }
+}
+
+.pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Responsive Improvements */
+@media (max-width: 768px) {
+    .animate-float,
+    .animate-float-delay-1,
+    .animate-float-delay-2,
+    .animate-float-delay-3 {
+        animation-duration: 4s;
+    }
+}
+
+/* Loading Animation */
+@keyframes shimmer {
+    0% { background-position: -200px 0; }
+    100% { background-position: calc(200px + 100%) 0; }
+}
+
+.shimmer {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200px 100%;
+    animation: shimmer 1.5s infinite;
+}
+</style>
+{% endblock %}

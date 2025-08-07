@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:smartyschool.stylemixthemes.com)",
+      "Bash(mkdir:*)",
+      "Bash(pip install:*)",
+      "Bash(python run:*)",
+      "Bash(python:*)"
+    ],
+    "deny": []
+  }
+}

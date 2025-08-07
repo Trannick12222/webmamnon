@@ -1,0 +1,22 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Tin nhắn liên hệ - Admin{% endblock %}
+{% block page_title %}Tin nhắn liên hệ{% endblock %}
+{% block page_description %}Quản lý tin nhắn từ phụ huynh{% endblock %}
+
+{% block content %}
+<div class="admin-card p-6">
+    <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-semibold text-gray-800">Tin nhắn liên hệ</h2>
+        <div class="flex items-center space-x-2">
+            <span class="text-sm text-gray-600">Tổng: <strong>0</strong> tin nhắn</span>
+        </div>
+    </div>
+    
+    <div class="text-center py-12">
+        <i class="fas fa-envelope text-gray-400 text-4xl mb-4"></i>
+        <p class="text-gray-500">Chưa có tin nhắn liên hệ nào</p>
+        <p class="text-gray-400 text-sm">Tin nhắn từ form liên hệ sẽ hiển thị ở đây</p>
+    </div>
+</div>
+{% endblock %}

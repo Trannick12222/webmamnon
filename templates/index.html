@@ -1,0 +1,603 @@
+{% extends "base.html" %}
+
+{% block title %}Trang chủ - Trường Mầm non Hoa Hướng Dương{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-slider relative min-h-screen flex items-center">
+    <div class="container mx-auto px-4 relative z-10">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div class="text-white">
+                <h1 class="text-5xl md:text-6xl font-bold font-patrick mb-6 leading-tight">
+                    Chào mừng đến với<br>
+                    <span class="text-yellow-300">Hoa Hướng Dương</span>
+                </h1>
+                <p class="text-xl md:text-2xl mb-8 text-white/90 leading-relaxed">
+                    Nơi nuôi dưỡng tâm hồn và phát triển tài năng của trẻ em từ 18 tháng đến 5 tuổi
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="/chuong-trinh" class="btn-primary inline-block text-center">
+                        <i class="fas fa-graduation-cap mr-2"></i>
+                        Xem chương trình học
+                    </a>
+                    <a href="/lien-he" class="bg-white text-primary px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition inline-block text-center">
+                        <i class="fas fa-phone mr-2"></i>
+                        Liên hệ tư vấn
+                    </a>
+                </div>
+            </div>
+            <div class="relative">
+                <div class="bg-white/10 backdrop-blur-sm rounded-3xl p-8 border border-white/20">
+                    <!-- Slider Container -->
+                    <div class="slider-container relative rounded-2xl overflow-hidden">
+                        {% if slider_images %}
+                        <div class="slider-wrapper">
+                            {% for slider in slider_images %}
+                            <div class="slider-slide {% if loop.first %}active{% endif %}" data-slide="{{ loop.index0 }}">
+                                <img src="/static/{{ slider.image_path }}" 
+                                     alt="{{ slider.title }}" class="w-full h-64 md:h-80 object-cover">
+                                {% if slider.title or slider.description %}
+                                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6">
+                                    {% if slider.title %}
+                                    <h3 class="text-white text-lg font-bold mb-2">{{ slider.title }}</h3>
+                                    {% endif %}
+                                    {% if slider.description %}
+                                    <p class="text-white/90 text-sm">{{ slider.description }}</p>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- Navigation Arrows -->
+                        {% if slider_images|length > 1 %}
+                        <button class="slider-prev absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-2 rounded-full transition">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="slider-next absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-2 rounded-full transition">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                        
+                        <!-- Dots Indicator -->
+                        <div class="slider-dots absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                            {% for slider in slider_images %}
+                            <button class="slider-dot w-3 h-3 rounded-full bg-white/50 hover:bg-white/80 transition {% if loop.first %}active bg-white{% endif %}" data-slide="{{ loop.index0 }}"></button>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        
+                        {% else %}
+                        <!-- Fallback image if no slider images -->
+                        <img src="https://images.unsplash.com/photo-1544717297-fa95b6ee9643?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                             alt="Trẻ em vui chơi" class="rounded-2xl w-full h-64 md:h-80 object-cover">
+                        {% endif %}
+                    </div>
+                </div>
+                <!-- Floating elements -->
+                <div class="absolute -top-4 -left-4 w-16 h-16 bg-yellow-300 rounded-full flex items-center justify-center">
+                    <i class="fas fa-star text-orange-600 text-xl"></i>
+                </div>
+                <div class="absolute -bottom-4 -right-4 w-12 h-12 bg-white rounded-full flex items-center justify-center">
+                    <i class="fas fa-heart text-primary text-lg"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Decorative shapes -->
+    <div class="absolute top-10 right-10 w-20 h-20 bg-yellow-300/20 rounded-full animate-bounce"></div>
+    <div class="absolute bottom-20 left-10 w-16 h-16 bg-white/20 rounded-full animate-pulse"></div>
+</section>
+
+<!-- About Section -->
+<section class="py-20 bg-gradient-to-br from-blue-50 to-purple-50 relative overflow-hidden">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+                <div class="text-center lg:text-left mb-8">
+                    <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
+                        <span class="text-primary font-patrick">Về chúng tôi</span>
+                    </h2>
+                    <p class="text-lg text-gray-600 leading-relaxed mb-6">
+                        Trường Mầm non Hoa Hướng Dương là ngôi trường tiên phong trong việc áp dụng 
+                        phương pháp giáo dục hiện đại, tập trung phát triển toàn diện cho trẻ em.
+                    </p>
+                    <p class="text-lg text-gray-600 leading-relaxed">
+                        Với đội ngũ giáo viên được đào tạo chuyên nghiệp và cơ sở vật chất hiện đại, 
+                        chúng tôi cam kết mang đến môi trường học tập an toàn, vui tươi và sáng tạo.
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="text-center p-6 bg-white rounded-2xl shadow-lg card-hover">
+                        <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-users text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-primary mb-2">200+</h3>
+                        <p class="text-gray-600">Học sinh</p>
+                    </div>
+                    <div class="text-center p-6 bg-white rounded-2xl shadow-lg card-hover">
+                        <div class="w-16 h-16 bg-secondary rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-chalkboard-teacher text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-secondary mb-2">25</h3>
+                        <p class="text-gray-600">Giáo viên</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="relative">
+                <div class="grid grid-cols-2 gap-4">
+                    <img src="https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" 
+                         alt="Trẻ học tập" class="rounded-2xl shadow-lg">
+                    <img src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" 
+                         alt="Trẻ vui chơi" class="rounded-2xl shadow-lg mt-8">
+                </div>
+                <div class="absolute -bottom-4 -left-4 bg-yellow-300 rounded-2xl p-6 shadow-lg">
+                    <div class="text-center">
+                        <h4 class="text-2xl font-bold text-orange-600 font-patrick">10+</h4>
+                        <p class="text-orange-800 font-medium">Năm kinh nghiệm</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Programs Section -->
+<section class="py-20 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
+                <span class="text-primary font-patrick">Chương trình học</span>
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Các chương trình giáo dục được thiết kế phù hợp với từng độ tuổi, 
+                giúp trẻ phát triển toàn diện về thể chất, trí tuệ và cảm xúc
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for program in featured_programs %}
+            <div class="bg-white rounded-3xl shadow-lg overflow-hidden card-hover border border-gray-100">
+                {% if program.featured_image %}
+                    {% if program.featured_image.startswith('http') %}
+                    <img src="{{ program.featured_image }}" 
+                         alt="{{ program.name }}" class="w-full h-48 object-cover">
+                    {% else %}
+                    <img src="/static/{{ program.featured_image }}" 
+                         alt="{{ program.name }}" class="w-full h-48 object-cover">
+                    {% endif %}
+                {% else %}
+                <div class="w-full h-48 flex items-center justify-center" style="background: linear-gradient(to bottom right, #ff6b35, #f7931e);">
+                    <i class="fas fa-graduation-cap text-white text-4xl"></i>
+                </div>
+                {% endif %}
+                
+                <div class="p-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                            {{ program.age_group }}
+                        </span>
+                        <span class="text-primary font-bold text-lg">{{ program.price }}</span>
+                    </div>
+                    
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">{{ program.name }}</h3>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        {{ program.description[:100] }}{% if program.description|length > 100 %}...{% endif %}
+                    </p>
+                    
+                    <div class="flex items-center justify-between">
+                        <div class="text-sm text-gray-500">
+                            <i class="fas fa-clock mr-1"></i>
+                            {{ program.duration }}
+                        </div>
+                        <a href="{{ url_for('program_detail', id=program.id) }}" 
+                           class="text-primary font-semibold hover:text-secondary transition">
+                            Chi tiết <i class="fas fa-arrow-right ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-12">
+            <a href="/chuong-trinh" class="btn-primary">
+                Xem tất cả chương trình
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-20" style="background: linear-gradient(to right, #ff6b35, #f7931e);">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-bold text-white mb-6 font-patrick">
+                Tại sao chọn Hoa Hướng Dương?
+            </h2>
+            <p class="text-xl text-white/90 max-w-3xl mx-auto">
+                Chúng tôi mang đến những giá trị giáo dục tốt nhất cho sự phát triển của trẻ
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="text-center text-white">
+                <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-shield-alt text-3xl"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-4">An toàn tuyệt đối</h3>
+                <p class="text-white/90 leading-relaxed">
+                    Hệ thống camera giám sát 24/7, đội ngũ bảo vệ chuyên nghiệp
+                </p>
+            </div>
+            
+            <div class="text-center text-white">
+                <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-brain text-3xl"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-4">Phát triển tư duy</h3>
+                <p class="text-white/90 leading-relaxed">
+                    Phương pháp STEAM giúp trẻ phát triển tư duy logic và sáng tạo
+                </p>
+            </div>
+            
+            <div class="text-center text-white">
+                <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-heart text-3xl"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-4">Yêu thương chân thành</h3>
+                <p class="text-white/90 leading-relaxed">
+                    Đội ngũ giáo viên tận tâm, yêu trẻ như con em mình
+                </p>
+            </div>
+            
+            <div class="text-center text-white">
+                <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-leaf text-3xl"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-4">Môi trường xanh</h3>
+                <p class="text-white/90 leading-relaxed">
+                    Không gian xanh, sạch, thân thiện với môi trường
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- News Section -->
+{% if latest_news %}
+<section class="py-20 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
+                <span class="text-primary font-patrick">Tin tức mới nhất</span>
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Cập nhật những thông tin mới nhất từ trường Hoa Hướng Dương
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {% for article in latest_news %}
+            <article class="bg-white rounded-2xl shadow-lg overflow-hidden card-hover">
+                {% if article.featured_image %}
+                    {% if article.featured_image.startswith('http') %}
+                    <img src="{{ article.featured_image }}" 
+                         alt="{{ article.title }}" class="w-full h-48 object-cover">
+                    {% else %}
+                    <img src="/static/{{ article.featured_image }}" 
+                         alt="{{ article.title }}" class="w-full h-48 object-cover">
+                    {% endif %}
+                {% else %}
+                <div class="w-full h-48 bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
+                    <i class="fas fa-newspaper text-white text-3xl"></i>
+                </div>
+                {% endif %}
+                
+                <div class="p-6">
+                    <div class="text-sm text-gray-500 mb-3">
+                        <i class="fas fa-calendar mr-2"></i>
+                        {{ article.created_at.strftime('%d/%m/%Y') }}
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-3 leading-tight">
+                        {{ article.title }}
+                    </h3>
+                    <p class="text-gray-600 mb-4 leading-relaxed">
+                        {{ article.summary[:100] if article.summary else article.content[:100] }}...
+                    </p>
+                    <a href="{{ url_for('news_detail', id=article.id) }}" 
+                       class="text-primary font-semibold hover:text-secondary transition">
+                        Đọc thêm <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-12">
+            <a href="/tin-tuc" class="btn-primary">
+                Xem tất cả tin tức
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Gallery Section -->
+{% if gallery_images %}
+<section class="py-20 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
+                <span class="text-primary font-patrick">Khoảnh khắc đáng nhớ</span>
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Những hình ảnh sinh động về cuộc sống học tập và vui chơi của các em
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {% for image in gallery_images %}
+            <div class="relative group overflow-hidden rounded-2xl shadow-lg card-hover">
+                {% if image.image_path.startswith('http') %}
+                <img src="{{ image.image_path }}" 
+                     alt="{{ image.title }}" class="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300">
+                {% else %}
+                <img src="/static/{{ image.image_path }}" 
+                     alt="{{ image.title }}" class="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300">
+                {% endif %}
+                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <div class="text-white text-center">
+                        <i class="fas fa-search-plus text-2xl mb-2"></i>
+                        <p class="text-sm font-medium">{{ image.title }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-12">
+            <a href="/thu-vien-anh" class="btn-primary">
+                Xem thêm hình ảnh
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Events Section -->
+{% if upcoming_events %}
+<section class="py-20 bg-blue-50">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
+                <span class="text-primary font-patrick">Sự kiện sắp tới</span>
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Đừng bỏ lỡ những sự kiện thú vị dành cho các em học sinh
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {% for event in upcoming_events %}
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden card-hover">
+                {% if event.featured_image %}
+                <img src="/static/{{ event.featured_image }}" 
+                     alt="{{ event.title }}" class="w-full h-48 object-cover">
+                {% else %}
+                <div class="w-full h-48 bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center">
+                    <i class="fas fa-calendar-alt text-white text-3xl"></i>
+                </div>
+                {% endif %}
+                
+                <div class="p-6">
+                    <div class="flex items-center text-sm text-primary font-semibold mb-3">
+                        <i class="fas fa-calendar mr-2"></i>
+                        {{ event.event_date.strftime('%d/%m/%Y') }}
+                        <i class="fas fa-clock ml-4 mr-2"></i>
+                        {{ event.event_date.strftime('%H:%M') }}
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-3">{{ event.title }}</h3>
+                    <p class="text-gray-600 mb-4 leading-relaxed">
+                        {{ event.description[:100] if event.description else '' }}...
+                    </p>
+                    {% if event.location %}
+                    <div class="flex items-center text-sm text-gray-500">
+                        <i class="fas fa-map-marker-alt mr-2"></i>
+                        {{ event.location }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-12">
+            <a href="/su-kien" class="btn-primary">
+                Xem tất cả sự kiện
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- CTA Section -->
+<section class="py-20 bg-gradient-to-r from-purple-600 to-pink-600 relative overflow-hidden">
+    <div class="container mx-auto px-4 relative z-10">
+        <div class="text-center text-white">
+            <h2 class="text-4xl md:text-5xl font-bold mb-6 font-patrick">
+                Sẵn sàng cho con bước vào hành trình học tập?
+            </h2>
+            <p class="text-xl mb-8 text-white/90 max-w-3xl mx-auto">
+                Hãy liên hệ với chúng tôi để được tư vấn chi tiết về chương trình học 
+                phù hợp với độ tuổi của con bạn
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="/lien-he" class="bg-white text-purple-600 px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition">
+                    <i class="fas fa-phone mr-2"></i>
+                    Liên hệ ngay
+                </a>
+                <a href="/chuong-trinh" class="border-2 border-white text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-white hover:text-purple-600 transition">
+                    <i class="fas fa-book mr-2"></i>
+                    Tìm hiểu chương trình
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Background decorations -->
+    <div class="absolute top-0 left-0 w-64 h-64 bg-white/10 rounded-full -translate-x-32 -translate-y-32"></div>
+    <div class="absolute bottom-0 right-0 w-64 h-64 bg-white/10 rounded-full translate-x-32 translate-y-32"></div>
+</section>
+
+<style>
+.slider-container {
+    position: relative;
+    background: rgba(255,255,255,0.1); /* Debug background */
+    border: 2px solid rgba(255,255,255,0.2); /* Debug border */
+}
+
+.slider-wrapper {
+    position: relative;
+    width: 100%;
+    min-height: 320px; /* Đặt chiều cao tối thiểu */
+}
+
+.slider-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+
+}
+
+.slider-slide.active {
+    opacity: 1;
+
+}
+
+.slider-slide img {
+    width: 100%;
+    height: 320px; /* Đặt chiều cao cố định cho hình ảnh */
+    object-fit: cover;
+}
+
+/* Responsive heights */
+@media (min-width: 768px) {
+    .slider-wrapper {
+        min-height: 400px;
+    }
+    
+    .slider-slide img {
+        height: 400px;
+    }
+}
+
+.slider-dot.active {
+    background-color: white !important;
+}
+
+.slider-prev, .slider-next {
+    z-index: 10;
+}
+
+.slider-dots {
+    z-index: 10;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const sliderContainer = document.querySelector('.slider-container');
+    if (!sliderContainer) return;
+    
+    const slides = document.querySelectorAll('.slider-slide');
+    const dots = document.querySelectorAll('.slider-dot');
+    const prevBtn = document.querySelector('.slider-prev');
+    const nextBtn = document.querySelector('.slider-next');
+    
+    if (slides.length <= 1) return;
+    
+    let currentSlide = 0;
+    let slideInterval;
+    
+    function showSlide(index) {
+        // Hide all slides
+        slides.forEach(slide => slide.classList.remove('active'));
+        dots.forEach(dot => dot.classList.remove('active', 'bg-white'));
+        
+        // Show current slide
+        slides[index].classList.add('active');
+        if (dots[index]) {
+            dots[index].classList.add('active', 'bg-white');
+        }
+        
+        currentSlide = index;
+    }
+    
+    function nextSlide() {
+        const next = (currentSlide + 1) % slides.length;
+        showSlide(next);
+    }
+    
+    function prevSlide() {
+        const prev = (currentSlide - 1 + slides.length) % slides.length;
+        showSlide(prev);
+    }
+    
+    function startAutoSlide() {
+        // Clear any existing interval first to prevent duplicates
+        stopAutoSlide();
+        slideInterval = setInterval(nextSlide, 5000); // Change slide every 5 seconds
+    }
+    
+    function stopAutoSlide() {
+        if (slideInterval) {
+            clearInterval(slideInterval);
+            slideInterval = null; // Reset to null
+        }
+    }
+    
+    // Event listeners
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            console.log('Next clicked - stopping and restarting timer');
+            stopAutoSlide(); // Stop first
+            nextSlide();
+            startAutoSlide(); // Restart with fresh 5s timer
+        });
+    }
+    
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            console.log('Prev clicked - stopping and restarting timer');
+            stopAutoSlide(); // Stop first
+            prevSlide();
+            startAutoSlide(); // Restart with fresh 5s timer
+        });
+    }
+    
+    dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+            console.log('Dot clicked - stopping and restarting timer');
+            stopAutoSlide(); // Stop first
+            showSlide(index);
+            startAutoSlide(); // Restart with fresh 5s timer
+        });
+    });
+    
+    // Pause auto-slide on hover
+    sliderContainer.addEventListener('mouseenter', stopAutoSlide);
+    sliderContainer.addEventListener('mouseleave', startAutoSlide);
+    
+    // Start auto-slide
+    startAutoSlide();
+});
+</script>
+{% endblock %}

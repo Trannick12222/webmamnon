@@ -1,0 +1,56 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Quản lý chương trình - Admin{% endblock %}
+{% block page_title %}Chương trình học{% endblock %}
+{% block page_description %}Quản lý các chương trình giáo dục{% endblock %}
+
+{% block content %}
+<div class="admin-card p-6">
+    <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-semibold text-gray-800">Danh sách chương trình</h2>
+        <a href="{{ url_for('admin_programs_create') }}" class="btn-primary px-4 py-2 rounded-lg">
+            <i class="fas fa-plus mr-2"></i>Thêm chương trình
+        </a>
+    </div>
+    
+    {% if programs %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for program in programs %}
+        <div class="border rounded-lg p-4 {% if program.is_featured %}border-orange-300 bg-orange-50{% endif %}">
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center space-x-2">
+                    <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">{{ program.age_group }}</span>
+                    {% if program.is_featured %}
+                    <span class="bg-orange-100 text-orange-800 px-2 py-1 rounded text-xs font-semibold">
+                        <i class="fas fa-star mr-1"></i>Trang chủ
+                    </span>
+                    {% endif %}
+                </div>
+                <span class="text-lg font-bold text-primary">{{ program.price }}</span>
+            </div>
+            <h3 class="font-semibold text-gray-800 mb-2">{{ program.name }}</h3>
+            <p class="text-gray-600 text-sm mb-3">{{ program.description[:100] }}...</p>
+            <div class="flex items-center justify-between">
+                <span class="text-sm text-gray-500">{{ program.duration }}</span>
+                <div class="flex space-x-2">
+                    <a href="{{ url_for('admin_programs_edit', id=program.id) }}" class="text-blue-600 hover:text-blue-800 text-sm">Sửa</a>
+                    <a href="{{ url_for('admin_programs_delete', id=program.id) }}" class="text-red-600 hover:text-red-800 text-sm" onclick="return confirm('Bạn có chắc chắn muốn xóa chương trình này?')">Xóa</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-12">
+        <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-graduation-cap text-2xl text-gray-400"></i>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">Chưa có chương trình nào</h3>
+        <p class="text-gray-600 mb-4">Bắt đầu bằng cách tạo chương trình đầu tiên</p>
+        <a href="{{ url_for('admin_programs_create') }}" class="btn-primary px-6 py-3 rounded-lg">
+            <i class="fas fa-plus mr-2"></i>Tạo chương trình đầu tiên
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

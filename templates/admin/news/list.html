@@ -1,0 +1,172 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Quản lý tin tức - Admin{% endblock %}
+{% block page_title %}Tin tức{% endblock %}
+{% block page_description %}Quản lý tất cả tin tức trên website{% endblock %}
+
+{% block content %}
+<div class="admin-card p-6">
+    <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-semibold text-gray-800">Danh sách tin tức</h2>
+        <a href="{{ url_for('admin_news_create') }}" class="btn-primary px-4 py-2 rounded-lg">
+            <i class="fas fa-plus mr-2"></i>Thêm tin tức
+        </a>
+    </div>
+    
+    {% if news and news.items and news.items|length > 0 %}
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3">Hình ảnh</th>
+                    <th class="px-6 py-3">Tiêu đề</th>
+                    <th class="px-6 py-3">Tóm tắt</th>
+                    <th class="px-6 py-3">Ngày tạo</th>
+                    <th class="px-6 py-3">Trạng thái</th>
+                    <th class="px-6 py-3">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for article in news.items %}
+                <tr class="bg-white border-b hover:bg-gray-50">
+                    <td class="px-6 py-4">
+                        {% if article.featured_image %}
+                            {% if article.featured_image.startswith('http') %}
+                            <img src="{{ article.featured_image }}" 
+                                 alt="{{ article.title }}" class="w-16 h-12 object-cover rounded">
+                            {% else %}
+                            <img src="{{ url_for('static', filename=article.featured_image) }}" 
+                                 alt="{{ article.title }}" class="w-16 h-12 object-cover rounded">
+                            {% endif %}
+                        {% else %}
+                        <div class="w-16 h-12 bg-gray-200 rounded flex items-center justify-center">
+                            <i class="fas fa-image text-gray-400"></i>
+                        </div>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="font-medium text-gray-900 max-w-xs">
+                            {{ article.title }}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="text-gray-600 max-w-sm">
+                            {{ article.summary[:100] if article.summary else article.content[:100] }}...
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 text-gray-500">
+                        {{ article.created_at.strftime('%d/%m/%Y') }}
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                            Đã xuất bản
+                        </span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="flex items-center space-x-2">
+                            <a href="{{ url_for('news_detail', id=article.id) }}" target="_blank"
+                               class="text-blue-600 hover:text-blue-900 text-sm" title="Xem trước">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="{{ url_for('admin_news_edit', id=article.id) }}" 
+                               class="text-green-600 hover:text-green-900 text-sm" title="Chỉnh sửa">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{{ url_for('admin_news_delete', id=article.id) }}" 
+                               class="text-red-600 hover:text-red-900 text-sm delete-btn" title="Xóa"
+                               onclick="return confirm('Bạn có chắc muốn xóa tin tức này?')">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination -->
+    <div class="flex items-center justify-between mt-6">
+        <div class="text-sm text-gray-500">
+            Hiển thị {{ news.items|length }} tin tức
+        </div>
+        
+        <div class="flex items-center space-x-2">
+            <button class="px-3 py-2 text-sm bg-gray-100 text-gray-400 rounded-md cursor-not-allowed">
+                <i class="fas fa-chevron-left mr-1"></i>Trước
+            </button>
+            <span class="px-3 py-2 text-sm bg-orange-500 text-white rounded-md">1</span>
+            <button class="px-3 py-2 text-sm bg-gray-100 text-gray-400 rounded-md cursor-not-allowed">
+                Sau<i class="fas fa-chevron-right ml-1"></i>
+            </button>
+        </div>
+    </div>
+    
+    {% else %}
+    <div class="text-center py-12">
+        <i class="fas fa-newspaper text-gray-400 text-4xl mb-4"></i>
+        <p class="text-gray-500 text-lg mb-2">Chưa có tin tức nào</p>
+        <p class="text-gray-400 text-sm mb-6">Hãy tạo tin tức đầu tiên cho trường</p>
+        <a href="{{ url_for('admin_news_create') }}" class="btn-primary px-6 py-3 rounded-lg">
+            <i class="fas fa-plus mr-2"></i>Tạo tin tức đầu tiên
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Quick Actions -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+    <div class="admin-card p-6 text-center">
+        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-edit text-blue-600 text-xl"></i>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">Tạo tin tức</h3>
+        <p class="text-gray-600 text-sm mb-4">Thêm bài viết tin tức mới</p>
+        <a href="{{ url_for('admin_news_create') }}" class="text-blue-600 hover:text-blue-800 font-medium">
+            Bắt đầu viết <i class="fas fa-arrow-right ml-1"></i>
+        </a>
+    </div>
+    
+    <div class="admin-card p-6 text-center">
+        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-images text-green-600 text-xl"></i>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">Thư viện ảnh</h3>
+        <p class="text-gray-600 text-sm mb-4">Quản lý hình ảnh cho tin tức</p>
+        <a href="{{ url_for('admin_gallery') }}" class="text-green-600 hover:text-green-800 font-medium">
+            Xem thư viện <i class="fas fa-arrow-right ml-1"></i>
+        </a>
+    </div>
+    
+    <div class="admin-card p-6 text-center">
+        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-eye text-purple-600 text-xl"></i>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">Xem website</h3>
+        <p class="text-gray-600 text-sm mb-4">Xem tin tức trên website</p>
+        <a href="{{ url_for('news') }}" target="_blank" class="text-purple-600 hover:text-purple-800 font-medium">
+            Trang tin tức <i class="fas fa-external-link-alt ml-1"></i>
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Xác nhận xóa
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.delete-btn')) {
+            e.preventDefault();
+            if (confirm('Bạn có chắc chắn muốn xóa tin tức này không?')) {
+                // Xử lý xóa ở đây
+                alert('Tính năng xóa sẽ được thêm khi kết nối database');
+            }
+        }
+    });
+    
+    // Auto refresh every 30 seconds
+    setTimeout(function() {
+        location.reload();
+    }, 30000);
+</script>
+{% endblock %}

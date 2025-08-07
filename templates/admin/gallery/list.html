@@ -1,0 +1,22 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Thư viện ảnh - Admin{% endblock %}
+{% block page_title %}Thư viện ảnh{% endblock %}
+{% block page_description %}Quản lý hình ảnh trên website{% endblock %}
+
+{% block content %}
+<div class="admin-card p-6">
+    <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-semibold text-gray-800">Thư viện ảnh</h2>
+        <a href="{{ url_for('admin_gallery_create') }}" class="btn-primary px-4 py-2 rounded-lg">
+            <i class="fas fa-upload mr-2"></i>Tải lên ảnh
+        </a>
+    </div>
+    
+    <div class="text-center py-12">
+        <i class="fas fa-images text-gray-400 text-4xl mb-4"></i>
+        <p class="text-gray-500">Chưa có hình ảnh nào</p>
+        <p class="text-gray-400 text-sm">Hãy tải lên một số hình ảnh đẹp cho trường</p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,348 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Chỉnh sửa tin tức - Admin{% endblock %}
+{% block page_title %}Chỉnh sửa tin tức{% endblock %}
+{% block page_description %}Cập nhật thông tin tin tức{% endblock %}
+
+{% block content %}
+<div class="admin-card p-6">
+    <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-semibold text-gray-800">Chỉnh sửa tin tức</h2>
+        <a href="{{ url_for('admin_news') }}" class="text-gray-600 hover:text-gray-800">
+            <i class="fas fa-arrow-left mr-2"></i>Quay lại
+        </a>
+    </div>
+    
+    <form method="POST" enctype="multipart/form-data" id="newsForm">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main Content -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Title -->
+                <div>
+                    <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
+                        Tiêu đề <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" 
+                           id="title" 
+                           name="title" 
+                           value="{{ news.title }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary" 
+                           placeholder="Nhập tiêu đề tin tức..."
+                           required>
+                </div>
+                
+                <!-- Slug -->
+                <div>
+                    <label for="slug" class="block text-sm font-medium text-gray-700 mb-2">
+                        Đường dẫn (URL)
+                    </label>
+                    <input type="text" 
+                           id="slug" 
+                           name="slug" 
+                           value="{{ news.slug }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary" 
+                           placeholder="duong-dan-url">
+                    <p class="text-sm text-gray-500 mt-1">Để trống để tự động tạo từ tiêu đề</p>
+                </div>
+                
+                <!-- Summary -->
+                <div>
+                    <label for="summary" class="block text-sm font-medium text-gray-700 mb-2">
+                        Tóm tắt
+                    </label>
+                    <textarea id="summary" 
+                              name="summary" 
+                              rows="4"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary" 
+                              placeholder="Nhập tóm tắt ngắn gọn...">{{ news.summary }}</textarea>
+                </div>
+                
+                <!-- Content -->
+                <div>
+                    <label for="content" class="block text-sm font-medium text-gray-700 mb-2">
+                        Nội dung <span class="text-red-500">*</span>
+                    </label>
+                    <textarea id="content" 
+                              name="content" 
+                              rows="15"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary" 
+                              placeholder="Nhập nội dung chi tiết..."
+                              required>{{ news.content }}</textarea>
+                    <p class="text-sm text-gray-500 mt-1">Hỗ trợ HTML và Markdown</p>
+                </div>
+                
+                <!-- SEO Section -->
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="text-lg font-medium text-gray-800 mb-4">
+                        <i class="fas fa-search mr-2"></i>
+                        Tối ưu SEO
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label for="meta_description" class="block text-sm font-medium text-gray-700 mb-2">
+                                Meta Description
+                            </label>
+                            <textarea id="meta_description" 
+                                      name="meta_description" 
+                                      rows="3"
+                                      maxlength="160"
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary" 
+                                      placeholder="Mô tả ngắn gọn cho search engine (tối đa 160 ký tự)">{{ news.meta_description }}</textarea>
+                            <div class="text-sm text-gray-500 mt-1">
+                                <span id="metaCount">{{ news.meta_description|length if news.meta_description else 0 }}</span>/160 ký tự
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label for="meta_keywords" class="block text-sm font-medium text-gray-700 mb-2">
+                                Meta Keywords
+                            </label>
+                            <input type="text" 
+                                   id="meta_keywords" 
+                                   name="meta_keywords" 
+                                   value="{{ news.meta_keywords }}"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary" 
+                                   placeholder="từ khóa 1, từ khóa 2, từ khóa 3">
+                            <p class="text-sm text-gray-500 mt-1">Phân cách bằng dấu phẩy</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sidebar -->
+            <div class="space-y-6">
+                <!-- Publish Settings -->
+                <div class="bg-white border border-gray-200 rounded-lg p-4">
+                    <h3 class="text-lg font-medium text-gray-800 mb-4">
+                        <i class="fas fa-cog mr-2"></i>
+                        Cài đặt xuất bản
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="flex items-center">
+                                <input type="checkbox" 
+                                       name="is_published" 
+                                       value="1"
+                                       {{ 'checked' if news.is_published else '' }}
+                                       class="rounded border-gray-300 text-primary focus:ring-primary">
+                                <span class="ml-2 text-sm text-gray-700">Xuất bản ngay</span>
+                            </label>
+                        </div>
+                        
+                        <div>
+                            <label class="flex items-center">
+                                <input type="checkbox" 
+                                       name="is_featured" 
+                                       value="1"
+                                       {{ 'checked' if news.is_featured else '' }}
+                                       class="rounded border-gray-300 text-primary focus:ring-primary">
+                                <span class="ml-2 text-sm text-gray-700">Tin nổi bật</span>
+                            </label>
+                        </div>
+                        
+                        <div>
+                            <label for="category" class="block text-sm font-medium text-gray-700 mb-2">
+                                Danh mục
+                            </label>
+                            <select id="category" 
+                                    name="category"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
+                                <option value="">Chọn danh mục</option>
+                                <option value="tin-tuc" {{ 'selected' if news.category == 'tin-tuc' else '' }}>Tin tức</option>
+                                <option value="thong-bao" {{ 'selected' if news.category == 'thong-bao' else '' }}>Thông báo</option>
+                                <option value="su-kien" {{ 'selected' if news.category == 'su-kien' else '' }}>Sự kiện</option>
+                                <option value="hoat-dong" {{ 'selected' if news.category == 'hoat-dong' else '' }}>Hoạt động</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="tags" class="block text-sm font-medium text-gray-700 mb-2">
+                                Tags
+                            </label>
+                            <input type="text" 
+                                   id="tags" 
+                                   name="tags" 
+                                   value="{{ news.tags }}"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary" 
+                                   placeholder="tag1, tag2, tag3">
+                            <p class="text-sm text-gray-500 mt-1">Phân cách bằng dấu phẩy</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Featured Image -->
+                <div class="bg-white border border-gray-200 rounded-lg p-4">
+                    <h3 class="text-lg font-medium text-gray-800 mb-4">
+                        <i class="fas fa-image mr-2"></i>
+                        Ảnh đại diện
+                    </h3>
+                    
+                    <!-- Current Image -->
+                    {% if news.featured_image %}
+                    <div class="mb-4">
+                        <p class="text-sm text-gray-600 mb-2">Ảnh hiện tại:</p>
+                        <div class="relative">
+                            <img src="{{ url_for('static', filename='uploads/news/' + news.featured_image) }}" 
+                                 alt="Current image" 
+                                 class="w-full h-32 object-cover rounded-lg">
+                            <div class="absolute top-2 right-2">
+                                <button type="button" 
+                                        onclick="removeCurrentImage()"
+                                        class="bg-red-500 text-white p-1 rounded-full text-xs hover:bg-red-600">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <input type="hidden" name="remove_image" id="remove_image" value="0">
+                    </div>
+                    {% endif %}
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <input type="file" 
+                                   id="featured_image" 
+                                   name="featured_image" 
+                                   accept="image/*"
+                                   class="hidden" 
+                                   onchange="previewImage(this)">
+                            <label for="featured_image" 
+                                   class="cursor-pointer bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:bg-gray-100 transition block">
+                                <i class="fas fa-cloud-upload-alt text-2xl text-gray-400 mb-2"></i>
+                                <p class="text-sm text-gray-600">Click để chọn ảnh mới</p>
+                                <p class="text-xs text-gray-500">JPG, PNG, WebP (tối đa 5MB)</p>
+                            </label>
+                        </div>
+                        
+                        <!-- Image Preview -->
+                        <div id="imagePreview" class="hidden">
+                            <img id="previewImg" class="w-full h-32 object-cover rounded-lg">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="space-y-3">
+                    <button type="submit" 
+                            name="action" 
+                            value="update"
+                            class="w-full bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary-dark transition font-medium">
+                        <i class="fas fa-save mr-2"></i>
+                        Cập nhật tin tức
+                    </button>
+                    
+                    <button type="submit" 
+                            name="action" 
+                            value="preview"
+                            class="w-full bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition font-medium">
+                        <i class="fas fa-eye mr-2"></i>
+                        Xem trước
+                    </button>
+                    
+                    <a href="{{ url_for('admin_news') }}" 
+                       class="w-full bg-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-300 transition font-medium text-center block">
+                        <i class="fas fa-times mr-2"></i>
+                        Hủy bỏ
+                    </a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Auto-generate slug from title
+document.getElementById('title').addEventListener('input', function() {
+    const title = this.value;
+    const slug = title.toLowerCase()
+        .replace(/[áàảãạăắằẳẵặâấầẩẫậ]/g, 'a')
+        .replace(/[éèẻẽẹêếềểễệ]/g, 'e')
+        .replace(/[íìỉĩị]/g, 'i')
+        .replace(/[óòỏõọôốồổỗộơớờởỡợ]/g, 'o')
+        .replace(/[úùủũụưứừửữự]/g, 'u')
+        .replace(/[ýỳỷỹỵ]/g, 'y')
+        .replace(/[đ]/g, 'd')
+        .replace(/[^a-z0-9\s]/g, '')
+        .replace(/\s+/g, '-')
+        .trim();
+    
+    document.getElementById('slug').value = slug;
+});
+
+// Meta description character count
+document.getElementById('meta_description').addEventListener('input', function() {
+    const count = this.value.length;
+    document.getElementById('metaCount').textContent = count;
+    
+    if (count > 160) {
+        document.getElementById('metaCount').classList.add('text-red-500');
+    } else {
+        document.getElementById('metaCount').classList.remove('text-red-500');
+    }
+});
+
+// Image preview
+function previewImage(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('previewImg').src = e.target.result;
+            document.getElementById('imagePreview').classList.remove('hidden');
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+// Remove current image
+function removeCurrentImage() {
+    if (confirm('Bạn có chắc muốn xóa ảnh hiện tại?')) {
+        document.getElementById('remove_image').value = '1';
+        document.querySelector('.relative').style.display = 'none';
+    }
+}
+
+// Form validation
+document.getElementById('newsForm').addEventListener('submit', function(e) {
+    const title = document.getElementById('title').value.trim();
+    const content = document.getElementById('content').value.trim();
+    
+    if (!title || !content) {
+        e.preventDefault();
+        alert('Vui lòng nhập đầy đủ tiêu đề và nội dung!');
+        return false;
+    }
+    
+    // Show loading
+    const submitBtn = document.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Đang cập nhật...';
+    submitBtn.disabled = true;
+});
+
+// Auto-save draft (optional)
+let autoSaveInterval;
+function startAutoSave() {
+    autoSaveInterval = setInterval(function() {
+        const formData = new FormData(document.getElementById('newsForm'));
+        formData.append('action', 'draft');
+        
+        fetch(window.location.href, {
+            method: 'POST',
+            body: formData
+        }).then(response => {
+            if (response.ok) {
+                console.log('Draft auto-saved');
+            }
+        }).catch(error => {
+            console.error('Auto-save failed:', error);
+        });
+    }, 60000); // Auto-save every minute
+}
+
+// Uncomment to enable auto-save
+// startAutoSave();
+</script>
+{% endblock %}

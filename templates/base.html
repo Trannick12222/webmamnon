@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Trường Mầm non Hoa Hướng Dương{% endblock %}</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&family=Patrick+Hand:wght@400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        .font-patrick { font-family: 'Patrick Hand', cursive; }
+        .font-quicksand { font-family: 'Quicksand', sans-serif; }
+        .bg-primary { background-color: #ff6b35; }
+        .bg-secondary { background-color: #f7931e; }
+        .text-primary { color: #ff6b35; }
+        .text-secondary { color: #f7931e; }
+        .bg-blue-light { background-color: #e3f2fd; }
+        .text-blue-dark { color: #1565c0; }
+        
+        .hero-slider {
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-slider::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="stars" patternUnits="userSpaceOnUse" width="10" height="10"><circle cx="5" cy="5" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23stars)"/></svg>');
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            border: none;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255,107,53,0.4);
+        }
+        
+        .navbar-sticky {
+            transition: all 0.3s ease;
+        }
+        
+        .navbar-sticky.scrolled {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="font-quicksand">
+    <!-- Header -->
+    <header class="navbar-sticky fixed w-full z-50 bg-white shadow-lg">
+        <!-- Top Bar -->
+        <div class="bg-blue-light py-2 hidden md:block">
+            <div class="container mx-auto px-4">
+                <div class="flex justify-between items-center text-sm text-blue-dark">
+                    <div class="flex items-center space-x-4">
+                        {% set phone_found = false %}
+                        {% set email_found = false %}
+                        {% for setting in global_contact_settings %}
+                            {% if setting.setting_type == 'phone' and not phone_found %}
+                                <span><i class="fas fa-phone mr-2"></i>{{ setting.setting_value }}</span>
+                                {% set phone_found = true %}
+                            {% elif setting.setting_type == 'email' and not email_found %}
+                                <span><i class="fas fa-envelope mr-2"></i>{{ setting.setting_value }}</span>
+                                {% set email_found = true %}
+                            {% endif %}
+                        {% endfor %}
+                        
+                        <!-- Fallback if no phone/email configured -->
+                        {% if not phone_found %}
+                        <span><i class="fas fa-phone mr-2"></i>028-3823-4567</span>
+                        {% endif %}
+                        {% if not email_found %}
+                        <span><i class="fas fa-envelope mr-2"></i>info@hoahuongduong.edu.vn</span>
+                        {% endif %}
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        {% for setting in global_contact_settings %}
+                            {% if setting.setting_type == 'url' %}
+                                <a href="{{ setting.setting_value }}" target="_blank" class="hover:text-primary" title="{{ setting.display_name }}">
+                                    <i class="
+                                        {% if 'facebook' in setting.setting_key.lower() %}fab fa-facebook
+                                        {% elif 'youtube' in setting.setting_key.lower() %}fab fa-youtube
+                                        {% elif 'instagram' in setting.setting_key.lower() %}fab fa-instagram
+                                        {% elif 'zalo' in setting.setting_key.lower() %}fas fa-comment
+                                        {% elif 'tiktok' in setting.setting_key.lower() %}fab fa-tiktok
+                                        {% elif 'twitter' in setting.setting_key.lower() %}fab fa-twitter
+                                        {% else %}fas fa-link
+                                        {% endif %}"></i>
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        <!-- Fallback if no social links configured -->
+                        {% if not global_contact_settings or not global_contact_settings|selectattr('setting_type', 'equalto', 'url')|list %}
+                        <a href="#" class="hover:text-primary"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="hover:text-primary"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="hover:text-primary"><i class="fab fa-instagram"></i></a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Navigation -->
+        <nav class="bg-white py-4">
+            <div class="container mx-auto px-4">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center">
+                        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Hoa Hướng Dương" class="h-12 mr-3">
+                        <div>
+                            <h1 class="text-xl font-bold text-primary font-patrick">Hoa Hướng Dương</h1>
+                            <p class="text-sm text-gray-600">Trường Mầm non</p>
+                        </div>
+                    </div>
+                    
+                    <div class="hidden lg:flex items-center space-x-8">
+                        <a href="/" class="text-gray-700 hover:text-primary font-medium transition">Trang chủ</a>
+                        <a href="/gioi-thieu" class="text-gray-700 hover:text-primary font-medium transition">Giới thiệu</a>
+                        <div class="relative group">
+                            <a href="/chuong-trinh" class="text-gray-700 hover:text-primary font-medium transition">Chương trình</a>
+                        </div>
+                        <a href="/tin-tuc" class="text-gray-700 hover:text-primary font-medium transition">Tin tức</a>
+                        <a href="/thu-vien-anh" class="text-gray-700 hover:text-primary font-medium transition">Thư viện ảnh</a>
+                        <a href="/su-kien" class="text-gray-700 hover:text-primary font-medium transition">Sự kiện</a>
+                        <a href="/lien-he" class="text-gray-700 hover:text-primary font-medium transition">Liên hệ</a>
+                    </div>
+                    
+                    <div class="lg:hidden">
+                        <button id="mobile-menu-btn" class="text-gray-700 hover:text-primary">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="lg:hidden hidden bg-white border-t">
+                <div class="container mx-auto px-4 py-4">
+                    <div class="flex flex-col space-y-4">
+                        <a href="/" class="text-gray-700 hover:text-primary font-medium">Trang chủ</a>
+                        <a href="/gioi-thieu" class="text-gray-700 hover:text-primary font-medium">Giới thiệu</a>
+                        <a href="/chuong-trinh" class="text-gray-700 hover:text-primary font-medium">Chương trình</a>
+                        <a href="/tin-tuc" class="text-gray-700 hover:text-primary font-medium">Tin tức</a>
+                        <a href="/thu-vien-anh" class="text-gray-700 hover:text-primary font-medium">Thư viện ảnh</a>
+                        <a href="/su-kien" class="text-gray-700 hover:text-primary font-medium">Sự kiện</a>
+                        <a href="/lien-he" class="text-gray-700 hover:text-primary font-medium">Liên hệ</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="pt-24">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="container mx-auto px-4 py-4">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }} mb-4 p-4 rounded-lg {{ 'bg-green-100 text-green-800' if category == 'success' else 'bg-red-100 text-red-800' }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center mb-4">
+                        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Hoa Hướng Dương" class="h-10 mr-3 filter brightness-0 invert">
+                        <div>
+                            <h3 class="text-lg font-bold font-patrick">Hoa Hướng Dương</h3>
+                            <p class="text-sm text-gray-400">Trường Mầm non</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 text-sm leading-relaxed">
+                        Nuôi dưỡng tâm hồn - Phát triển tài năng. Chúng tôi cam kết mang đến cho trẻ em một môi trường giáo dục tốt nhất.
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Liên kết nhanh</h4>
+                    <div class="space-y-2">
+                        <a href="/gioi-thieu" class="block text-gray-300 hover:text-primary transition">Giới thiệu</a>
+                        <a href="/chuong-trinh" class="block text-gray-300 hover:text-primary transition">Chương trình</a>
+                        <a href="/tin-tuc" class="block text-gray-300 hover:text-primary transition">Tin tức</a>
+                        <a href="/lien-he" class="block text-gray-300 hover:text-primary transition">Liên hệ</a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Thông tin liên hệ</h4>
+                    <div class="space-y-3">
+                        <div class="flex items-start">
+                            <i class="fas fa-map-marker-alt text-primary mr-3 mt-1"></i>
+                            <span class="text-gray-300 text-sm">123 Đường Hoa Hướng Dương, Quận 1, TP.HCM</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-phone text-primary mr-3"></i>
+                            <span class="text-gray-300 text-sm">028-3823-4567</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-envelope text-primary mr-3"></i>
+                            <span class="text-gray-300 text-sm">info@hoahuongduong.edu.vn</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Giờ làm việc</h4>
+                    <div class="space-y-2 text-gray-300 text-sm">
+                        <div>Thứ 2 - Thứ 6: 7:00 - 17:00</div>
+                        <div>Thứ 7: 7:30 - 11:30</div>
+                        <div>Chủ nhật: Nghỉ</div>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <h5 class="font-semibold mb-3">Theo dõi chúng tôi</h5>
+                        <div class="flex space-x-3 flex-wrap">
+                            {% for setting in global_contact_settings %}
+                                {% if setting.setting_type == 'url' %}
+                                    <a href="{{ setting.setting_value }}" target="_blank" 
+                                       class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-secondary transition
+                                       {% if 'facebook' in setting.setting_key.lower() %}bg-blue-600 hover:bg-blue-700
+                                       {% elif 'youtube' in setting.setting_key.lower() %}bg-red-600 hover:bg-red-700
+                                       {% elif 'instagram' in setting.setting_key.lower() %}bg-pink-600 hover:bg-pink-700
+                                       {% elif 'zalo' in setting.setting_key.lower() %}bg-blue-500 hover:bg-blue-600
+                                       {% elif 'tiktok' in setting.setting_key.lower() %}bg-black hover:bg-gray-800
+                                       {% elif 'twitter' in setting.setting_key.lower() %}bg-blue-400 hover:bg-blue-500
+                                       {% else %}bg-primary{% endif %}"
+                                       title="{{ setting.display_name }}">
+                                        <i class="text-white text-sm
+                                            {% if 'facebook' in setting.setting_key.lower() %}fab fa-facebook
+                                            {% elif 'youtube' in setting.setting_key.lower() %}fab fa-youtube
+                                            {% elif 'instagram' in setting.setting_key.lower() %}fab fa-instagram
+                                            {% elif 'zalo' in setting.setting_key.lower() %}fas fa-comment
+                                            {% elif 'tiktok' in setting.setting_key.lower() %}fab fa-tiktok
+                                            {% elif 'twitter' in setting.setting_key.lower() %}fab fa-twitter
+                                            {% else %}fas fa-link
+                                            {% endif %}"></i>
+                                    </a>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            <!-- Fallback if no social links configured -->
+                            {% if not global_contact_settings or not global_contact_settings|selectattr('setting_type', 'equalto', 'url')|list %}
+                            <a href="#" class="w-8 h-8 bg-primary rounded-full flex items-center justify-center hover:bg-secondary transition">
+                                <i class="fab fa-facebook text-sm"></i>
+                            </a>
+                            <a href="#" class="w-8 h-8 bg-primary rounded-full flex items-center justify-center hover:bg-secondary transition">
+                                <i class="fab fa-youtube text-sm"></i>
+                            </a>
+                            <a href="#" class="w-8 h-8 bg-primary rounded-full flex items-center justify-center hover:bg-secondary transition">
+                                <i class="fab fa-instagram text-sm"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center">
+                <p class="text-gray-400 text-sm">
+                    © 2024 Trường Mầm non Hoa Hướng Dương. Tất cả quyền được bảo lưu.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar-sticky');
+            if (window.scrollY > 100) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

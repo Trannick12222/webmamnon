@@ -1,0 +1,465 @@
+{% extends "base.html" %}
+
+{% block title %}Liên hệ - Trường Mầm non Hoa Hướng Dương{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="bg-gradient-to-r from-primary to-secondary py-20 relative overflow-hidden">
+    <div class="container mx-auto px-4 relative z-10">
+        <div class="text-center text-white">
+            <h1 class="text-5xl md:text-6xl font-bold font-patrick mb-6">Liên hệ</h1>
+            <p class="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto">
+                Chúng tôi luôn sẵn sàng lắng nghe và hỗ trợ bạn
+            </p>
+        </div>
+    </div>
+    <div class="absolute top-10 right-10 w-32 h-32 bg-yellow-300/20 rounded-full"></div>
+    <div class="absolute bottom-10 left-10 w-20 h-20 bg-white/20 rounded-full"></div>
+</section>
+
+<!-- Contact Section -->
+<section class="py-20 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <!-- Contact Form -->
+            <div class="admin-card p-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6 font-patrick text-primary">
+                    Gửi tin nhắn cho chúng tôi
+                </h2>
+                
+                <form method="POST" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
+                                Họ và tên <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" id="name" name="name" required
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                                   placeholder="Nhập họ và tên của bạn">
+                        </div>
+                        
+                        <div>
+                            <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
+                                Số điện thoại
+                            </label>
+                            <input type="tel" id="phone" name="phone"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                                   placeholder="Số điện thoại của bạn">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                            Email <span class="text-red-500">*</span>
+                        </label>
+                        <input type="email" id="email" name="email" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                               placeholder="Địa chỉ email của bạn">
+                    </div>
+                    
+                    <div>
+                        <label for="subject" class="block text-sm font-medium text-gray-700 mb-2">
+                            Chủ đề
+                        </label>
+                        <select id="subject" name="subject"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                            <option value="">Chọn chủ đề</option>
+                            <option value="Tư vấn chương trình học">Tư vấn chương trình học</option>
+                            <option value="Đăng ký nhập học">Đăng ký nhập học</option>
+                            <option value="Thăm quan trường">Thăm quan trường</option>
+                            <option value="Học phí">Hỏi về học phí</option>
+                            <option value="Phản hồi">Phản hồi, góp ý</option>
+                            <option value="Khác">Khác</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="message" class="block text-sm font-medium text-gray-700 mb-2">
+                            Nội dung tin nhắn <span class="text-red-500">*</span>
+                        </label>
+                        <textarea id="message" name="message" rows="6" required
+                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                                  placeholder="Nhập nội dung tin nhắn của bạn..."></textarea>
+                    </div>
+                    
+                    <button type="submit" 
+                            class="w-full btn-primary py-4 px-6 rounded-lg font-semibold text-lg transition duration-200">
+                        <i class="fas fa-paper-plane mr-2"></i>
+                        Gửi tin nhắn
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Contact Info -->
+            <div class="space-y-8">
+                <div class="admin-card p-8">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-6 font-patrick text-primary">
+                        Thông tin liên hệ
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <div class="flex items-start">
+                            <div class="w-12 h-12 bg-primary rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
+                                <i class="fas fa-map-marker-alt text-white text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800 mb-2">Địa chỉ</h3>
+                                <p class="text-gray-600">123 Đường Hoa Hướng Dương, Quận 1, TP.HCM</p>
+                                <p class="text-gray-600">Việt Nam</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
+                                <i class="fas fa-phone text-white text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800 mb-2">Điện thoại</h3>
+                                <p class="text-gray-600">Hotline: <a href="tel:02838234567" class="text-primary hover:text-secondary">028-3823-4567</a></p>
+                                <p class="text-gray-600">Di động: <a href="tel:0901234567" class="text-primary hover:text-secondary">090-123-4567</a></p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
+                                <i class="fas fa-envelope text-white text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800 mb-2">Email</h3>
+                                <p class="text-gray-600">
+                                    <a href="mailto:info@hoahuongduong.edu.vn" class="text-primary hover:text-secondary">
+                                        info@hoahuongduong.edu.vn
+                                    </a>
+                                </p>
+                                <p class="text-gray-600">
+                                    <a href="mailto:tuyensinh@hoahuongduong.edu.vn" class="text-primary hover:text-secondary">
+                                        tuyensinh@hoahuongduong.edu.vn
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
+                                <i class="fas fa-clock text-white text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800 mb-2">Giờ làm việc</h3>
+                                <p class="text-gray-600">Thứ 2 - Thứ 6: 7:00 - 17:00</p>
+                                <p class="text-gray-600">Thứ 7: 7:30 - 11:30</p>
+                                <p class="text-gray-600">Chủ nhật: Nghỉ</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Dynamic Contact Settings -->
+                {% if contact_settings %}
+                <div class="admin-card p-8">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Kết nối với chúng tôi</h3>
+                    <div class="space-y-4">
+                        {% for setting in contact_settings %}
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 rounded-lg flex items-center justify-center mr-4 flex-shrink-0
+                                {% if setting.setting_type == 'url' and 'facebook' in setting.setting_key.lower() %}bg-blue-600
+                                {% elif setting.setting_type == 'url' and 'youtube' in setting.setting_key.lower() %}bg-red-600
+                                {% elif setting.setting_type == 'url' and 'instagram' in setting.setting_key.lower() %}bg-pink-600
+                                {% elif setting.setting_type == 'url' and 'zalo' in setting.setting_key.lower() %}bg-blue-500
+                                {% elif setting.setting_type == 'phone' %}bg-green-500
+                                {% elif setting.setting_type == 'email' %}bg-purple-500
+                                {% else %}bg-gray-500{% endif %}">
+                                <i class="text-white text-xl
+                                    {% if setting.setting_type == 'url' and 'facebook' in setting.setting_key.lower() %}fab fa-facebook
+                                    {% elif setting.setting_type == 'url' and 'youtube' in setting.setting_key.lower() %}fab fa-youtube
+                                    {% elif setting.setting_type == 'url' and 'instagram' in setting.setting_key.lower() %}fab fa-instagram
+                                    {% elif setting.setting_type == 'url' and 'zalo' in setting.setting_key.lower() %}fas fa-comment
+                                    {% elif setting.setting_type == 'phone' %}fas fa-phone
+                                    {% elif setting.setting_type == 'email' %}fas fa-envelope
+                                    {% elif setting.setting_type == 'url' %}fas fa-link
+                                    {% else %}fas fa-info{% endif %}"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-medium text-gray-800">{{ setting.display_name }}</h4>
+                                {% if setting.setting_type == 'url' %}
+                                    <a href="{{ setting.setting_value }}" target="_blank" 
+                                       class="text-primary hover:text-secondary transition-colors">
+                                        {{ setting.setting_value }}
+                                        <i class="fas fa-external-link-alt ml-1 text-xs"></i>
+                                    </a>
+                                {% elif setting.setting_type == 'phone' %}
+                                    <a href="tel:{{ setting.setting_value }}" 
+                                       class="text-primary hover:text-secondary transition-colors">
+                                        {{ setting.setting_value }}
+                                    </a>
+                                {% elif setting.setting_type == 'email' %}
+                                    <a href="mailto:{{ setting.setting_value }}" 
+                                       class="text-primary hover:text-secondary transition-colors">
+                                        {{ setting.setting_value }}
+                                    </a>
+                                {% else %}
+                                    <span class="text-gray-600">{{ setting.setting_value }}</span>
+                                {% endif %}
+                                {% if setting.description %}
+                                <p class="text-sm text-gray-500 mt-1">{{ setting.description }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% else %}
+                <!-- Fallback Social Links -->
+                <div class="admin-card p-8">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Kết nối với chúng tôi</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center text-white hover:bg-blue-700 transition">
+                            <i class="fab fa-facebook text-xl"></i>
+                        </a>
+                        <a href="#" class="w-12 h-12 bg-red-600 rounded-lg flex items-center justify-center text-white hover:bg-red-700 transition">
+                            <i class="fab fa-youtube text-xl"></i>
+                        </a>
+                        <a href="#" class="w-12 h-12 bg-pink-600 rounded-lg flex items-center justify-center text-white hover:bg-pink-700 transition">
+                            <i class="fab fa-instagram text-xl"></i>
+                        </a>
+                        <a href="#" class="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center text-white hover:bg-green-700 transition">
+                            <i class="fab fa-whatsapp text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Quick Actions -->
+                <div class="admin-card p-8">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Liên hệ nhanh</h3>
+                    <div class="space-y-4">
+                        <a href="tel:02838234567" 
+                           class="flex items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition duration-200">
+                            <i class="fas fa-phone text-green-600 text-xl mr-4"></i>
+                            <div>
+                                <p class="font-medium text-gray-800">Gọi điện tư vấn</p>
+                                <p class="text-sm text-gray-600">028-3823-4567</p>
+                            </div>
+                        </a>
+                        
+                        <a href="https://zalo.me/0901234567" target="_blank"
+                           class="flex items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition duration-200">
+                            <i class="fas fa-comments text-blue-600 text-xl mr-4"></i>
+                            <div>
+                                <p class="font-medium text-gray-800">Chat Zalo</p>
+                                <p class="text-sm text-gray-600">Phản hồi nhanh</p>
+                            </div>
+                        </a>
+                        
+                        <a href="/chuong-trinh" 
+                           class="flex items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition duration-200">
+                            <i class="fas fa-book text-purple-600 text-xl mr-4"></i>
+                            <div>
+                                <p class="font-medium text-gray-800">Xem chương trình</p>
+                                <p class="text-sm text-gray-600">Các lớp học</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Map Section -->
+<section class="py-20 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <h2 class="text-4xl font-bold text-gray-800 mb-6 font-patrick text-primary">
+                Vị trí trường học
+            </h2>
+            <p class="text-xl text-gray-600">
+                Trường nằm ở vị trí thuận lợi, dễ dàng di chuyển và đậu xe
+            </p>
+        </div>
+        
+        <div class="admin-card overflow-hidden">
+            <div class="aspect-w-16 aspect-h-9">
+                <!-- Google Maps Embed -->
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.3258184132145!2d106.69790521485064!3d10.782779992312916!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f4b3328121b%3A0x872b65bd5a58c8aa!2zSOG7kyBDaMOtIE1pbmgsIEhvw6BuIEtp4bq_bSBRdeG6rW4gMSwgVGjDoG5oIHBo4buRIEjhu5MgQ2jDrSBNaW5oIDcwMDAwMCwgVmnhu4d0IE5hbQ!5e0!3m2!1svi!2s!4v1629800400000!5m2!1svi!2s" 
+                        width="100%" 
+                        height="400" 
+                        style="border:0;" 
+                        allowfullscreen="" 
+                        loading="lazy" 
+                        referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+            <div class="bg-white rounded-2xl p-6 shadow-lg text-center">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-car text-green-600 text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800 mb-2">Đậu xe thuận tiện</h3>
+                <p class="text-gray-600 text-sm">Bãi đậu xe rộng rãi, an toàn cho phụ huynh</p>
+            </div>
+            
+            <div class="bg-white rounded-2xl p-6 shadow-lg text-center">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-bus text-blue-600 text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800 mb-2">Giao thông công cộng</h3>
+                <p class="text-gray-600 text-sm">Gần các tuyến xe buýt, dễ dàng di chuyển</p>
+            </div>
+            
+            <div class="bg-white rounded-2xl p-6 shadow-lg text-center">
+                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-shield-alt text-purple-600 text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800 mb-2">Khu vực an toàn</h3>
+                <p class="text-gray-600 text-sm">Nằm trong khu dân cư yên tĩnh, an ninh tốt</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="py-20 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold text-gray-800 mb-6 font-patrick text-primary">
+                Câu hỏi thường gặp
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Những thắc mắc phổ biến của phụ huynh về trường Hoa Hướng Dương
+            </p>
+        </div>
+        
+        <div class="max-w-4xl mx-auto">
+            <div class="space-y-6">
+                <div class="admin-card">
+                    <button class="w-full p-6 text-left focus:outline-none" onclick="toggleFAQ(1)">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-semibold text-gray-800">
+                                Trường nhận trẻ từ độ tuổi nào?
+                            </h3>
+                            <i id="faq-icon-1" class="fas fa-plus text-primary"></i>
+                        </div>
+                    </button>
+                    <div id="faq-content-1" class="hidden px-6 pb-6">
+                        <p class="text-gray-600">
+                            Trường Mầm non Hoa Hướng Dương nhận trẻ từ 18 tháng tuổi đến 5 tuổi. 
+                            Chúng tôi có các lớp phù hợp với từng độ tuổi để đảm bảo sự phát triển tốt nhất cho trẻ.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="admin-card">
+                    <button class="w-full p-6 text-left focus:outline-none" onclick="toggleFAQ(2)">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-semibold text-gray-800">
+                                Học phí một tháng là bao nhiêu?
+                            </h3>
+                            <i id="faq-icon-2" class="fas fa-plus text-primary"></i>
+                        </div>
+                    </button>
+                    <div id="faq-content-2" class="hidden px-6 pb-6">
+                        <p class="text-gray-600">
+                            Học phí dao động từ 2.500.000 - 3.200.000 VNĐ/tháng tùy theo độ tuổi và chương trình học. 
+                            Đã bao gồm ăn sáng, ăn trưa, ăn xế và các hoạt động ngoại khóa.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="admin-card">
+                    <button class="w-full p-6 text-left focus:outline-none" onclick="toggleFAQ(3)">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-semibold text-gray-800">
+                                Trường có xe đưa đón không?
+                            </h3>
+                            <i id="faq-icon-3" class="fas fa-plus text-primary"></i>
+                        </div>
+                    </button>
+                    <div id="faq-content-3" class="hidden px-6 pb-6">
+                        <p class="text-gray-600">
+                            Có, trường có dịch vụ xe đưa đón với các chú tài xế kinh nghiệm và cô giáo đi kèm. 
+                            Phụ huynh có thể đăng ký thêm dịch vụ này với chi phí bổ sung.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="admin-card">
+                    <button class="w-full p-6 text-left focus:outline-none" onclick="toggleFAQ(4)">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-semibold text-gray-800">
+                                Thời gian học trong ngày như thế nào?
+                            </h3>
+                            <i id="faq-icon-4" class="fas fa-plus text-primary"></i>
+                        </div>
+                    </button>
+                    <div id="faq-content-4" class="hidden px-6 pb-6">
+                        <p class="text-gray-600">
+                            Trường hoạt động từ 7:00 - 17:00 từ thứ 2 đến thứ 6. 
+                            Thời gian học chính thức từ 8:00 - 16:00, các hoạt động trước và sau giờ học được bố trí linh hoạt.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="admin-card">
+                    <button class="w-full p-6 text-left focus:outline-none" onclick="toggleFAQ(5)">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-semibold text-gray-800">
+                                Phụ huynh có thể tham quan trường không?
+                            </h3>
+                            <i id="faq-icon-5" class="fas fa-plus text-primary"></i>
+                        </div>
+                    </button>
+                    <div id="faq-content-5" class="hidden px-6 pb-6">
+                        <p class="text-gray-600">
+                            Hoàn toàn có thể. Chúng tôi khuyến khích phụ huynh đến tham quan và trải nghiệm môi trường học tập. 
+                            Vui lòng liên hệ trước để được sắp xếp thời gian phù hợp.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function toggleFAQ(id) {
+        const content = document.getElementById(`faq-content-${id}`);
+        const icon = document.getElementById(`faq-icon-${id}`);
+        
+        if (content.classList.contains('hidden')) {
+            content.classList.remove('hidden');
+            icon.classList.remove('fa-plus');
+            icon.classList.add('fa-minus');
+        } else {
+            content.classList.add('hidden');
+            icon.classList.remove('fa-minus');
+            icon.classList.add('fa-plus');
+        }
+    }
+    
+    // Form validation and submission
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const requiredFields = ['name', 'email', 'message'];
+        let isValid = true;
+        
+        requiredFields.forEach(field => {
+            const input = document.getElementById(field);
+            if (!input.value.trim()) {
+                isValid = false;
+                input.classList.add('border-red-500');
+                input.focus();
+            } else {
+                input.classList.remove('border-red-500');
+            }
+        });
+        
+        if (!isValid) {
+            e.preventDefault();
+            alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
+        }
+    });
+</script>
+{% endblock %}

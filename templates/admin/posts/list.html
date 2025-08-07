@@ -1,0 +1,53 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Quản lý bài viết - Admin{% endblock %}
+{% block page_title %}Bài viết{% endblock %}
+{% block page_description %}Quản lý tất cả bài viết trên website{% endblock %}
+
+{% block content %}
+<div class="admin-card p-6">
+    <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-semibold text-gray-800">Danh sách bài viết</h2>
+        <a href="#" class="btn-primary px-4 py-2 rounded-lg">
+            <i class="fas fa-plus mr-2"></i>Thêm bài viết
+        </a>
+    </div>
+    
+    {% if posts %}
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3">Tiêu đề</th>
+                    <th class="px-6 py-3">Ngày tạo</th>
+                    <th class="px-6 py-3">Trạng thái</th>
+                    <th class="px-6 py-3">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for post in posts %}
+                <tr class="bg-white border-b hover:bg-gray-50">
+                    <td class="px-6 py-4 font-medium text-gray-900">{{ post.title }}</td>
+                    <td class="px-6 py-4">{{ post.created_at.strftime('%d/%m/%Y') }}</td>
+                    <td class="px-6 py-4">
+                        <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                            Đã xuất bản
+                        </span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <a href="#" class="text-blue-600 hover:text-blue-900 mr-3">Sửa</a>
+                        <a href="#" class="text-red-600 hover:text-red-900">Xóa</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center py-12">
+        <i class="fas fa-file-alt text-gray-400 text-4xl mb-4"></i>
+        <p class="text-gray-500">Chưa có bài viết nào</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

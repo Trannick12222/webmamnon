@@ -1,0 +1,201 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Quản lý thông tin liên hệ - Admin{% endblock %}
+{% block page_title %}Thông tin liên hệ{% endblock %}
+{% block page_description %}Quản lý thông tin liên hệ và liên kết ứng dụng{% endblock %}
+
+{% block content %}
+<div class="admin-card p-6">
+    <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-semibold text-gray-800">Thông tin liên hệ</h2>
+        <a href="{{ url_for('admin_contact_settings_create') }}" 
+           class="btn-primary px-4 py-2 rounded-lg font-medium transition-colors">
+            <i class="fas fa-plus mr-2"></i>
+            Thêm thông tin
+        </a>
+    </div>
+    
+    {% if settings %}
+    <div class="overflow-x-auto">
+        <table class="w-full table-auto">
+            <thead>
+                <tr class="bg-gray-50 border-b">
+                    <th class="text-left py-3 px-4 font-semibold text-gray-700">Thứ tự</th>
+                    <th class="text-left py-3 px-4 font-semibold text-gray-700">Tên hiển thị</th>
+                    <th class="text-left py-3 px-4 font-semibold text-gray-700">Khóa</th>
+                    <th class="text-left py-3 px-4 font-semibold text-gray-700">Loại</th>
+                    <th class="text-left py-3 px-4 font-semibold text-gray-700">Giá trị</th>
+                    <th class="text-left py-3 px-4 font-semibold text-gray-700">Trạng thái</th>
+                    <th class="text-left py-3 px-4 font-semibold text-gray-700">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for setting in settings %}
+                <tr class="border-b hover:bg-gray-50 transition-colors">
+                    <td class="py-3 px-4">
+                        <span class="inline-flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-600 rounded-full text-sm font-medium">
+                            {{ setting.order_index }}
+                        </span>
+                    </td>
+                    <td class="py-3 px-4">
+                        <div class="font-medium text-gray-800">{{ setting.display_name }}</div>
+                        {% if setting.description %}
+                        <div class="text-sm text-gray-500 mt-1">{{ setting.description }}</div>
+                        {% endif %}
+                    </td>
+                    <td class="py-3 px-4">
+                        <code class="bg-gray-100 px-2 py-1 rounded text-sm">{{ setting.setting_key }}</code>
+                    </td>
+                    <td class="py-3 px-4">
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
+                            {% if setting.setting_type == 'url' %}bg-blue-100 text-blue-800
+                            {% elif setting.setting_type == 'phone' %}bg-green-100 text-green-800
+                            {% elif setting.setting_type == 'email' %}bg-purple-100 text-purple-800
+                            {% else %}bg-gray-100 text-gray-800{% endif %}">
+                            <i class="fas fa-{% if setting.setting_type == 'url' %}link
+                                {% elif setting.setting_type == 'phone' %}phone
+                                {% elif setting.setting_type == 'email' %}envelope
+                                {% else %}text{% endif %} mr-1"></i>
+                            {{ setting.setting_type|title }}
+                        </span>
+                    </td>
+                    <td class="py-3 px-4">
+                        <div class="max-w-xs truncate">
+                            {% if setting.setting_type == 'url' %}
+                                <a href="{{ setting.setting_value }}" target="_blank" 
+                                   class="text-blue-600 hover:text-blue-800 transition-colors">
+                                    {{ setting.setting_value }}
+                                    <i class="fas fa-external-link-alt ml-1 text-xs"></i>
+                                </a>
+                            {% elif setting.setting_type == 'phone' %}
+                                <a href="tel:{{ setting.setting_value }}" 
+                                   class="text-green-600 hover:text-green-800 transition-colors">
+                                    {{ setting.setting_value }}
+                                </a>
+                            {% elif setting.setting_type == 'email' %}
+                                <a href="mailto:{{ setting.setting_value }}" 
+                                   class="text-purple-600 hover:text-purple-800 transition-colors">
+                                    {{ setting.setting_value }}
+                                </a>
+                            {% else %}
+                                {{ setting.setting_value }}
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td class="py-3 px-4">
+                        {% if setting.is_active %}
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            <i class="fas fa-check mr-1"></i>
+                            Hoạt động
+                        </span>
+                        {% else %}
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                            <i class="fas fa-times mr-1"></i>
+                            Tạm dừng
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td class="py-3 px-4">
+                        <div class="flex items-center space-x-2">
+                            <a href="{{ url_for('admin_contact_settings_edit', id=setting.id) }}" 
+                               class="text-blue-600 hover:text-blue-800 transition-colors" 
+                               title="Chỉnh sửa">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{{ url_for('admin_contact_settings_delete', id=setting.id) }}" 
+                               class="text-red-600 hover:text-red-800 transition-colors delete-btn" 
+                               title="Xóa">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center py-12">
+        <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="fas fa-address-book text-3xl text-gray-400"></i>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-800 mb-2">Chưa có thông tin liên hệ</h3>
+        <p class="text-gray-600 mb-6">Thêm thông tin liên hệ, liên kết ứng dụng để hiển thị trên website</p>
+        <a href="{{ url_for('admin_contact_settings_create') }}" 
+           class="btn-primary px-6 py-3 rounded-lg font-medium transition-colors">
+            <i class="fas fa-plus mr-2"></i>
+            Thêm thông tin đầu tiên
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Quick Add Modal -->
+<div id="quickAddModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-lg max-w-md w-full p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold">Thêm nhanh</h3>
+                <button onclick="closeQuickAdd()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="space-y-3">
+                <button onclick="quickAdd('facebook', 'Facebook', 'url')" 
+                        class="w-full text-left p-3 rounded-lg border hover:bg-blue-50 transition-colors">
+                    <i class="fab fa-facebook text-blue-600 mr-3"></i>
+                    Facebook
+                </button>
+                <button onclick="quickAdd('youtube', 'YouTube', 'url')" 
+                        class="w-full text-left p-3 rounded-lg border hover:bg-red-50 transition-colors">
+                    <i class="fab fa-youtube text-red-600 mr-3"></i>
+                    YouTube
+                </button>
+                <button onclick="quickAdd('zalo', 'Zalo', 'url')" 
+                        class="w-full text-left p-3 rounded-lg border hover:bg-blue-50 transition-colors">
+                    <i class="fas fa-comment text-blue-500 mr-3"></i>
+                    Zalo
+                </button>
+                <button onclick="quickAdd('phone_main', 'Số điện thoại chính', 'phone')" 
+                        class="w-full text-left p-3 rounded-lg border hover:bg-green-50 transition-colors">
+                    <i class="fas fa-phone text-green-600 mr-3"></i>
+                    Số điện thoại
+                </button>
+                <button onclick="quickAdd('email_main', 'Email chính', 'email')" 
+                        class="w-full text-left p-3 rounded-lg border hover:bg-purple-50 transition-colors">
+                    <i class="fas fa-envelope text-purple-600 mr-3"></i>
+                    Email
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function showQuickAdd() {
+    document.getElementById('quickAddModal').classList.remove('hidden');
+}
+
+function closeQuickAdd() {
+    document.getElementById('quickAddModal').classList.add('hidden');
+}
+
+function quickAdd(key, name, type) {
+    const url = new URL('{{ url_for("admin_contact_settings_create") }}', window.location.origin);
+    url.searchParams.set('quick', '1');
+    url.searchParams.set('key', key);
+    url.searchParams.set('name', name);
+    url.searchParams.set('type', type);
+    window.location.href = url.toString();
+}
+
+// Close modal when clicking outside
+document.getElementById('quickAddModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeQuickAdd();
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block title %}Sự Kiện - Trường Mầm Non Hoa Hướng Dương{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="relative bg-gradient-to-r from-purple-600 to-pink-600 py-20">
+    <div class="absolute inset-0 bg-black/20"></div>
+    <div class="relative container mx-auto px-4 text-center text-white">
+        <h1 class="text-4xl md:text-6xl font-bold mb-4">Sự Kiện</h1>
+        <p class="text-xl md:text-2xl opacity-90">Những hoạt động và sự kiện đặc biệt của trường</p>
+    </div>
+</section>
+
+<!-- Upcoming Events Section -->
+{% if upcoming %}
+<section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Sự Kiện Sắp Tới</h2>
+            <p class="text-xl text-gray-600">Những sự kiện thú vị đang chờ đón các bé</p>
+        </div>
+        
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for event in upcoming %}
+            <article class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                {% if event.featured_image %}
+                <div class="aspect-video overflow-hidden">
+                    <img src="/static/{{ event.featured_image }}" 
+                         alt="{{ event.title }}" 
+                         class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
+                </div>
+                {% else %}
+                <div class="aspect-video bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center">
+                    <i class="fas fa-calendar-star text-6xl text-white opacity-80"></i>
+                </div>
+                {% endif %}
+                
+                <div class="p-6">
+                    <div class="flex items-center text-sm text-purple-600 mb-3 font-semibold">
+                        <i class="fas fa-calendar-alt mr-2"></i>
+                        <span>{{ event.event_date.strftime('%d/%m/%Y - %H:%M') }}</span>
+                    </div>
+                    
+                    {% if event.location %}
+                    <div class="flex items-center text-sm text-gray-500 mb-3">
+                        <i class="fas fa-map-marker-alt mr-2"></i>
+                        <span>{{ event.location }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    <h3 class="text-xl font-bold text-gray-800 mb-3 line-clamp-2">
+                        {{ event.title }}
+                    </h3>
+                    
+                    {% if event.description %}
+                    <p class="text-gray-600 mb-4 line-clamp-3">{{ event.description }}</p>
+                    {% endif %}
+                    
+                    <div class="flex items-center justify-between">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                            <i class="fas fa-clock mr-1"></i>
+                            Sắp diễn ra
+                        </span>
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Past Events Section -->
+{% if past %}
+<section class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Sự Kiện Đã Diễn Ra</h2>
+            <p class="text-xl text-gray-600">Những kỷ niệm đẹp đã qua</p>
+        </div>
+        
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for event in past %}
+            <article class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                {% if event.featured_image %}
+                <div class="aspect-video overflow-hidden">
+                    <img src="/static/{{ event.featured_image }}" 
+                         alt="{{ event.title }}" 
+                         class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
+                </div>
+                {% else %}
+                <div class="aspect-video bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center">
+                    <i class="fas fa-calendar-check text-6xl text-white opacity-80"></i>
+                </div>
+                {% endif %}
+                
+                <div class="p-6">
+                    <div class="flex items-center text-sm text-gray-500 mb-3">
+                        <i class="fas fa-calendar-alt mr-2"></i>
+                        <span>{{ event.event_date.strftime('%d/%m/%Y - %H:%M') }}</span>
+                    </div>
+                    
+                    {% if event.location %}
+                    <div class="flex items-center text-sm text-gray-500 mb-3">
+                        <i class="fas fa-map-marker-alt mr-2"></i>
+                        <span>{{ event.location }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    <h3 class="text-xl font-bold text-gray-800 mb-3 line-clamp-2">
+                        {{ event.title }}
+                    </h3>
+                    
+                    {% if event.description %}
+                    <p class="text-gray-600 mb-4 line-clamp-3">{{ event.description }}</p>
+                    {% endif %}
+                    
+                    <div class="flex items-center justify-between">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                            <i class="fas fa-check mr-1"></i>
+                            Đã kết thúc
+                        </span>
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Empty State -->
+{% if not upcoming and not past %}
+<section class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="text-center py-16">
+            <div class="max-w-md mx-auto">
+                <div class="w-24 h-24 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-calendar-alt text-3xl text-purple-500"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">Chưa có sự kiện nào</h3>
+                <p class="text-gray-600">Hiện tại chưa có sự kiện nào được lên lịch. Vui lòng quay lại sau để cập nhật những sự kiện mới nhất!</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- CTA Section -->
+<section class="py-16 bg-gradient-to-r from-purple-600 to-pink-600">
+    <div class="container mx-auto px-4 text-center">
+        <div class="max-w-3xl mx-auto text-white">
+            <h2 class="text-3xl md:text-4xl font-bold mb-6">Tham Gia Cùng Chúng Tôi</h2>
+            <p class="text-xl mb-8 opacity-90">
+                Đừng bỏ lỡ những sự kiện thú vị và ý nghĩa dành cho các bé. Liên hệ với chúng tôi để biết thêm thông tin!
+            </p>
+            <a href="{{ url_for('contact') }}" 
+               class="inline-block bg-white text-purple-600 px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition-colors transform hover:scale-105">
+                Liên Hệ Ngay
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.aspect-video {
+    aspect-ratio: 16 / 9;
+}
+</style>
+{% endblock %}
