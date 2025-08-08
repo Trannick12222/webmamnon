@@ -1,16 +1,17 @@
 [phases.setup]
-nixPkgs = ['python39', 'nodejs-18_x']
+nixPkgs = ['python3', 'python3Packages.pip', 'nodejs-18_x']
 
 [phases.install]
 cmds = [
-    'pip install -r requirements.txt',
+    'python3 -m pip install --upgrade pip',
+    'python3 -m pip install -r requirements.txt',
     'npm install'
 ]
 
 [phases.build]
 cmds = [
-    'python -c "from app import app, db; app.app_context().push(); db.create_all(); print(\"Database initialized\")"'
+    'python3 -c "from app import app, db; app.app_context().push(); db.create_all(); print(\"Database initialized\")"'
 ]
 
 [start]
-cmd = 'gunicorn app:app --bind 0.0.0.0:$PORT --timeout 120 --workers 1'
+cmd = 'python3 -m gunicorn app:app --bind 0.0.0.0:$PORT --timeout 120 --workers 1'
