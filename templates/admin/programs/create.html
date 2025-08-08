@@ -196,6 +196,9 @@
                 </button>
             </div>
         </div>
+        
+        <!-- Hidden field for cropped image data -->
+        <input type="hidden" id="cropped-image-data" name="cropped_image_data">
     </form>
 </div>
 
@@ -382,13 +385,18 @@ document.addEventListener('DOMContentLoaded', function() {
     window.applyCrop = function() {
         if (programCropper) {
             const canvas = programCropper.getCroppedCanvas({
-                width: 1200,
-                height: 675, // 16:9 ratio
                 imageSmoothingEnabled: true,
                 imageSmoothingQuality: 'high',
             });
             
             canvas.toBlob(function(blob) {
+                // Store cropped image data as base64
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('cropped-image-data').value = e.target.result;
+                };
+                reader.readAsDataURL(blob);
+                
                 // Create new file from cropped image
                 const croppedFile = new File([blob], programOriginalFile.name, {
                     type: programOriginalFile.type,

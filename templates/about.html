@@ -7,6 +7,12 @@
 <section class="bg-gradient-to-r from-primary to-secondary py-20 relative overflow-hidden">
     <div class="container mx-auto px-4 relative z-10">
         <div class="text-center text-white">
+            <!-- Logo trong hero section -->
+            <div class="flex justify-center mb-8">
+                <div class="w-24 h-24 md:w-32 md:h-32 rounded-2xl overflow-hidden shadow-2xl border-4 border-white/30">
+                    <img src="{{ url_for('static', filename='images/mnhhd.jpg') }}" alt="Logo Hoa Hướng Dương" class="w-full h-full object-cover">
+                </div>
+            </div>
             <h1 class="text-5xl md:text-6xl font-bold font-patrick mb-6">Giới thiệu</h1>
             <p class="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto">
                 Khám phá hành trình giáo dục đầy ý nghĩa tại Trường Mầm non Hoa Hướng Dương
@@ -23,8 +29,27 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div>
                 <h2 class="text-4xl font-bold text-gray-800 mb-8 font-patrick text-primary">
-                    Sứ mệnh của chúng tôi
+                    {{ mission_content.main_title if mission_content else 'Sứ mệnh của chúng tôi' }}
                 </h2>
+                
+                {% if mission_items %}
+                <div class="space-y-6">
+                    {% for item in mission_items %}
+                    <div class="flex items-start">
+                        <div class="w-12 h-12 {{ item.color }} rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+                            <i class="{{ item.icon }} text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">{{ item.title }}</h3>
+                            <p class="text-gray-600 leading-relaxed">
+                                {{ item.description }}
+                            </p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <!-- Default content when no mission items -->
                 <div class="space-y-6">
                     <div class="flex items-start">
                         <div class="w-12 h-12 bg-primary rounded-full flex items-center justify-center mr-4 flex-shrink-0">
@@ -68,15 +93,26 @@
                         </div>
                     </div>
                 </div>
+                {% endif %}
             </div>
             
             <div class="relative">
+                {% if mission_content and mission_content.main_image %}
+                <img src="{{ url_for('static', filename=mission_content.main_image) }}" 
+                     alt="Mission Image" class="rounded-3xl shadow-2xl w-full">
+                {% else %}
                 <img src="https://images.unsplash.com/photo-1587654780291-39c9404d746b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
                      alt="Trẻ em học tập" class="rounded-3xl shadow-2xl w-full">
+                {% endif %}
+                
                 <div class="absolute -bottom-8 -left-8 bg-yellow-300 rounded-2xl p-6 shadow-lg">
                     <div class="text-center">
-                        <h4 class="text-3xl font-bold text-orange-600 font-patrick">100%</h4>
-                        <p class="text-orange-800 font-medium">Hài lòng</p>
+                        <h4 class="text-3xl font-bold text-orange-600 font-patrick">
+                            {{ mission_content.stats_number if mission_content else '100%' }}
+                        </h4>
+                        <p class="text-orange-800 font-medium">
+                            {{ mission_content.stats_text if mission_content else 'Hài lòng' }}
+                        </p>
                     </div>
                 </div>
             </div>
@@ -89,13 +125,35 @@
     <div class="container mx-auto px-4">
         <div class="text-center mb-16">
             <h2 class="text-4xl font-bold text-gray-800 mb-6 font-patrick text-primary">
-                Lịch sử hình thành
+                {{ history_section.title if history_section else 'Lịch sử hình thành' }}
             </h2>
             <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                Hành trình 10 năm xây dựng và phát triển của Trường Mầm non Hoa Hướng Dương
+                {{ history_section.subtitle if history_section else 'Hành trình 10 năm xây dựng và phát triển của Trường Mầm non Hoa Hướng Dương' }}
             </p>
         </div>
         
+        {% if history_events %}
+        <div class="relative">
+            <div class="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-primary"></div>
+            
+            <div class="space-y-12">
+                {% for event in history_events %}
+                <div class="flex items-center {{ 'flex-row-reverse' if event.position == 'right' or (loop.index0 % 2 == 1 and event.position != 'left') }}">
+                    <div class="w-1/2 {{ 'pl-8' if event.position == 'left' or (loop.index0 % 2 == 0 and event.position != 'right') else 'pr-8 text-right' }}">
+                        <div class="bg-white p-6 rounded-2xl shadow-lg">
+                            <h3 class="text-xl font-bold {{ event.color.replace('bg-', 'text-') }} mb-2">{{ event.year }}</h3>
+                            <h4 class="text-lg font-semibold text-gray-800 mb-3">{{ event.title }}</h4>
+                            <p class="text-gray-600">{{ event.description }}</p>
+                        </div>
+                    </div>
+                    <div class="w-8 h-8 {{ event.color }} rounded-full border-4 border-white shadow-lg relative z-10"></div>
+                    <div class="w-1/2 {{ 'pr-8' if event.position == 'left' or (loop.index0 % 2 == 0 and event.position != 'right') else 'pl-8' }}"></div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% else %}
+        <!-- Default timeline when no events exist -->
         <div class="relative">
             <div class="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-primary"></div>
             
@@ -161,6 +219,7 @@
                 </div>
             </div>
         </div>
+        {% endif %}
     </div>
 </section>
 
@@ -298,40 +357,39 @@
             </p>
         </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="bg-white rounded-3xl shadow-lg overflow-hidden text-center p-8">
-                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" 
-                     alt="Hiệu trưởng" class="w-32 h-32 rounded-full mx-auto mb-6 object-cover">
-                <h3 class="text-xl font-bold text-gray-800 mb-2">ThS. Nguyễn Thị Hoa</h3>
-                <p class="text-primary font-medium mb-4">Hiệu trưởng</p>
+        {% if team_members %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for member in team_members %}
+            <div class="bg-white rounded-3xl shadow-lg overflow-hidden text-center p-8 hover:shadow-xl transition-shadow duration-300">
+                {% if member.image_path %}
+                <img src="{{ url_for('static', filename=member.image_path) }}" 
+                     alt="{{ member.name }}" 
+                     class="w-32 h-32 rounded-full mx-auto mb-6 object-contain shadow-lg bg-gray-50">
+                {% else %}
+                <div class="w-32 h-32 bg-gradient-to-br from-orange-400 to-yellow-400 rounded-full mx-auto mb-6 flex items-center justify-center shadow-lg">
+                    <i class="fas fa-user text-white text-3xl"></i>
+                </div>
+                {% endif %}
+                
+                <h3 class="text-xl font-bold text-gray-800 mb-2">{{ member.name }}</h3>
+                <p class="text-primary font-medium mb-4">{{ member.position }}</p>
+                {% if member.description %}
                 <p class="text-gray-600 text-sm leading-relaxed">
-                    15 năm kinh nghiệm trong lĩnh vực giáo dục mầm non, 
-                    Thạc sĩ Tâm lý học Trẻ em.
+                    {{ member.description }}
                 </p>
+                {% endif %}
             </div>
-            
-            <div class="bg-white rounded-3xl shadow-lg overflow-hidden text-center p-8">
-                <img src="https://images.unsplash.com/photo-1494790108755-2616b9ad5d54?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" 
-                     alt="Phó hiệu trưởng" class="w-32 h-32 rounded-full mx-auto mb-6 object-cover">
-                <h3 class="text-xl font-bold text-gray-800 mb-2">Cô Trần Thị Mai</h3>
-                <p class="text-secondary font-medium mb-4">Phó Hiệu trưởng</p>
-                <p class="text-gray-600 text-sm leading-relaxed">
-                    12 năm kinh nghiệm, chuyên gia về phương pháp giáo dục STEAM 
-                    cho trẻ mầm non.
-                </p>
-            </div>
-            
-            <div class="bg-white rounded-3xl shadow-lg overflow-hidden text-center p-8">
-                <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" 
-                     alt="Trưởng phụ trách" class="w-32 h-32 rounded-full mx-auto mb-6 object-cover">
-                <h3 class="text-xl font-bold text-gray-800 mb-2">Cô Lê Thị Lan</h3>
-                <p class="text-green-500 font-medium mb-4">Trưởng Khối</p>
-                <p class="text-gray-600 text-sm leading-relaxed">
-                    10 năm kinh nghiệm giảng dạy, chuyên về phát triển 
-                    kỹ năng xã hội cho trẻ em.
-                </p>
-            </div>
+            {% endfor %}
         </div>
+        {% else %}
+        <div class="text-center py-12">
+            <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-users text-gray-400 text-3xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-800 mb-2">Đội ngũ đang được cập nhật</h3>
+            <p class="text-gray-500">Thông tin đội ngũ lãnh đạo sẽ được cập nhật sớm nhất</p>
+        </div>
+        {% endif %}
     </div>
 </section>
 

@@ -1,0 +1,324 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Chỉnh sửa Call-to-Action - Admin{% endblock %}
+
+{% block page_title %}Chỉnh sửa Call-to-Action{% endblock %}
+{% block page_description %}Cập nhật phần "{{ cta.section_name.replace('_', ' ').title() }}"{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Form Section -->
+        <div class="admin-card p-6">
+            <form method="POST" class="space-y-6">
+                <!-- Section Name -->
+                <div>
+                    <label for="section_name" class="block text-sm font-medium text-gray-700 mb-2">
+                        Tên section <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="section_name" name="section_name" 
+                           value="{{ cta.section_name }}" readonly
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-600"
+                           required>
+                    <p class="text-sm text-gray-500 mt-1">Mỗi section chỉ được tạo một lần</p>
+                </div>
+
+                <!-- Main Title -->
+                <div>
+                    <label for="main_title" class="block text-sm font-medium text-gray-700 mb-2">
+                        Tiêu đề chính <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="main_title" name="main_title" 
+                           value="{{ cta.main_title }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                           placeholder="🌻 Hành trình học tập tuyệt vời đang chờ bé! 🌻"
+                           required>
+                </div>
+
+                <!-- Subtitle -->
+                <div>
+                    <label for="subtitle" class="block text-sm font-medium text-gray-700 mb-2">
+                        Mô tả phụ <span class="text-red-500">*</span>
+                    </label>
+                    <textarea id="subtitle" name="subtitle" rows="3"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                              placeholder="Mỗi bé là một bông hoa nhỏ đặc biệt. Hãy để chúng tôi giúp bé nở rộ với những chương trình học phù hợp và đầy yêu thương."
+                              required>{{ cta.subtitle }}</textarea>
+                </div>
+
+                <!-- Contact Information -->
+                <div class="border-t pt-6">
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4">Thông tin liên hệ</h4>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="phone_number" class="block text-sm font-medium text-gray-700 mb-2">
+                                Số điện thoại
+                            </label>
+                            <input type="text" id="phone_number" name="phone_number" 
+                                   value="{{ cta.phone_number }}"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                        </div>
+                        
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                                Email
+                            </label>
+                            <input type="email" id="email" name="email" 
+                                   value="{{ cta.email }}"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                        <div>
+                            <label for="working_hours" class="block text-sm font-medium text-gray-700 mb-2">
+                                Giờ làm việc
+                            </label>
+                            <input type="text" id="working_hours" name="working_hours" 
+                                   value="{{ cta.working_hours }}"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                        </div>
+                        
+                        <div>
+                            <label for="email_response_time" class="block text-sm font-medium text-gray-700 mb-2">
+                                Thời gian phản hồi email
+                            </label>
+                            <input type="text" id="email_response_time" name="email_response_time" 
+                                   value="{{ cta.email_response_time }}"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                        </div>
+                        
+                        <div>
+                            <label for="visit_note" class="block text-sm font-medium text-gray-700 mb-2">
+                                Ghi chú tham quan
+                            </label>
+                            <input type="text" id="visit_note" name="visit_note" 
+                                   value="{{ cta.visit_note }}"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Promotion Section -->
+                <div class="border-t pt-6">
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4">Phần ưu đãi (tùy chọn)</h4>
+                    
+                    <div>
+                        <label for="promotion_title" class="block text-sm font-medium text-gray-700 mb-2">
+                            Tiêu đề ưu đãi
+                        </label>
+                        <input type="text" id="promotion_title" name="promotion_title" 
+                               value="{{ cta.promotion_title }}"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                    </div>
+                    
+                    <div class="mt-4">
+                        <label for="promotion_description" class="block text-sm font-medium text-gray-700 mb-2">
+                            Mô tả ưu đãi
+                        </label>
+                        <textarea id="promotion_description" name="promotion_description" rows="2"
+                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                                  placeholder="Đăng ký tham quan trong tháng này để nhận ưu đãi 20% học phí tháng đầu!">{{ cta.promotion_description }}</textarea>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <label for="promotion_note" class="block text-sm font-medium text-gray-700 mb-2">
+                            Ghi chú ưu đãi
+                        </label>
+                        <input type="text" id="promotion_note" name="promotion_note" 
+                               value="{{ cta.promotion_note }}"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                    </div>
+                </div>
+
+                <!-- Active Status -->
+                <div class="flex items-center">
+                    <input type="checkbox" id="is_active" name="is_active" value="1" {{ 'checked' if cta.is_active }}
+                           class="w-4 h-4 text-orange-600 bg-gray-100 border-gray-300 rounded focus:ring-orange-500">
+                    <label for="is_active" class="ml-3 text-sm font-medium text-gray-700">
+                        Hiển thị trên website
+                    </label>
+                </div>
+
+                <!-- Meta Information -->
+                <div class="bg-blue-50 rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-700 mb-2">Thông tin:</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+                        <div>
+                            <i class="fas fa-calendar-plus mr-2"></i>
+                            Tạo: {{ cta.created_at.strftime('%d/%m/%Y %H:%M') }}
+                        </div>
+                        <div>
+                            <i class="fas fa-calendar-edit mr-2"></i>
+                            Cập nhật: {{ cta.updated_at.strftime('%d/%m/%Y %H:%M') }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex items-center justify-between pt-6 border-t border-gray-200">
+                    <a href="{{ url_for('admin_cta') }}" 
+                       class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Quay lại
+                    </a>
+                    
+                    <div class="flex space-x-3">
+                        <form method="POST" action="{{ url_for('admin_cta_delete', id=cta.id) }}" class="inline-block">
+                            <button type="submit" 
+                                    class="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition delete-btn"
+                                    onclick="return confirm('Bạn có chắc chắn muốn xóa CTA này?')">
+                                <i class="fas fa-trash mr-2"></i>
+                                Xóa
+                            </button>
+                        </form>
+                        
+                        <button type="submit" 
+                                class="btn-primary px-8 py-3 rounded-lg font-medium">
+                            <i class="fas fa-save mr-2"></i>
+                            Lưu thay đổi
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Preview Section -->
+        <div class="admin-card p-6">
+            <h4 class="text-lg font-semibold text-gray-800 mb-4">Xem trước:</h4>
+            
+            <div class="bg-gradient-to-br from-yellow-50 via-orange-50 to-pink-50 rounded-2xl p-6 relative overflow-hidden">
+                <!-- Decorative Elements -->
+                <div class="absolute top-4 right-4 w-8 h-8 bg-yellow-200 rounded-full opacity-30"></div>
+                <div class="absolute bottom-4 left-4 w-6 h-6 bg-pink-200 rounded-full opacity-40"></div>
+                
+                <div class="relative z-10">
+                    <!-- Main Title -->
+                    <h2 id="preview-title" class="text-2xl md:text-3xl font-bold text-gray-800 mb-4 text-center">
+                        {{ cta.main_title }}
+                    </h2>
+                    <p id="preview-subtitle" class="text-lg text-gray-600 text-center mb-6 max-w-2xl mx-auto">
+                        {{ cta.subtitle }}
+                    </p>
+                    
+                    <!-- Contact Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <!-- Phone Card -->
+                        <div class="bg-white rounded-xl p-4 shadow-sm border-l-4 border-orange-400">
+                            <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-phone text-lg text-orange-500"></i>
+                            </div>
+                            <h3 class="text-sm font-semibold text-gray-800 mb-1 text-center">Gọi điện tư vấn</h3>
+                            <p id="preview-phone" class="text-orange-600 font-bold text-center">{{ cta.phone_number }}</p>
+                            <p id="preview-hours" class="text-xs text-gray-500 text-center mt-1">{{ cta.working_hours }}</p>
+                        </div>
+                        
+                        <!-- Email Card -->
+                        <div class="bg-white rounded-xl p-4 shadow-sm border-l-4 border-pink-400">
+                            <div class="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-envelope text-lg text-pink-500"></i>
+                            </div>
+                            <h3 class="text-sm font-semibold text-gray-800 mb-1 text-center">Gửi email</h3>
+                            <p id="preview-email" class="text-pink-600 font-bold text-center text-sm">{{ cta.email }}</p>
+                            <p id="preview-email-time" class="text-xs text-gray-500 text-center mt-1">{{ cta.email_response_time }}</p>
+                        </div>
+                        
+                        <!-- Visit Card -->
+                        <div class="bg-white rounded-xl p-4 shadow-sm border-l-4 border-purple-400">
+                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-map-marker-alt text-lg text-purple-500"></i>
+                            </div>
+                            <h3 class="text-sm font-semibold text-gray-800 mb-1 text-center">Đến thăm trường</h3>
+                            <p class="text-purple-600 font-bold text-center text-sm">Tham quan miễn phí</p>
+                            <p id="preview-visit" class="text-xs text-gray-500 text-center mt-1">{{ cta.visit_note }}</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Promotion -->
+                    {% if cta.promotion_title or cta.promotion_description %}
+                    <div id="preview-promotion" class="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-sm">
+                        <div class="flex items-center justify-center mb-2">
+                            <span class="text-2xl mr-2">💝</span>
+                            <h3 id="preview-promo-title" class="text-lg font-bold text-gray-800">{{ cta.promotion_title }}</h3>
+                            <span class="text-2xl ml-2">💝</span>
+                        </div>
+                        <p id="preview-promo-desc" class="text-sm text-gray-600 mb-2 text-center">
+                            {{ cta.promotion_description }}
+                        </p>
+                        <div class="flex items-center justify-center space-x-2 text-xs text-gray-500">
+                            <i class="fas fa-clock"></i>
+                            <span id="preview-promo-note">{{ cta.promotion_note }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Live preview update (same as create.html)
+document.addEventListener('DOMContentLoaded', function() {
+    const inputs = {
+        main_title: document.getElementById('main_title'),
+        subtitle: document.getElementById('subtitle'),
+        phone_number: document.getElementById('phone_number'),
+        email: document.getElementById('email'),
+        working_hours: document.getElementById('working_hours'),
+        email_response_time: document.getElementById('email_response_time'),
+        visit_note: document.getElementById('visit_note'),
+        promotion_title: document.getElementById('promotion_title'),
+        promotion_description: document.getElementById('promotion_description'),
+        promotion_note: document.getElementById('promotion_note')
+    };
+    
+    const previews = {
+        main_title: document.getElementById('preview-title'),
+        subtitle: document.getElementById('preview-subtitle'),
+        phone_number: document.getElementById('preview-phone'),
+        email: document.getElementById('preview-email'),
+        working_hours: document.getElementById('preview-hours'),
+        email_response_time: document.getElementById('preview-email-time'),
+        visit_note: document.getElementById('preview-visit'),
+        promotion_title: document.getElementById('preview-promo-title'),
+        promotion_description: document.getElementById('preview-promo-desc'),
+        promotion_note: document.getElementById('preview-promo-note')
+    };
+    
+    function updatePreview() {
+        Object.keys(inputs).forEach(key => {
+            const input = inputs[key];
+            const preview = previews[key];
+            if (input && preview) {
+                const value = input.value.trim();
+                if (value) {
+                    preview.textContent = value;
+                }
+            }
+        });
+        
+        // Show/hide promotion section
+        const promoTitle = inputs.promotion_title.value.trim();
+        const promoDesc = inputs.promotion_description.value.trim();
+        const promoSection = document.getElementById('preview-promotion');
+        
+        if (promoSection) {
+            if (promoTitle || promoDesc) {
+                promoSection.style.display = 'block';
+            } else {
+                promoSection.style.display = 'none';
+            }
+        }
+    }
+    
+    // Add event listeners
+    Object.values(inputs).forEach(input => {
+        if (input) {
+            input.addEventListener('input', updatePreview);
+        }
+    });
+});
+</script>
+{% endblock %}

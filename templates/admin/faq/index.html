@@ -1,0 +1,149 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Quản lý FAQ - Admin{% endblock %}
+
+{% block page_title %}Câu hỏi thường gặp{% endblock %}
+{% block page_description %}Quản lý các câu hỏi thường gặp trên trang liên hệ{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header Actions -->
+    <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+            <div class="bg-white rounded-lg px-4 py-2 shadow-sm border">
+                <span class="text-sm text-gray-600">Tổng cộng: </span>
+                <span class="font-semibold text-primary">{{ faqs|length }} câu hỏi</span>
+            </div>
+        </div>
+        
+        <a href="{{ url_for('admin_faq_create') }}" 
+           class="btn-primary px-6 py-2 rounded-lg font-medium">
+            <i class="fas fa-plus mr-2"></i>
+            Thêm câu hỏi mới
+        </a>
+    </div>
+
+    <!-- FAQ List -->
+    {% if faqs %}
+    <div class="admin-card p-6">
+        <div class="space-y-4">
+            {% for faq in faqs %}
+            <div class="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-3 mb-3">
+                            <h3 class="text-lg font-semibold text-gray-800">{{ faq.question }}</h3>
+                            <span class="px-2 py-1 text-xs rounded-full {{ 'bg-green-100 text-green-800' if faq.is_active else 'bg-red-100 text-red-800' }}">
+                                {{ 'Hiển thị' if faq.is_active else 'Ẩn' }}
+                            </span>
+                        </div>
+                        
+                        <p class="text-gray-600 mb-3 line-clamp-2">{{ faq.answer[:150] }}{% if faq.answer|length > 150 %}...{% endif %}</p>
+                        
+                        <div class="flex items-center space-x-4 text-sm text-gray-500">
+                            <span>
+                                <i class="fas fa-tag mr-1"></i>
+                                {{ faq.category.title() }}
+                            </span>
+                            <span>
+                                <i class="fas fa-sort-numeric-up mr-1"></i>
+                                Thứ tự: {{ faq.order_index }}
+                            </span>
+                            <span>
+                                <i class="fas fa-clock mr-1"></i>
+                                {{ faq.updated_at.strftime('%d/%m/%Y %H:%M') }}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center space-x-2 ml-4">
+                        <a href="{{ url_for('admin_faq_edit', id=faq.id) }}" 
+                           class="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm">
+                            <i class="fas fa-edit mr-1"></i>
+                            Sửa
+                        </a>
+                        <form method="POST" action="{{ url_for('admin_faq_delete', id=faq.id) }}" class="inline-block">
+                            <button type="submit" 
+                                    class="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm delete-btn"
+                                    onclick="return confirm('Bạn có chắc chắn muốn xóa câu hỏi này?')">
+                                <i class="fas fa-trash mr-1"></i>
+                                Xóa
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Preview Toggle -->
+                <div class="mt-4 pt-4 border-t border-gray-100">
+                    <button onclick="togglePreview({{ faq.id }})" 
+                            class="text-primary hover:text-orange-600 text-sm font-medium">
+                        <i id="preview-icon-{{ faq.id }}" class="fas fa-chevron-down mr-1"></i>
+                        <span id="preview-text-{{ faq.id }}">Xem trước</span>
+                    </button>
+                    
+                    <div id="preview-{{ faq.id }}" class="hidden mt-3 p-4 bg-gray-50 rounded-lg">
+                        <div class="admin-card">
+                            <button class="w-full p-4 text-left focus:outline-none">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-lg font-semibold text-gray-800">{{ faq.question }}</h3>
+                                    <i class="fas fa-plus text-primary"></i>
+                                </div>
+                            </button>
+                            <div class="px-4 pb-4">
+                                <p class="text-gray-600">{{ faq.answer }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <div class="admin-card p-12 text-center">
+        <i class="fas fa-question-circle text-gray-400 text-6xl mb-6"></i>
+        <h3 class="text-xl font-semibold text-gray-800 mb-4">Chưa có câu hỏi thường gặp</h3>
+        <p class="text-gray-600 mb-6">Thêm câu hỏi đầu tiên để giúp phụ huynh hiểu rõ hơn về trường</p>
+        <a href="{{ url_for('admin_faq_create') }}" 
+           class="btn-primary px-8 py-3 rounded-lg font-medium">
+            <i class="fas fa-plus mr-2"></i>
+            Thêm câu hỏi đầu tiên
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function togglePreview(id) {
+    const preview = document.getElementById(`preview-${id}`);
+    const icon = document.getElementById(`preview-icon-${id}`);
+    const text = document.getElementById(`preview-text-${id}`);
+    
+    if (preview.classList.contains('hidden')) {
+        preview.classList.remove('hidden');
+        icon.classList.remove('fa-chevron-down');
+        icon.classList.add('fa-chevron-up');
+        text.textContent = 'Ẩn xem trước';
+    } else {
+        preview.classList.add('hidden');
+        icon.classList.remove('fa-chevron-up');
+        icon.classList.add('fa-chevron-down');
+        text.textContent = 'Xem trước';
+    }
+}
+</script>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Xác nhận xóa
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.delete-btn')) {
+            e.preventDefault();
+            if (confirm('Bạn có chắc chắn muốn xóa không?')) {
+                e.target.closest('form').submit();
+            }
+        }
+    });
+</script>
+{% endblock %}

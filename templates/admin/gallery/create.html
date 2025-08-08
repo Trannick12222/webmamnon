@@ -383,8 +383,6 @@
     function applyCropToImage() {
         if (currentCropperInstance && currentImageIndex >= 0) {
             const canvas = currentCropperInstance.getCroppedCanvas({
-                width: 800,
-                height: 450,
                 imageSmoothingEnabled: true,
                 imageSmoothingQuality: 'high'
             });

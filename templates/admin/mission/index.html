@@ -1,0 +1,202 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Quản lý Sứ mệnh - Admin{% endblock %}
+{% block page_title %}Sứ mệnh trường{% endblock %}
+{% block page_description %}Quản lý nội dung sứ mệnh và mục tiêu của trường{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Mission Content Overview -->
+    <div class="admin-card p-6">
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center">
+                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                    <i class="fas fa-bullseye text-blue-600"></i>
+                </div>
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-800">Nội dung chính</h2>
+                    <p class="text-sm text-gray-600">Tiêu đề, hình ảnh và thống kê</p>
+                </div>
+            </div>
+            <a href="{{ url_for('admin_mission_content') }}" class="btn-primary px-4 py-2 rounded-lg">
+                <i class="fas fa-edit mr-2"></i>Chỉnh sửa
+            </a>
+        </div>
+        
+        {% if mission_content %}
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div>
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">{{ mission_content.main_title }}</h3>
+                <div class="flex items-center space-x-4 text-sm text-gray-600">
+                    <span><i class="fas fa-chart-line mr-1 text-green-500"></i> {{ mission_content.stats_number }}</span>
+                    <span>{{ mission_content.stats_text }}</span>
+                </div>
+            </div>
+            <div>
+                {% if mission_content.main_image %}
+                <img src="{{ url_for('static', filename=mission_content.main_image) }}" 
+                     alt="Mission Image" 
+                     class="w-full h-32 object-cover rounded-lg shadow-sm">
+                {% else %}
+                <div class="w-full h-32 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-image text-gray-400 text-2xl"></i>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
+        <div class="text-center py-8">
+            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-plus text-gray-400 text-xl"></i>
+            </div>
+            <p class="text-gray-500">Chưa có nội dung sứ mệnh</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Mission Items -->
+    <div class="admin-card p-6">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-semibold text-gray-800">Các mục tiêu sứ mệnh</h2>
+            <a href="{{ url_for('admin_mission_item_create') }}" class="btn-primary px-4 py-2 rounded-lg">
+                <i class="fas fa-plus mr-2"></i>Thêm mục tiêu
+            </a>
+        </div>
+        
+        {% if mission_items %}
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3">Icon</th>
+                        <th class="px-6 py-3">Tiêu đề</th>
+                        <th class="px-6 py-3">Mô tả</th>
+                        <th class="px-6 py-3">Màu sắc</th>
+                        <th class="px-6 py-3">Thứ tự</th>
+                        <th class="px-6 py-3">Trạng thái</th>
+                        <th class="px-6 py-3">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in mission_items %}
+                    <tr class="bg-white border-b hover:bg-gray-50">
+                        <td class="px-6 py-4">
+                            <div class="w-10 h-10 {{ item.color }} rounded-full flex items-center justify-center">
+                                <i class="{{ item.icon }} text-white"></i>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 font-medium text-gray-900">
+                            {{ item.title }}
+                        </td>
+                        <td class="px-6 py-4 text-gray-600">
+                            {{ item.description[:60] }}
+                            {% if item.description|length > 60 %}...{% endif %}
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="inline-block w-4 h-4 {{ item.color }} rounded-full"></span>
+                            <span class="ml-2 text-xs text-gray-600">{{ item.color }}</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                                {{ item.order_index }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            {% if item.is_active %}
+                            <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center w-fit">
+                                <i class="fas fa-check-circle mr-1"></i>Hoạt động
+                            </span>
+                            {% else %}
+                            <span class="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center w-fit">
+                                <i class="fas fa-pause-circle mr-1"></i>Tạm dừng
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center space-x-2">
+                                <a href="{{ url_for('admin_mission_item_edit', id=item.id) }}" 
+                                   class="inline-flex items-center px-3 py-1.5 bg-amber-100 text-amber-700 text-sm font-medium rounded-lg hover:bg-amber-200 transition-colors">
+                                    <i class="fas fa-edit mr-1"></i>Sửa
+                                </a>
+                                <form method="POST" action="{{ url_for('admin_mission_item_delete', id=item.id) }}" class="inline">
+                                    <button type="submit" class="delete-btn inline-flex items-center px-3 py-1.5 bg-red-100 text-red-700 text-sm font-medium rounded-lg hover:bg-red-200 transition-colors">
+                                        <i class="fas fa-trash mr-1"></i>Xóa
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-16">
+            <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-list text-gray-400 text-3xl"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-800 mb-2">Chưa có mục tiêu nào</h3>
+            <p class="text-gray-500 mb-6">Hãy thêm mục tiêu sứ mệnh đầu tiên</p>
+            <a href="{{ url_for('admin_mission_item_create') }}" class="btn-primary px-6 py-3 rounded-lg">
+                <i class="fas fa-plus mr-2"></i>Thêm mục tiêu đầu tiên
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Quick Stats -->
+    {% if mission_items %}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="admin-card p-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Tổng mục tiêu</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ mission_items|length }}</p>
+                </div>
+                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-bullseye text-blue-600"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="admin-card p-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Đang hoạt động</p>
+                    <p class="text-2xl font-bold text-green-600">{{ mission_items|selectattr('is_active')|list|length }}</p>
+                </div>
+                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-check-circle text-green-600"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="admin-card p-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Tạm dừng</p>
+                    <p class="text-2xl font-bold text-gray-600">{{ mission_items|rejectattr('is_active')|list|length }}</p>
+                </div>
+                <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-pause-circle text-gray-600"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Xác nhận xóa
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.delete-btn')) {
+            e.preventDefault();
+            if (confirm('Bạn có chắc chắn muốn xóa không?')) {
+                e.target.closest('form').submit();
+            }
+        }
+    });
+</script>
+{% endblock %}

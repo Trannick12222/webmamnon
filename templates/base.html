@@ -3,7 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Trường Mầm non Hoa Hướng Dương{% endblock %}</title>
+    
+    <!-- SEO Meta Tags -->
+    {% set seo_data = get_seo_settings(request.endpoint or 'home') %}
+    <title>{{ seo_data.meta_title or (block('title') + ' - Trường Mầm non Hoa Hướng Dương') }}</title>
+    
+    {% if seo_data.meta_description %}
+    <meta name="description" content="{{ seo_data.meta_description }}">
+    {% endif %}
+    
+    {% if seo_data.meta_keywords %}
+    <meta name="keywords" content="{{ seo_data.meta_keywords }}">
+    {% endif %}
+    
+    {% if seo_data.robots_meta %}
+    <meta name="robots" content="{{ seo_data.robots_meta }}">
+    {% endif %}
+    
+    {% if seo_data.canonical_url %}
+    <link rel="canonical" href="{{ seo_data.canonical_url }}">
+    {% endif %}
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{{ seo_data.og_title or seo_data.meta_title or 'Trường Mầm non Hoa Hướng Dương' }}">
+    <meta property="og:description" content="{{ seo_data.og_description or seo_data.meta_description or 'Trường Mầm non Hoa Hướng Dương - Nuôi dưỡng tâm hồn, phát triển tài năng' }}">
+    <meta property="og:image" content="{{ request.url_root.rstrip('/') }}{{ seo_data.og_image or '/static/images/mnhhd.jpg' }}">
+    <meta property="og:url" content="{{ request.url }}">
+    <meta property="og:site_name" content="Trường Mầm non Hoa Hướng Dương">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ seo_data.og_title or seo_data.meta_title or 'Trường Mầm non Hoa Hướng Dương' }}">
+    <meta name="twitter:description" content="{{ seo_data.og_description or seo_data.meta_description or 'Trường Mầm non Hoa Hướng Dương - Nuôi dưỡng tâm hồn, phát triển tài năng' }}">
+    <meta name="twitter:image" content="{{ request.url_root.rstrip('/') }}{{ seo_data.og_image or '/static/images/mnhhd.jpg' }}">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/jpeg" href="{{ url_for('static', filename='images/mnhhd.jpg') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/mnhhd.jpg') }}">
     
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&family=Patrick+Hand:wght@400&display=swap" rel="stylesheet">
@@ -70,6 +107,13 @@
         }
     </style>
     
+    <!-- Schema Markup -->
+    {% if seo_data.schema_markup %}
+    <script type="application/ld+json">
+    {{ seo_data.schema_markup|safe }}
+    </script>
+    {% endif %}
+    
     {% block extra_css %}{% endblock %}
 </head>
 <body class="font-quicksand">
@@ -133,7 +177,7 @@
             <div class="container mx-auto px-4">
                 <div class="flex justify-between items-center">
                     <div class="flex items-center">
-                        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Hoa Hướng Dương" class="h-12 mr-3">
+                        <img src="{{ url_for('static', filename='images/mnhhd.jpg') }}" alt="Hoa Hướng Dương" class="h-12 mr-3 rounded-lg shadow-sm">
                         <div>
                             <h1 class="text-xl font-bold text-primary font-patrick">Hoa Hướng Dương</h1>
                             <p class="text-sm text-gray-600">Trường Mầm non</p>
@@ -200,7 +244,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 <div>
                     <div class="flex items-center mb-4">
-                        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Hoa Hướng Dương" class="h-10 mr-3 filter brightness-0 invert">
+                        <img src="{{ url_for('static', filename='images/mnhhd.jpg') }}" alt="Hoa Hướng Dương" class="h-10 mr-3 rounded-lg">
                         <div>
                             <h3 class="text-lg font-bold font-patrick">Hoa Hướng Dương</h3>
                             <p class="text-sm text-gray-400">Trường Mầm non</p>

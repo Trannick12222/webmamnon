@@ -1,0 +1,177 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Quản lý Call-to-Action - Admin{% endblock %}
+
+{% block page_title %}Call-to-Action{% endblock %}
+{% block page_description %}Quản lý các phần kêu gọi hành động trên website{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header Actions -->
+    <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+            <div class="bg-white rounded-lg px-4 py-2 shadow-sm border">
+                <span class="text-sm text-gray-600">Tổng cộng: </span>
+                <span class="font-semibold text-primary">{{ cta_sections|length }} section</span>
+            </div>
+        </div>
+        
+        <a href="{{ url_for('admin_cta_create') }}" 
+           class="btn-primary px-6 py-2 rounded-lg font-medium">
+            <i class="fas fa-plus mr-2"></i>
+            Thêm CTA mới
+        </a>
+    </div>
+
+    <!-- CTA Sections List -->
+    {% if cta_sections %}
+    <div class="space-y-6">
+        {% for cta in cta_sections %}
+        <div class="admin-card p-6 hover:shadow-lg transition">
+            <!-- Header -->
+            <div class="flex items-start justify-between mb-6">
+                <div class="flex-1">
+                    <div class="flex items-center space-x-3 mb-2">
+                        <h3 class="text-xl font-bold text-gray-800">{{ cta.section_name.replace('_', ' ').title() }}</h3>
+                        <span class="px-3 py-1 text-sm rounded-full {{ 'bg-green-100 text-green-800' if cta.is_active else 'bg-red-100 text-red-800' }}">
+                            {{ 'Hoạt động' if cta.is_active else 'Tạm dừng' }}
+                        </span>
+                    </div>
+                    <p class="text-gray-600 text-sm">Cập nhật: {{ cta.updated_at.strftime('%d/%m/%Y %H:%M') }}</p>
+                </div>
+                
+                <div class="flex items-center space-x-2">
+                    <a href="{{ url_for('admin_cta_edit', id=cta.id) }}" 
+                       class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm">
+                        <i class="fas fa-edit mr-1"></i>
+                        Sửa
+                    </a>
+                    <form method="POST" action="{{ url_for('admin_cta_delete', id=cta.id) }}" class="inline-block">
+                        <button type="submit" 
+                                class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm delete-btn"
+                                onclick="return confirm('Bạn có chắc chắn muốn xóa CTA này?')">
+                            <i class="fas fa-trash mr-1"></i>
+                            Xóa
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Preview -->
+            <div class="bg-gradient-to-br from-yellow-50 via-orange-50 to-pink-50 rounded-2xl p-6 relative overflow-hidden">
+                <!-- Decorative Elements -->
+                <div class="absolute top-4 right-4 w-8 h-8 bg-yellow-200 rounded-full opacity-30"></div>
+                <div class="absolute bottom-4 left-4 w-6 h-6 bg-pink-200 rounded-full opacity-40"></div>
+                
+                <div class="relative z-10">
+                    <!-- Main Title -->
+                    <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-4 text-center">
+                        {{ cta.main_title }}
+                    </h2>
+                    <p class="text-lg text-gray-600 text-center mb-6 max-w-2xl mx-auto">
+                        {{ cta.subtitle }}
+                    </p>
+                    
+                    <!-- Contact Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <!-- Phone Card -->
+                        <div class="bg-white rounded-xl p-4 shadow-sm border-l-4 border-orange-400">
+                            <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-phone text-lg text-orange-500"></i>
+                            </div>
+                            <h3 class="text-sm font-semibold text-gray-800 mb-1 text-center">Gọi điện tư vấn</h3>
+                            <p class="text-orange-600 font-bold text-center">{{ cta.phone_number }}</p>
+                            <p class="text-xs text-gray-500 text-center mt-1">{{ cta.working_hours }}</p>
+                        </div>
+                        
+                        <!-- Email Card -->
+                        <div class="bg-white rounded-xl p-4 shadow-sm border-l-4 border-pink-400">
+                            <div class="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-envelope text-lg text-pink-500"></i>
+                            </div>
+                            <h3 class="text-sm font-semibold text-gray-800 mb-1 text-center">Gửi email</h3>
+                            <p class="text-pink-600 font-bold text-center text-sm">{{ cta.email }}</p>
+                            <p class="text-xs text-gray-500 text-center mt-1">{{ cta.email_response_time }}</p>
+                        </div>
+                        
+                        <!-- Visit Card -->
+                        <div class="bg-white rounded-xl p-4 shadow-sm border-l-4 border-purple-400">
+                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-map-marker-alt text-lg text-purple-500"></i>
+                            </div>
+                            <h3 class="text-sm font-semibold text-gray-800 mb-1 text-center">Đến thăm trường</h3>
+                            <p class="text-purple-600 font-bold text-center text-sm">Tham quan miễn phí</p>
+                            <p class="text-xs text-gray-500 text-center mt-1">{{ cta.visit_note }}</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Promotion -->
+                    {% if cta.promotion_title %}
+                    <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-sm">
+                        <div class="flex items-center justify-center mb-2">
+                            <span class="text-2xl mr-2">💝</span>
+                            <h3 class="text-lg font-bold text-gray-800">{{ cta.promotion_title }}</h3>
+                            <span class="text-2xl ml-2">💝</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-2 text-center">
+                            {{ cta.promotion_description }}
+                        </p>
+                        <div class="flex items-center justify-center space-x-2 text-xs text-gray-500">
+                            <i class="fas fa-clock"></i>
+                            <span>{{ cta.promotion_note }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="admin-card p-12 text-center">
+        <i class="fas fa-bullhorn text-gray-400 text-6xl mb-6"></i>
+        <h3 class="text-xl font-semibold text-gray-800 mb-4">Chưa có Call-to-Action</h3>
+        <p class="text-gray-600 mb-6">Thêm CTA đầu tiên để tăng tương tác với khách hàng</p>
+        <a href="{{ url_for('admin_cta_create') }}" 
+           class="btn-primary px-8 py-3 rounded-lg font-medium">
+            <i class="fas fa-plus mr-2"></i>
+            Thêm CTA đầu tiên
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Info Box -->
+<div class="mt-8 admin-card p-6">
+    <h4 class="text-lg font-semibold text-gray-800 mb-4">
+        <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+        Hướng dẫn sử dụng
+    </h4>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-gray-600">
+        <div>
+            <h5 class="font-semibold text-gray-800 mb-2">Hiện tại chỉ hỗ trợ:</h5>
+            <ul class="space-y-1">
+                <li>• <code class="bg-gray-100 px-2 py-1 rounded">programs_cta</code> - Trang chương trình</li>
+                <li class="text-gray-400">• Các trang khác sẽ được thêm khi cần thiết</li>
+            </ul>
+        </div>
+        <div>
+            <h5 class="font-semibold text-gray-800 mb-2">Lưu ý:</h5>
+            <ul class="space-y-1">
+                <li>• Chỉ có một CTA cho trang chương trình</li>
+                <li>• Chỉ CTA có trạng thái "Hoạt động" mới hiển thị</li>
+                <li>• Có thể để trống phần ưu đãi nếu không cần</li>
+                <li>• Preview sẽ hiển thị giao diện thực tế</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Xác nhận xóa - JavaScript này sẽ được gọi bởi onclick trong button
+    // Không cần thêm event listener vì đã có onclick="return confirm(...)"
+    console.log('CTA admin page loaded');
+</script>
+{% endblock %}

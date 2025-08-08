@@ -34,7 +34,9 @@
                 <span class="text-sm text-gray-500">{{ program.duration }}</span>
                 <div class="flex space-x-2">
                     <a href="{{ url_for('admin_programs_edit', id=program.id) }}" class="text-blue-600 hover:text-blue-800 text-sm">Sửa</a>
-                    <a href="{{ url_for('admin_programs_delete', id=program.id) }}" class="text-red-600 hover:text-red-800 text-sm" onclick="return confirm('Bạn có chắc chắn muốn xóa chương trình này?')">Xóa</a>
+                    <form method="POST" action="{{ url_for('admin_programs_delete', id=program.id) }}" class="inline">
+                        <button type="submit" class="text-red-600 hover:text-red-800 text-sm delete-btn">Xóa</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -53,4 +55,18 @@
     </div>
     {% endif %}
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Xác nhận xóa
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.delete-btn')) {
+            e.preventDefault();
+            if (confirm('Bạn có chắc chắn muốn xóa chương trình này không?')) {
+                e.target.closest('form').submit();
+            }
+        }
+    });
+</script>
 {% endblock %}

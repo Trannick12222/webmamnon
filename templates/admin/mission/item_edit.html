@@ -1,0 +1,398 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Chỉnh sửa Mục tiêu - Admin{% endblock %}
+{% block page_title %}Chỉnh sửa mục tiêu{% endblock %}
+{% block page_description %}Cập nhật "{{ mission_item.title }}"{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <!-- Header Section -->
+    <div class="mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">
+                    <i class="fas fa-edit text-indigo-600 mr-3"></i>
+                    Chỉnh sửa mục tiêu
+                </h1>
+                <p class="text-gray-600">Cập nhật "{{ mission_item.title }}"</p>
+            </div>
+            <a href="{{ url_for('admin_mission') }}" 
+               class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition duration-200">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Quay lại
+            </a>
+        </div>
+    </div>
+
+    <form method="POST" class="space-y-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main Content -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Basic Information Card -->
+                <div class="admin-card p-6">
+                    <div class="flex items-center mb-6">
+                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                            <i class="fas fa-info-circle text-blue-600"></i>
+                        </div>
+                        <h2 class="text-xl font-semibold text-gray-800">Thông tin cơ bản</h2>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <!-- Title -->
+                        <div>
+                            <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
+                                Tiêu đề <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" 
+                                   id="title" 
+                                   name="title" 
+                                   value="{{ mission_item.title }}"
+                                   required
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200"
+                                   placeholder="Ví dụ: Nuôi dưỡng tâm hồn">
+                        </div>
+                        
+                        <!-- Description -->
+                        <div>
+                            <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
+                                Mô tả <span class="text-red-500">*</span>
+                            </label>
+                            <textarea id="description" 
+                                      name="description" 
+                                      rows="4"
+                                      required
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200"
+                                      placeholder="Nhập mô tả chi tiết về mục tiêu này...">{{ mission_item.description }}</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Design Settings Card -->
+                <div class="admin-card p-6">
+                    <div class="flex items-center mb-6">
+                        <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                            <i class="fas fa-palette text-purple-600"></i>
+                        </div>
+                        <h2 class="text-xl font-semibold text-gray-800">Thiết kế</h2>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <!-- Icon Selection -->
+                        <div>
+                            <label for="icon" class="block text-sm font-medium text-gray-700 mb-3">
+                                Icon <span class="text-red-500">*</span>
+                            </label>
+                            <div class="grid grid-cols-6 gap-3">
+                                <label class="icon-option cursor-pointer">
+                                    <input type="radio" name="icon" value="fas fa-heart" class="hidden" {% if mission_item.icon == 'fas fa-heart' %}checked{% endif %}>
+                                    <div class="icon-preview w-12 h-12 bg-gray-100 hover:bg-indigo-100 rounded-lg flex items-center justify-center transition-colors">
+                                        <i class="fas fa-heart text-gray-600"></i>
+                                    </div>
+                                </label>
+                                <label class="icon-option cursor-pointer">
+                                    <input type="radio" name="icon" value="fas fa-lightbulb" class="hidden" {% if mission_item.icon == 'fas fa-lightbulb' %}checked{% endif %}>
+                                    <div class="icon-preview w-12 h-12 bg-gray-100 hover:bg-indigo-100 rounded-lg flex items-center justify-center transition-colors">
+                                        <i class="fas fa-lightbulb text-gray-600"></i>
+                                    </div>
+                                </label>
+                                <label class="icon-option cursor-pointer">
+                                    <input type="radio" name="icon" value="fas fa-seedling" class="hidden" {% if mission_item.icon == 'fas fa-seedling' %}checked{% endif %}>
+                                    <div class="icon-preview w-12 h-12 bg-gray-100 hover:bg-indigo-100 rounded-lg flex items-center justify-center transition-colors">
+                                        <i class="fas fa-seedling text-gray-600"></i>
+                                    </div>
+                                </label>
+                                <label class="icon-option cursor-pointer">
+                                    <input type="radio" name="icon" value="fas fa-star" class="hidden" {% if mission_item.icon == 'fas fa-star' %}checked{% endif %}>
+                                    <div class="icon-preview w-12 h-12 bg-gray-100 hover:bg-indigo-100 rounded-lg flex items-center justify-center transition-colors">
+                                        <i class="fas fa-star text-gray-600"></i>
+                                    </div>
+                                </label>
+                                <label class="icon-option cursor-pointer">
+                                    <input type="radio" name="icon" value="fas fa-users" class="hidden" {% if mission_item.icon == 'fas fa-users' %}checked{% endif %}>
+                                    <div class="icon-preview w-12 h-12 bg-gray-100 hover:bg-indigo-100 rounded-lg flex items-center justify-center transition-colors">
+                                        <i class="fas fa-users text-gray-600"></i>
+                                    </div>
+                                </label>
+                                <label class="icon-option cursor-pointer">
+                                    <input type="radio" name="icon" value="fas fa-shield-alt" class="hidden" {% if mission_item.icon == 'fas fa-shield-alt' %}checked{% endif %}>
+                                    <div class="icon-preview w-12 h-12 bg-gray-100 hover:bg-indigo-100 rounded-lg flex items-center justify-center transition-colors">
+                                        <i class="fas fa-shield-alt text-gray-600"></i>
+                                    </div>
+                                </label>
+                                <label class="icon-option cursor-pointer">
+                                    <input type="radio" name="icon" value="fas fa-graduation-cap" class="hidden" {% if mission_item.icon == 'fas fa-graduation-cap' %}checked{% endif %}>
+                                    <div class="icon-preview w-12 h-12 bg-gray-100 hover:bg-indigo-100 rounded-lg flex items-center justify-center transition-colors">
+                                        <i class="fas fa-graduation-cap text-gray-600"></i>
+                                    </div>
+                                </label>
+                                <label class="icon-option cursor-pointer">
+                                    <input type="radio" name="icon" value="fas fa-handshake" class="hidden" {% if mission_item.icon == 'fas fa-handshake' %}checked{% endif %}>
+                                    <div class="icon-preview w-12 h-12 bg-gray-100 hover:bg-indigo-100 rounded-lg flex items-center justify-center transition-colors">
+                                        <i class="fas fa-handshake text-gray-600"></i>
+                                    </div>
+                                </label>
+                                <label class="icon-option cursor-pointer">
+                                    <input type="radio" name="icon" value="fas fa-rocket" class="hidden" {% if mission_item.icon == 'fas fa-rocket' %}checked{% endif %}>
+                                    <div class="icon-preview w-12 h-12 bg-gray-100 hover:bg-indigo-100 rounded-lg flex items-center justify-center transition-colors">
+                                        <i class="fas fa-rocket text-gray-600"></i>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Color Selection -->
+                        <div>
+                            <label for="color" class="block text-sm font-medium text-gray-700 mb-3">
+                                Màu sắc <span class="text-red-500">*</span>
+                            </label>
+                            <div class="grid grid-cols-4 gap-3">
+                                <label class="color-option cursor-pointer">
+                                    <input type="radio" name="color" value="bg-primary" class="hidden" {% if mission_item.color == 'bg-primary' %}checked{% endif %}>
+                                    <div class="color-preview w-16 h-12 bg-primary rounded-lg border-2 border-transparent hover:border-gray-300 transition-colors"></div>
+                                    <span class="text-xs text-center block mt-1">Primary</span>
+                                </label>
+                                <label class="color-option cursor-pointer">
+                                    <input type="radio" name="color" value="bg-secondary" class="hidden" {% if mission_item.color == 'bg-secondary' %}checked{% endif %}>
+                                    <div class="color-preview w-16 h-12 bg-secondary rounded-lg border-2 border-transparent hover:border-gray-300 transition-colors"></div>
+                                    <span class="text-xs text-center block mt-1">Secondary</span>
+                                </label>
+                                <label class="color-option cursor-pointer">
+                                    <input type="radio" name="color" value="bg-green-500" class="hidden" {% if mission_item.color == 'bg-green-500' %}checked{% endif %}>
+                                    <div class="color-preview w-16 h-12 bg-green-500 rounded-lg border-2 border-transparent hover:border-gray-300 transition-colors"></div>
+                                    <span class="text-xs text-center block mt-1">Green</span>
+                                </label>
+                                <label class="color-option cursor-pointer">
+                                    <input type="radio" name="color" value="bg-blue-500" class="hidden" {% if mission_item.color == 'bg-blue-500' %}checked{% endif %}>
+                                    <div class="color-preview w-16 h-12 bg-blue-500 rounded-lg border-2 border-transparent hover:border-gray-300 transition-colors"></div>
+                                    <span class="text-xs text-center block mt-1">Blue</span>
+                                </label>
+                                <label class="color-option cursor-pointer">
+                                    <input type="radio" name="color" value="bg-purple-500" class="hidden" {% if mission_item.color == 'bg-purple-500' %}checked{% endif %}>
+                                    <div class="color-preview w-16 h-12 bg-purple-500 rounded-lg border-2 border-transparent hover:border-gray-300 transition-colors"></div>
+                                    <span class="text-xs text-center block mt-1">Purple</span>
+                                </label>
+                                <label class="color-option cursor-pointer">
+                                    <input type="radio" name="color" value="bg-red-500" class="hidden" {% if mission_item.color == 'bg-red-500' %}checked{% endif %}>
+                                    <div class="color-preview w-16 h-12 bg-red-500 rounded-lg border-2 border-transparent hover:border-gray-300 transition-colors"></div>
+                                    <span class="text-xs text-center block mt-1">Red</span>
+                                </label>
+                                <label class="color-option cursor-pointer">
+                                    <input type="radio" name="color" value="bg-yellow-500" class="hidden" {% if mission_item.color == 'bg-yellow-500' %}checked{% endif %}>
+                                    <div class="color-preview w-16 h-12 bg-yellow-500 rounded-lg border-2 border-transparent hover:border-gray-300 transition-colors"></div>
+                                    <span class="text-xs text-center block mt-1">Yellow</span>
+                                </label>
+                                <label class="color-option cursor-pointer">
+                                    <input type="radio" name="color" value="bg-pink-500" class="hidden" {% if mission_item.color == 'bg-pink-500' %}checked{% endif %}>
+                                    <div class="color-preview w-16 h-12 bg-pink-500 rounded-lg border-2 border-transparent hover:border-gray-300 transition-colors"></div>
+                                    <span class="text-xs text-center block mt-1">Pink</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="space-y-6">
+                <!-- Settings Card -->
+                <div class="admin-card p-6">
+                    <div class="flex items-center mb-6">
+                        <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                            <i class="fas fa-cog text-green-600"></i>
+                        </div>
+                        <h2 class="text-xl font-semibold text-gray-800">Cài đặt</h2>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <!-- Order Index -->
+                        <div>
+                            <label for="order_index" class="block text-sm font-medium text-gray-700 mb-2">
+                                Thứ tự hiển thị
+                            </label>
+                            <input type="number" 
+                                   id="order_index" 
+                                   name="order_index" 
+                                   value="{{ mission_item.order_index }}" 
+                                   min="0"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200">
+                            <p class="text-xs text-gray-500 mt-1">Số nhỏ hơn sẽ hiển thị trước</p>
+                        </div>
+                        
+                        <!-- Active Status -->
+                        <div>
+                            <label class="flex items-center">
+                                <input type="checkbox" 
+                                       id="is_active" 
+                                       name="is_active" 
+                                       {% if mission_item.is_active %}checked{% endif %}
+                                       class="w-5 h-5 text-green-600 border-gray-300 rounded focus:ring-green-500">
+                                <span class="ml-3 text-sm font-medium text-gray-700">Kích hoạt mục tiêu</span>
+                            </label>
+                            <p class="text-xs text-gray-500 mt-1">Mục tiêu sẽ hiển thị trên trang giới thiệu</p>
+                        </div>
+                        
+                        <!-- Status Badge -->
+                        <div class="p-3 rounded-lg {{ 'bg-green-50 border border-green-200' if mission_item.is_active else 'bg-gray-50 border border-gray-200' }}">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 rounded-full {{ 'bg-green-500' if mission_item.is_active else 'bg-gray-400' }} mr-2"></div>
+                                <span class="text-sm font-medium {{ 'text-green-800' if mission_item.is_active else 'text-gray-600' }}">
+                                    {{ 'Đang hiển thị' if mission_item.is_active else 'Đang ẩn' }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preview Card -->
+                <div class="admin-card p-6">
+                    <div class="flex items-center mb-6">
+                        <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center mr-3">
+                            <i class="fas fa-eye text-orange-600"></i>
+                        </div>
+                        <h2 class="text-xl font-semibold text-gray-800">Xem trước</h2>
+                    </div>
+                    
+                    <div id="preview-container">
+                        <div class="flex items-start">
+                            <div id="preview-icon" class="w-12 h-12 {{ mission_item.color }} rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+                                <i class="{{ mission_item.icon }} text-white"></i>
+                            </div>
+                            <div>
+                                <h3 id="preview-title" class="text-lg font-semibold text-gray-800 mb-2">{{ mission_item.title }}</h3>
+                                <p id="preview-description" class="text-gray-600 leading-relaxed text-sm">{{ mission_item.description }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Info Card -->
+                <div class="admin-card p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                            <i class="fas fa-info text-blue-600"></i>
+                        </div>
+                        <h2 class="text-lg font-semibold text-gray-800">Thông tin</h2>
+                    </div>
+                    
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Ngày tạo:</span>
+                            <span class="font-medium">{{ mission_item.created_at.strftime('%d/%m/%Y %H:%M') }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">ID:</span>
+                            <span class="font-medium">#{{ mission_item.id }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center justify-between pt-6 border-t border-gray-200">
+            <a href="{{ url_for('admin_mission') }}" 
+               class="inline-flex items-center px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition duration-200">
+                <i class="fas fa-times mr-2"></i>
+                Hủy bỏ
+            </a>
+            
+            <button type="submit" 
+                    class="inline-flex items-center px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-lg transition duration-200 shadow-lg hover:shadow-xl">
+                <i class="fas fa-save mr-2"></i>
+                Cập nhật mục tiêu
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const titleInput = document.getElementById('title');
+    const descriptionInput = document.getElementById('description');
+    const iconInputs = document.querySelectorAll('input[name="icon"]');
+    const colorInputs = document.querySelectorAll('input[name="color"]');
+    const previewIcon = document.getElementById('preview-icon');
+    const previewTitle = document.getElementById('preview-title');
+    const previewDescription = document.getElementById('preview-description');
+
+    function updatePreview() {
+        const title = titleInput.value.trim();
+        const description = descriptionInput.value.trim();
+        const selectedIcon = document.querySelector('input[name="icon"]:checked');
+        const selectedColor = document.querySelector('input[name="color"]:checked');
+
+        // Update icon and color
+        if (selectedIcon && selectedColor) {
+            previewIcon.className = `w-12 h-12 ${selectedColor.value} rounded-full flex items-center justify-center mr-4 flex-shrink-0`;
+            previewIcon.innerHTML = `<i class="${selectedIcon.value} text-white"></i>`;
+        }
+
+        // Update text
+        previewTitle.textContent = title || 'Tiêu đề mục tiêu';
+        previewDescription.textContent = description || 'Mô tả mục tiêu sẽ hiển thị ở đây...';
+    }
+
+    // Event listeners
+    titleInput.addEventListener('input', updatePreview);
+    descriptionInput.addEventListener('input', updatePreview);
+    
+    iconInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            // Update icon preview styling
+            document.querySelectorAll('.icon-option .icon-preview').forEach(preview => {
+                preview.classList.remove('bg-indigo-100', 'ring-2', 'ring-indigo-500');
+                preview.classList.add('bg-gray-100');
+            });
+            
+            if (this.checked) {
+                const preview = this.parentNode.querySelector('.icon-preview');
+                preview.classList.remove('bg-gray-100');
+                preview.classList.add('bg-indigo-100', 'ring-2', 'ring-indigo-500');
+            }
+            
+            updatePreview();
+        });
+    });
+    
+    colorInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            // Update color preview styling
+            document.querySelectorAll('.color-option .color-preview').forEach(preview => {
+                preview.classList.remove('ring-2', 'ring-gray-400');
+            });
+            
+            if (this.checked) {
+                const preview = this.parentNode.querySelector('.color-preview');
+                preview.classList.add('ring-2', 'ring-gray-400');
+            }
+            
+            updatePreview();
+        });
+    });
+
+    // Initialize selected states
+    const selectedIcon = document.querySelector('input[name="icon"]:checked');
+    const selectedColor = document.querySelector('input[name="color"]:checked');
+    
+    if (selectedIcon) {
+        const preview = selectedIcon.parentNode.querySelector('.icon-preview');
+        preview.classList.remove('bg-gray-100');
+        preview.classList.add('bg-indigo-100', 'ring-2', 'ring-indigo-500');
+    }
+    
+    if (selectedColor) {
+        const preview = selectedColor.parentNode.querySelector('.color-preview');
+        preview.classList.add('ring-2', 'ring-gray-400');
+    }
+});
+</script>
+
+<style>
+.icon-option input:checked + .icon-preview {
+    @apply bg-indigo-100 ring-2 ring-indigo-500;
+}
+.color-option input:checked + .color-preview {
+    @apply ring-2 ring-gray-400;
+}
+</style>
+{% endblock %}

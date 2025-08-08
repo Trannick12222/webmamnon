@@ -1,0 +1,164 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Quản lý Đội ngũ - Admin{% endblock %}
+{% block page_title %}Đội ngũ lãnh đạo{% endblock %}
+{% block page_description %}Quản lý thông tin đội ngũ lãnh đạo trường{% endblock %}
+
+{% block content %}
+<div class="admin-card p-6">
+    <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-semibold text-gray-800">Danh sách đội ngũ</h2>
+        <a href="{{ url_for('admin_team_create') }}" class="btn-primary px-4 py-2 rounded-lg">
+            <i class="fas fa-plus mr-2"></i>Thêm thành viên
+        </a>
+    </div>
+    
+    {% if team_members %}
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3">Ảnh</th>
+                    <th class="px-6 py-3">Tên</th>
+                    <th class="px-6 py-3">Chức vụ</th>
+                    <th class="px-6 py-3">Mô tả</th>
+                    <th class="px-6 py-3">Thứ tự</th>
+                    <th class="px-6 py-3">Trạng thái</th>
+                    <th class="px-6 py-3">Ngày tạo</th>
+                    <th class="px-6 py-3">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for member in team_members %}
+                <tr class="bg-white border-b hover:bg-gray-50">
+                    <td class="px-6 py-4">
+                        {% if member.image_path %}
+                        <img src="{{ url_for('static', filename=member.image_path|normalize_path) }}" 
+                             alt="{{ member.name }}" 
+                             class="w-12 h-12 rounded-full object-contain shadow-sm bg-gray-50">
+                        {% else %}
+                        <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-gray-400"></i>
+                        </div>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 font-medium text-gray-900">
+                        {{ member.name }}
+                    </td>
+                    <td class="px-6 py-4 text-gray-600">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                            {{ member.position }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-gray-600">
+                        {% if member.description %}
+                            {{ member.description[:50] }}
+                            {% if member.description|length > 50 %}...{% endif %}
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                            {{ member.order_index }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4">
+                        {% if member.is_active %}
+                        <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center w-fit">
+                            <i class="fas fa-check-circle mr-1"></i>Hoạt động
+                        </span>
+                        {% else %}
+                        <span class="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center w-fit">
+                            <i class="fas fa-pause-circle mr-1"></i>Tạm dừng
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 text-gray-500">
+                        {{ member.created_at.strftime('%d/%m/%Y') }}
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="flex items-center space-x-2">
+                            <a href="{{ url_for('admin_team_edit', id=member.id) }}" 
+                               class="inline-flex items-center px-3 py-1.5 bg-amber-100 text-amber-700 text-sm font-medium rounded-lg hover:bg-amber-200 transition-colors">
+                                <i class="fas fa-edit mr-1"></i>Sửa
+                            </a>
+                            <form method="POST" action="{{ url_for('admin_team_delete', id=member.id) }}" class="inline">
+                                <button type="submit" class="delete-btn inline-flex items-center px-3 py-1.5 bg-red-100 text-red-700 text-sm font-medium rounded-lg hover:bg-red-200 transition-colors">
+                                    <i class="fas fa-trash mr-1"></i>Xóa
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center py-16">
+        <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="fas fa-users text-gray-400 text-3xl"></i>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">Chưa có thành viên nào</h3>
+        <p class="text-gray-500 mb-6">Hãy thêm thành viên đầu tiên cho đội ngũ lãnh đạo</p>
+        <a href="{{ url_for('admin_team_create') }}" class="btn-primary px-6 py-3 rounded-lg">
+            <i class="fas fa-plus mr-2"></i>Thêm thành viên đầu tiên
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Quick Stats -->
+{% if team_members %}
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+    <div class="admin-card p-4">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-600">Tổng thành viên</p>
+                <p class="text-2xl font-bold text-gray-900">{{ team_members|length }}</p>
+            </div>
+            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                <i class="fas fa-users text-blue-600"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="admin-card p-4">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-600">Đang hoạt động</p>
+                <p class="text-2xl font-bold text-green-600">{{ team_members|selectattr('is_active')|list|length }}</p>
+            </div>
+            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <i class="fas fa-check-circle text-green-600"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="admin-card p-4">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-600">Tạm dừng</p>
+                <p class="text-2xl font-bold text-gray-600">{{ team_members|rejectattr('is_active')|list|length }}</p>
+            </div>
+            <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                <i class="fas fa-pause-circle text-gray-600"></i>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Xác nhận xóa
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.delete-btn')) {
+            e.preventDefault();
+            if (confirm('Bạn có chắc chắn muốn xóa không?')) {
+                e.target.closest('form').submit();
+            }
+        }
+    });
+</script>
+{% endblock %}

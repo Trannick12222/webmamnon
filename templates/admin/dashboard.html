@@ -30,7 +30,7 @@
                 <p class="text-3xl font-bold text-gray-900">{{ stats.posts }}</p>
                 <p class="text-sm text-green-600 mt-1">
                     <i class="fas fa-arrow-up mr-1"></i>
-                    +12% so với tháng trước
+                    +{{ additional_stats.news_this_month }} bài tháng này
                 </p>
             </div>
             <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -45,8 +45,8 @@
                 <p class="text-sm font-medium text-gray-600">Chương trình</p>
                 <p class="text-3xl font-bold text-gray-900">{{ stats.programs }}</p>
                 <p class="text-sm text-blue-600 mt-1">
-                    <i class="fas fa-arrow-up mr-1"></i>
-                    +2 chương trình mới
+                    <i class="fas fa-graduation-cap mr-1"></i>
+                    {{ stats.programs }} chương trình
                 </p>
             </div>
             <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
@@ -62,7 +62,7 @@
                 <p class="text-3xl font-bold text-gray-900">{{ stats.gallery }}</p>
                 <p class="text-sm text-purple-600 mt-1">
                     <i class="fas fa-arrow-up mr-1"></i>
-                    +25 ảnh tuần này
+                    +{{ additional_stats.gallery_this_week }} ảnh tuần này
                 </p>
             </div>
             <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
@@ -140,44 +140,53 @@
                     <p class="text-sm text-gray-600">Tạo sự kiện</p>
                 </div>
             </a>
+            
+            <a href="{{ url_for('admin_seo') }}" 
+               class="flex items-center p-4 bg-pink-50 rounded-lg hover:bg-pink-100 transition duration-200">
+                <i class="fas fa-search text-pink-600 text-xl mr-3"></i>
+                <div>
+                    <p class="font-medium text-gray-800">SEO</p>
+                    <p class="text-sm text-gray-600">Tối ưu SEO</p>
+                </div>
+            </a>
         </div>
     </div>
     
     <div class="admin-card p-6">
         <h3 class="text-lg font-semibold text-gray-800 mb-4">
             <i class="fas fa-chart-bar text-blue-500 mr-2"></i>
-            Thống kê truy cập
+            Thống kê nội dung
         </h3>
         <div class="space-y-4">
             <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                 <div class="flex items-center">
                     <div class="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
-                    <span class="text-gray-700">Hôm nay</span>
+                    <span class="text-gray-700">Tin tức tuần này</span>
                 </div>
-                <span class="font-semibold text-gray-900">1,247 lượt</span>
+                <span class="font-semibold text-gray-900">{{ additional_stats.news_this_week }} bài</span>
             </div>
             
             <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                 <div class="flex items-center">
                     <div class="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
-                    <span class="text-gray-700">Tuần này</span>
+                    <span class="text-gray-700">Hình ảnh tuần này</span>
                 </div>
-                <span class="font-semibold text-gray-900">8,532 lượt</span>
+                <span class="font-semibold text-gray-900">{{ additional_stats.gallery_this_week }} ảnh</span>
             </div>
             
             <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                 <div class="flex items-center">
                     <div class="w-3 h-3 bg-purple-500 rounded-full mr-3"></div>
-                    <span class="text-gray-700">Tháng này</span>
+                    <span class="text-gray-700">Liên hệ tuần này</span>
                 </div>
-                <span class="font-semibold text-gray-900">35,421 lượt</span>
+                <span class="font-semibold text-gray-900">{{ additional_stats.contacts_this_week }} tin nhắn</span>
             </div>
         </div>
         
         <div class="mt-4 pt-4 border-t border-gray-200">
             <div class="flex items-center justify-between">
-                <span class="text-sm text-gray-600">Trang phổ biến nhất:</span>
-                <span class="text-sm font-medium text-gray-800">Trang chủ (42%)</span>
+                <span class="text-sm text-gray-600">Tổng liên hệ:</span>
+                <span class="text-sm font-medium text-gray-800">{{ additional_stats.total_contacts }} tin nhắn</span>
             </div>
         </div>
     </div>
@@ -194,45 +203,24 @@
         </div>
         <div class="p-6">
             <div class="space-y-4">
-                <div class="flex items-start">
-                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
-                        <i class="fas fa-edit text-blue-600 text-sm"></i>
+                {% if recent_activities %}
+                    {% for activity in recent_activities %}
+                    <div class="flex items-start">
+                        <div class="w-8 h-8 bg-{{ activity.color }}-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                            <i class="{{ activity.icon }} text-{{ activity.color }}-600 text-sm"></i>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm text-gray-800">{{ activity.title }}</p>
+                            <p class="text-xs text-gray-500">{{ activity.time.strftime('%d/%m/%Y %H:%M') }}</p>
+                        </div>
                     </div>
-                    <div class="flex-1">
-                        <p class="text-sm text-gray-800">Đã cập nhật bài viết "Khai giảng năm học mới"</p>
-                        <p class="text-xs text-gray-500">2 giờ trước</p>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-8">
+                        <i class="fas fa-clock text-gray-400 text-3xl mb-3"></i>
+                        <p class="text-gray-500">Chưa có hoạt động nào gần đây</p>
                     </div>
-                </div>
-                
-                <div class="flex items-start">
-                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
-                        <i class="fas fa-plus text-green-600 text-sm"></i>
-                    </div>
-                    <div class="flex-1">
-                        <p class="text-sm text-gray-800">Đã thêm 15 hình ảnh mới vào thư viện</p>
-                        <p class="text-xs text-gray-500">4 giờ trước</p>
-                    </div>
-                </div>
-                
-                <div class="flex items-start">
-                    <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
-                        <i class="fas fa-calendar text-purple-600 text-sm"></i>
-                    </div>
-                    <div class="flex-1">
-                        <p class="text-sm text-gray-800">Đã tạo sự kiện "Lễ Trung Thu 2024"</p>
-                        <p class="text-xs text-gray-500">1 ngày trước</p>
-                    </div>
-                </div>
-                
-                <div class="flex items-start">
-                    <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
-                        <i class="fas fa-envelope text-orange-600 text-sm"></i>
-                    </div>
-                    <div class="flex-1">
-                        <p class="text-sm text-gray-800">Nhận được 3 tin nhắn liên hệ mới</p>
-                        <p class="text-xs text-gray-500">2 ngày trước</p>
-                    </div>
-                </div>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -246,10 +234,11 @@
         </div>
         <div class="p-6">
             <div class="space-y-4">
+                {% if stats.contacts > 0 %}
                 <div class="flex items-center p-3 bg-red-50 rounded-lg border border-red-200">
                     <div class="w-3 h-3 bg-red-500 rounded-full mr-3"></div>
                     <div class="flex-1">
-                        <p class="text-sm font-medium text-red-800">Phản hồi 5 tin nhắn liên hệ</p>
+                        <p class="text-sm font-medium text-red-800">Phản hồi {{ stats.contacts }} tin nhắn liên hệ</p>
                         <p class="text-xs text-red-600">Ưu tiên cao</p>
                     </div>
                     <a href="{{ url_for('admin_contacts') }}" 
@@ -257,40 +246,63 @@
                         Xem ngay
                     </a>
                 </div>
+                {% endif %}
                 
+                {% if stats.programs == 0 %}
                 <div class="flex items-center p-3 bg-yellow-50 rounded-lg border border-yellow-200">
                     <div class="w-3 h-3 bg-yellow-500 rounded-full mr-3"></div>
                     <div class="flex-1">
-                        <p class="text-sm font-medium text-yellow-800">Cập nhật thông tin chương trình học</p>
-                        <p class="text-xs text-yellow-600">Trung bình</p>
+                        <p class="text-sm font-medium text-yellow-800">Thêm chương trình học đầu tiên</p>
+                        <p class="text-xs text-yellow-600">Ưu tiên cao</p>
                     </div>
-                    <a href="{{ url_for('admin_programs') }}" 
+                    <a href="{{ url_for('admin_programs_create') }}" 
                        class="text-yellow-600 hover:text-yellow-800 text-sm font-medium">
-                        Cập nhật
+                        Thêm ngay
                     </a>
                 </div>
+                {% endif %}
                 
-                <div class="flex items-center p-3 bg-green-50 rounded-lg border border-green-200">
-                    <div class="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
-                    <div class="flex-1">
-                        <p class="text-sm font-medium text-green-800">Backup dữ liệu hàng tuần</p>
-                        <p class="text-xs text-green-600">Thấp</p>
-                    </div>
-                    <button class="text-green-600 hover:text-green-800 text-sm font-medium">
-                        Thực hiện
-                    </button>
-                </div>
-                
+                {% if stats.slider == 0 %}
                 <div class="flex items-center p-3 bg-blue-50 rounded-lg border border-blue-200">
                     <div class="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
                     <div class="flex-1">
-                        <p class="text-sm font-medium text-blue-800">Kiểm tra và tối ưu SEO</p>
+                        <p class="text-sm font-medium text-blue-800">Thêm slider cho trang chủ</p>
                         <p class="text-xs text-blue-600">Trung bình</p>
                     </div>
-                    <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                        Bắt đầu
-                    </button>
+                    <a href="{{ url_for('admin_slider_create') }}" 
+                       class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                        Thêm slider
+                    </a>
                 </div>
+                {% endif %}
+                
+                {% if stats.news < 3 %}
+                <div class="flex items-center p-3 bg-green-50 rounded-lg border border-green-200">
+                    <div class="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
+                    <div class="flex-1">
+                        <p class="text-sm font-medium text-green-800">Thêm tin tức để website sinh động hơn</p>
+                        <p class="text-xs text-green-600">Trung bình</p>
+                    </div>
+                    <a href="{{ url_for('admin_news_create') }}" 
+                       class="text-green-600 hover:text-green-800 text-sm font-medium">
+                        Viết tin
+                    </a>
+                </div>
+                {% endif %}
+                
+                {% if not recent_activities %}
+                <div class="flex items-center p-3 bg-purple-50 rounded-lg border border-purple-200">
+                    <div class="w-3 h-3 bg-purple-500 rounded-full mr-3"></div>
+                    <div class="flex-1">
+                        <p class="text-sm font-medium text-purple-800">Website chưa có nội dung nào</p>
+                        <p class="text-xs text-purple-600">Cần hành động</p>
+                    </div>
+                    <a href="{{ url_for('admin_news_create') }}" 
+                       class="text-purple-600 hover:text-purple-800 text-sm font-medium">
+                        Bắt đầu
+                    </a>
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>

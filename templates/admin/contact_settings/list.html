@@ -102,11 +102,14 @@
                                title="Chỉnh sửa">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            <a href="{{ url_for('admin_contact_settings_delete', id=setting.id) }}" 
-                               class="text-red-600 hover:text-red-800 transition-colors delete-btn" 
-                               title="Xóa">
-                                <i class="fas fa-trash"></i>
-                            </a>
+                            <form method="POST" action="{{ url_for('admin_contact_settings_delete', id=setting.id) }}" class="inline-block">
+                                <button type="submit" 
+                                        class="text-red-600 hover:text-red-800 transition-colors delete-btn bg-transparent border-0 p-0" 
+                                        title="Xóa"
+                                        onclick="return confirm('Bạn có chắc chắn muốn xóa cài đặt này?')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
                         </div>
                     </td>
                 </tr>

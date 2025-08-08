@@ -1,0 +1,630 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Chỉnh sửa sự kiện - Admin{% endblock %}
+{% block page_title %}Chỉnh sửa sự kiện{% endblock %}
+{% block page_description %}Cập nhật thông tin sự kiện{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <form method="POST" enctype="multipart/form-data" class="space-y-6">
+        <div class="admin-card p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-semibold text-gray-800">Chỉnh sửa sự kiện</h2>
+                <a href="{{ url_for('admin_events') }}" class="text-gray-600 hover:text-gray-800">
+                    <i class="fas fa-arrow-left mr-2"></i>Quay lại
+                </a>
+            </div>
+            
+            <div class="grid grid-cols-1 gap-6">
+                <div>
+                    <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
+                        Tiêu đề sự kiện <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="title" name="title" required
+                           value="{{ event.title }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                           placeholder="Nhập tiêu đề sự kiện">
+                </div>
+                
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
+                        Mô tả sự kiện
+                    </label>
+                    <textarea id="description" name="description" rows="10"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                              placeholder="Mô tả chi tiết về sự kiện...">{{ event.description }}</textarea>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="event_date" class="block text-sm font-medium text-gray-700 mb-2">
+                            Ngày giờ diễn ra <span class="text-red-500">*</span>
+                        </label>
+                        <input type="datetime-local" id="event_date" name="event_date" required
+                               value="{{ event.event_date.strftime('%Y-%m-%dT%H:%M') }}"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                    </div>
+                    
+                    <div>
+                        <label for="location" class="block text-sm font-medium text-gray-700 mb-2">
+                            Địa điểm
+                        </label>
+                        <input type="text" id="location" name="location"
+                               value="{{ event.location }}"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                               placeholder="Địa điểm tổ chức sự kiện">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="admin-card p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-6">Hình ảnh sự kiện</h2>
+            
+            <!-- Current Image -->
+            {% if event.featured_image %}
+            <div class="mb-4">
+                <p class="text-sm text-gray-600 mb-2">Hình ảnh hiện tại:</p>
+                <div class="relative inline-block">
+                    <img src="{{ url_for('static', filename=event.featured_image if event.featured_image.startswith('uploads/') else 'uploads/events/' + event.featured_image) }}" 
+                         alt="Current image" 
+                         class="w-48 h-32 object-cover rounded-lg">
+                    <div class="absolute top-2 right-2">
+                        <button type="button" 
+                                onclick="removeCurrentImage()"
+                                class="bg-red-500 text-white p-1 rounded-full text-xs hover:bg-red-600">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <input type="hidden" name="remove_image" id="remove_image" value="0">
+            </div>
+            {% endif %}
+            
+            <div class="space-y-4">
+                <div>
+                    <label for="image" class="block text-sm font-medium text-gray-700 mb-2">
+                        Chọn hình ảnh mới
+                    </label>
+                    <div class="flex items-center justify-center w-full">
+                        <label for="image" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6" id="upload-placeholder">
+                                <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
+                                <p class="mb-2 text-sm text-gray-500">
+                                    <span class="font-semibold">Nhấp để tải lên</span> hoặc kéo thả
+                                </p>
+                                <p class="text-xs text-gray-500">PNG, JPG, JPEG (MAX. 16MB)</p>
+                            </div>
+                            <input id="image" name="image" type="file" class="hidden" 
+                                   accept="image/*">
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Image Preview -->
+                <div id="imagePreview" class="hidden">
+                    <img id="previewImg" class="w-full max-w-md h-48 object-cover rounded-lg mx-auto">
+                </div>
+                
+                <!-- Image Cropper Modal -->
+                <div id="crop-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+                    <div class="flex items-center justify-center min-h-screen p-4">
+                        <div class="bg-white rounded-lg max-w-4xl w-full max-h-screen overflow-hidden">
+                            <div class="p-6 border-b border-gray-200">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-lg font-semibold text-gray-900">
+                                        <i class="fas fa-crop-alt text-orange-600 mr-2"></i>
+                                        Cắt hình ảnh sự kiện
+                                    </h3>
+                                    <button type="button" id="close-crop" class="text-gray-400 hover:text-gray-600">
+                                        <i class="fas fa-times text-xl"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="p-6">
+                                <div class="mb-4">
+                                    <div class="flex items-center space-x-4 mb-4">
+                                        <button type="button" id="crop-16-9" class="px-3 py-2 bg-orange-100 text-orange-700 rounded-lg hover:bg-orange-200 transition">
+                                            <i class="fas fa-tv mr-1"></i> 16:9 (Banner)
+                                        </button>
+                                        <button type="button" id="crop-4-3" class="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition">
+                                            <i class="fas fa-desktop mr-1"></i> 4:3
+                                        </button>
+                                        <button type="button" id="crop-1-1" class="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition">
+                                            <i class="fas fa-square mr-1"></i> 1:1
+                                        </button>
+                                        <button type="button" id="crop-free" class="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition">
+                                            <i class="fas fa-expand mr-1"></i> Tự do
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="crop-container" style="max-height: 400px; overflow: hidden;">
+                                    <img id="crop-image" src="" alt="Crop Image" style="max-width: 100%; display: block;">
+                                </div>
+                            </div>
+                            
+                            <div class="p-6 border-t border-gray-200 flex justify-between">
+                                <button type="button" id="cancel-crop" 
+                                        class="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-all duration-200 border border-gray-300 hover:border-gray-400">
+                                    <i class="fas fa-times mr-2"></i>Hủy
+                                </button>
+                                <button type="button" id="apply-crop" 
+                                        class="px-6 py-2 text-white rounded-lg transition-all duration-200 font-semibold">
+                                    <i class="fas fa-check mr-2"></i>Áp dụng
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="admin-card p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-6">Cài đặt sự kiện</h2>
+            
+            <div class="flex items-center">
+                <input id="is_active" name="is_active" type="checkbox" 
+                       {{ 'checked' if event.is_active else '' }}
+                       class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded">
+                <label for="is_active" class="ml-2 block text-sm text-gray-900">
+                    Sự kiện đang hoạt động
+                </label>
+            </div>
+        </div>
+        
+        <div class="flex items-center justify-between pt-6">
+            <a href="{{ url_for('admin_events') }}" 
+               class="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition duration-200">
+                <i class="fas fa-arrow-left mr-2"></i>Quay lại
+            </a>
+            
+            <div class="flex space-x-4">
+                <button type="submit"
+                        class="btn-primary px-6 py-3 rounded-lg hover:bg-orange-600 transition duration-200">
+                    <i class="fas fa-save mr-2"></i>Cập nhật sự kiện
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Remove current image
+function removeCurrentImage() {
+    if (confirm('Bạn có chắc muốn xóa hình ảnh hiện tại?')) {
+        document.getElementById('remove_image').value = '1';
+        document.querySelector('.relative').style.display = 'none';
+    }
+}
+
+// Form validation (updated for TinyMCE)
+document.querySelector('form').addEventListener('submit', function(e) {
+    const title = document.getElementById('title').value.trim();
+    const eventDate = document.getElementById('event_date').value;
+    
+    // Get content from TinyMCE
+    let description = '';
+    if (tinymce.get('description')) {
+        description = tinymce.get('description').getContent().trim();
+    } else {
+        description = document.getElementById('description').value.trim();
+    }
+    
+    if (!title || !eventDate) {
+        e.preventDefault();
+        alert('Vui lòng điền đầy đủ tiêu đề và ngày giờ sự kiện!');
+        return false;
+    }
+    
+    // Show loading
+    const submitBtn = document.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Đang cập nhật...';
+    submitBtn.disabled = true;
+});
+</script>
+
+<!-- TinyMCE Editor -->
+<script src="https://cdn.jsdelivr.net/npm/tinymce@6/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+    // Initialize TinyMCE editor with image upload
+    tinymce.init({
+        selector: '#description',
+        height: 400,
+        plugins: [
+            'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+            'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+            'insertdatetime', 'media', 'table', 'help', 'wordcount', 'emoticons'
+        ],
+        toolbar: 'undo redo | blocks | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | image media link | table | emoticons | fullscreen | help',
+        menubar: 'file edit view insert format tools table help',
+        
+        // Image upload configuration
+        images_upload_url: '{{ url_for("admin_upload_image") }}',
+        images_upload_base_path: '',
+        images_upload_credentials: true,
+        automatic_uploads: true,
+        
+        // File picker for images
+        file_picker_types: 'image',
+        file_picker_callback: function(callback, value, meta) {
+            if (meta.filetype === 'image') {
+                var input = document.createElement('input');
+                input.setAttribute('type', 'file');
+                input.setAttribute('accept', 'image/*');
+                
+                input.onchange = function() {
+                    var file = this.files[0];
+                    var formData = new FormData();
+                    formData.append('file', file);
+                    
+                    fetch('{{ url_for("admin_upload_image") }}', {
+                        method: 'POST',
+                        body: formData,
+                        credentials: 'same-origin'
+                    })
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result.location) {
+                            callback(result.location, {
+                                alt: file.name,
+                                title: file.name
+                            });
+                        } else {
+                            alert('Upload failed: ' + (result.error || 'Unknown error'));
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Upload error:', error);
+                        alert('Upload failed: ' + error.message);
+                    });
+                };
+                
+                input.click();
+            }
+        },
+        
+        // Content styling
+        content_style: `
+            body { 
+                font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+                font-size: 14px; 
+                line-height: 1.6;
+                color: #374151;
+                max-width: none;
+            }
+            img {
+                max-width: 100%;
+                height: auto;
+                border-radius: 8px;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+                margin: 10px 0;
+            }
+            h1, h2, h3, h4, h5, h6 {
+                color: #1f2937;
+                margin-top: 1.5em;
+                margin-bottom: 0.5em;
+            }
+            p {
+                margin-bottom: 1em;
+            }
+            ul, ol {
+                margin-bottom: 1em;
+                padding-left: 1.5em;
+            }
+            blockquote {
+                border-left: 4px solid #f59e0b;
+                padding-left: 1em;
+                margin: 1em 0;
+                font-style: italic;
+                background-color: #fef3c7;
+                padding: 1em;
+                border-radius: 4px;
+            }
+        `,
+        
+        // Language
+        // language: 'vi', // Commented out to avoid loading error
+        
+        // Other settings
+        menubar: true,
+        branding: false,
+        resize: true,
+        elementpath: false,
+        statusbar: true,
+        
+        // Paste settings
+        paste_as_text: false,
+        paste_auto_cleanup_on_paste: true,
+        
+        // Setup callback
+        setup: function(editor) {
+            editor.on('change', function() {
+                editor.save();
+            });
+        }
+    });
+</script>
+
+<!-- Cropper.js CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+<style>
+.admin-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+}
+
+.admin-card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.file-info {
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+    color: white;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+/* Enhanced Apply Button Styling */
+#apply-crop {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+#apply-crop:hover {
+    background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
+}
+
+#apply-crop:active {
+    transform: scale(0.98);
+}
+
+#apply-crop::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+#apply-crop:hover::before {
+    left: 100%;
+}
+</style>
+
+<!-- Cropper.js JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Crop modal elements and variables
+    const cropModal = document.getElementById('crop-modal');
+    const cropImage = document.getElementById('crop-image');
+    const closeCrop = document.getElementById('close-crop');
+    const cancelCrop = document.getElementById('cancel-crop');
+    const applyCrop = document.getElementById('apply-crop');
+    const crop16_9 = document.getElementById('crop-16-9');
+    const crop4_3 = document.getElementById('crop-4-3');
+    const crop1_1 = document.getElementById('crop-1-1');
+    const cropFree = document.getElementById('crop-free');
+    const fileInput = document.getElementById('image');
+
+    let cropper = null;
+    let originalFile = null;
+    let croppedBlob = null;
+
+    // File input change event
+    fileInput.addEventListener('change', function(e) {
+        if (e.target.files && e.target.files[0]) {
+            handleFileSelect(e.target.files[0]);
+        }
+    });
+
+    function handleFileSelect(file) {
+        if (file && file.type.startsWith('image/')) {
+            originalFile = file;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                cropImage.src = e.target.result;
+                showCropModal();
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function showCropModal() {
+    cropModal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    
+    // Initialize cropper
+    if (cropper) {
+        cropper.destroy();
+    }
+    
+    cropper = new Cropper(cropImage, {
+        aspectRatio: 16 / 9, // Default to banner ratio for events
+        viewMode: 2,
+        autoCropArea: 1,
+        responsive: true,
+        background: false,
+        guides: true,
+        center: true,
+        highlight: false,
+        cropBoxMovable: true,
+        cropBoxResizable: true,
+        toggleDragModeOnDblclick: false,
+        minContainerWidth: 300,
+        minContainerHeight: 200
+    });
+
+    // Set active aspect ratio button
+    setActiveAspectButton(crop16_9);
+}
+
+    function hideCropModal() {
+    cropModal.classList.add('hidden');
+    document.body.style.overflow = '';
+    if (cropper) {
+        cropper.destroy();
+        cropper = null;
+    }
+}
+
+    function setActiveAspectButton(activeBtn) {
+    [crop16_9, crop4_3, crop1_1, cropFree].forEach(btn => {
+        btn.classList.remove('bg-orange-100', 'text-orange-700');
+        btn.classList.add('bg-gray-100', 'text-gray-700');
+    });
+    activeBtn.classList.remove('bg-gray-100', 'text-gray-700');
+    activeBtn.classList.add('bg-orange-100', 'text-orange-700');
+}
+
+    // Aspect ratio buttons
+    crop16_9.addEventListener('click', () => {
+        if (cropper) {
+            cropper.setAspectRatio(16 / 9);
+            setActiveAspectButton(crop16_9);
+        }
+    });
+
+    crop4_3.addEventListener('click', () => {
+        if (cropper) {
+            cropper.setAspectRatio(4 / 3);
+            setActiveAspectButton(crop4_3);
+        }
+    });
+
+    crop1_1.addEventListener('click', () => {
+        if (cropper) {
+            cropper.setAspectRatio(1);
+            setActiveAspectButton(crop1_1);
+        }
+    });
+
+    cropFree.addEventListener('click', () => {
+        if (cropper) {
+            cropper.setAspectRatio(NaN);
+            setActiveAspectButton(cropFree);
+        }
+    });
+
+    // Modal close events
+    closeCrop.addEventListener('click', hideCropModal);
+    cancelCrop.addEventListener('click', hideCropModal);
+
+    // Apply crop
+    applyCrop.addEventListener('click', () => {
+    if (cropper) {
+        const canvas = cropper.getCroppedCanvas({
+            imageSmoothingEnabled: true,
+            imageSmoothingQuality: 'high'
+        });
+        
+        canvas.toBlob((blob) => {
+            croppedBlob = blob;
+            
+            // Create new file from cropped blob
+            const croppedFile = new File([blob], originalFile.name, {
+                type: originalFile.type,
+                lastModified: Date.now()
+            });
+            
+            // Update file input
+            const dt = new DataTransfer();
+            dt.items.add(croppedFile);
+            document.getElementById('image').files = dt.files;
+            
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('previewImg').src = e.target.result;
+                document.getElementById('imagePreview').classList.remove('hidden');
+                updateUploadLabel(croppedFile);
+            };
+            reader.readAsDataURL(blob);
+            
+            hideCropModal();
+        }, originalFile.type, 0.9);
+    }
+});
+
+    // Close modal on backdrop click
+    cropModal.addEventListener('click', (e) => {
+        if (e.target === cropModal) {
+            hideCropModal();
+        }
+    });
+
+    // ESC key to close modal
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !cropModal.classList.contains('hidden')) {
+            hideCropModal();
+        }
+    });
+
+    function updateUploadLabel(file) {
+    const label = document.querySelector('label[for="image"]');
+    if (label) {
+        label.innerHTML = `
+            <div class="file-info">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <i class="fas fa-file-image text-2xl mr-3"></i>
+                        <div>
+                            <p class="font-medium">${file.name}</p>
+                            <p class="text-sm opacity-90">${formatFileSize(file.size)}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <i class="fas fa-crop-alt text-2xl text-green-400"></i>
+                        <p class="text-sm">Đã cắt & sẽ thay thế</p>
+                    </div>
+                </div>
+                <div class="mt-3 pt-3 border-t border-white/20">
+                    <button type="button" id="recrop-btn" class="text-sm text-white/90 hover:text-white underline">
+                        <i class="fas fa-redo mr-1"></i>Cắt lại
+                    </button>
+                </div>
+            </div>
+        `;
+
+        // Add recrop functionality
+        const recropBtn = document.getElementById('recrop-btn');
+        if (recropBtn) {
+            recropBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (originalFile) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        cropImage.src = e.target.result;
+                        showCropModal();
+                    };
+                    reader.readAsDataURL(originalFile);
+                }
+            });
+        }
+    }
+}
+
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+}); // End DOMContentLoaded
+</script>
+{% endblock %}

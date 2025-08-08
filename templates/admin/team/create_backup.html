@@ -1,0 +1,457 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Thêm Thành viên Đội ngũ - Admin{% endblock %}
+{% block page_title %}Thêm thành viên đội ngũ{% endblock %}
+{% block page_description %}Thêm thành viên mới vào đội ngũ lãnh đạo{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <!-- Header Section -->
+    <div class="mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">
+                    <i class="fas fa-user-plus text-indigo-600 mr-3"></i>
+                    Thêm thành viên đội ngũ
+                </h1>
+                <p class="text-gray-600">Thêm thông tin thành viên mới vào đội ngũ lãnh đạo</p>
+            </div>
+            <a href="{{ url_for('admin_team') }}" 
+               class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition duration-200">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Quay lại danh sách
+            </a>
+        </div>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" class="space-y-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main Content -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Basic Information Card -->
+                <div class="admin-card p-6">
+                    <div class="flex items-center mb-6">
+                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                            <i class="fas fa-info-circle text-blue-600"></i>
+                        </div>
+                        <h2 class="text-xl font-semibold text-gray-800">Thông tin cơ bản</h2>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <!-- Name Field -->
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
+                                Họ và tên <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" 
+                                   id="name" 
+                                   name="name" 
+                                   required
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200"
+                                   placeholder="Nhập họ và tên...">
+                        </div>
+                        
+                        <!-- Position Field -->
+                        <div>
+                            <label for="position" class="block text-sm font-medium text-gray-700 mb-2">
+                                Chức vụ <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" 
+                                   id="position" 
+                                   name="position" 
+                                   required
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200"
+                                   placeholder="Ví dụ: Hiệu trưởng, Phó Hiệu trưởng...">
+                        </div>
+                        
+                        <!-- Description Field -->
+                        <div>
+                            <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
+                                Mô tả
+                            </label>
+                            <textarea id="description" 
+                                      name="description" 
+                                      rows="4"
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200"
+                                      placeholder="Nhập mô tả về kinh nghiệm, chuyên môn..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Image Upload Card -->
+                <div class="admin-card p-6">
+                    <div class="flex items-center mb-6">
+                        <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                            <i class="fas fa-camera text-purple-600"></i>
+                        </div>
+                        <h2 class="text-xl font-semibold text-gray-800">Ảnh đại diện</h2>
+                    </div>
+                    
+                    <!-- Custom File Upload -->
+                    <div class="relative">
+                        <input type="file" 
+                               id="image" 
+                               name="image" 
+                               accept="image/*" 
+                               class="hidden">
+                        
+                        <div id="upload-area" 
+                             class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-indigo-400 hover:bg-indigo-50 transition duration-200 cursor-pointer"
+                             onclick="document.getElementById('image').click()">
+                            <div id="upload-content">
+                                <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-cloud-upload-alt text-indigo-600 text-2xl"></i>
+                                </div>
+                                <h3 class="text-lg font-medium text-gray-900 mb-2">Tải lên ảnh đại diện</h3>
+                                <p class="text-gray-600 mb-4">Kéo thả file hoặc click để chọn</p>
+                                <button type="button" 
+                                        class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition duration-200">
+                                    <i class="fas fa-folder-open mr-2"></i>
+                                    Chọn file
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- File Info -->
+                        <div class="mt-4 text-sm text-gray-500">
+                            <div class="flex items-center space-x-4">
+                                <span><i class="fas fa-check-circle text-green-500 mr-1"></i> JPG, PNG, GIF, WEBP</span>
+                                <span><i class="fas fa-weight-hanging text-blue-500 mr-1"></i> Tối đa 16MB</span>
+                                <span><i class="fas fa-expand-arrows-alt text-purple-500 mr-1"></i> Khuyến nghị: 400x400px</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Image Cropper -->
+                    <div id="crop-container" class="mt-6" style="display: none;">
+                        <h3 class="text-lg font-medium text-gray-800 mb-4">Cắt ảnh</h3>
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <div class="relative inline-block mx-auto">
+                                <canvas id="crop-canvas" 
+                                        class="border border-gray-300 rounded cursor-crosshair max-w-full"
+                                        style="max-height: 400px;"></canvas>
+                                <div id="crop-overlay" 
+                                     class="absolute border-2 border-blue-500 bg-blue-500 bg-opacity-20 cursor-move"
+                                     style="display: none;"></div>
+                            </div>
+                            
+                            <div class="mt-4 flex justify-center space-x-3">
+                                <button type="button" id="crop-btn" 
+                                        class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200">
+                                    <i class="fas fa-crop mr-2"></i>Cắt ảnh
+                                </button>
+                                <button type="button" id="reset-crop" 
+                                        class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition duration-200">
+                                    <i class="fas fa-undo mr-2"></i>Đặt lại
+                                </button>
+                                <button type="button" id="cancel-crop" 
+                                        class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-200">
+                                    <i class="fas fa-times mr-2"></i>Hủy
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Image Preview -->
+                    <div id="preview-container" class="mt-6" style="display: none;">
+                        <h3 class="text-lg font-medium text-gray-800 mb-4">Xem trước</h3>
+                        <div class="text-center">
+                            <img id="preview-image" src="" alt="Preview" 
+                                 class="w-32 h-32 rounded-full object-cover shadow-lg mx-auto">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="space-y-6">
+                <!-- Settings Card -->
+                <div class="admin-card p-6">
+                    <div class="flex items-center mb-6">
+                        <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                            <i class="fas fa-cog text-green-600"></i>
+                        </div>
+                        <h2 class="text-xl font-semibold text-gray-800">Cài đặt</h2>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <!-- Order Index -->
+                        <div>
+                            <label for="order_index" class="block text-sm font-medium text-gray-700 mb-2">
+                                Thứ tự hiển thị
+                            </label>
+                            <input type="number" 
+                                   id="order_index" 
+                                   name="order_index" 
+                                   value="0" 
+                                   min="0"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200">
+                            <p class="text-xs text-gray-500 mt-1">Số nhỏ hơn sẽ hiển thị trước</p>
+                        </div>
+                        
+                        <!-- Active Status -->
+                        <div>
+                            <label class="flex items-center">
+                                <input type="checkbox" 
+                                       id="is_active" 
+                                       name="is_active" 
+                                       checked
+                                       class="w-5 h-5 text-green-600 border-gray-300 rounded focus:ring-green-500">
+                                <span class="ml-3 text-sm font-medium text-gray-700">Hiển thị thành viên</span>
+                            </label>
+                            <p class="text-xs text-gray-500 mt-1">Thành viên sẽ hiển thị trên trang giới thiệu</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preview Card -->
+                <div class="admin-card p-6">
+                    <div class="flex items-center mb-6">
+                        <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center mr-3">
+                            <i class="fas fa-eye text-orange-600"></i>
+                        </div>
+                        <h2 class="text-xl font-semibold text-gray-800">Xem trước</h2>
+                    </div>
+                    
+                    <div id="preview-container" class="text-center">
+                        <div id="preview-placeholder" class="bg-gray-100 rounded-lg p-8 border-2 border-dashed border-gray-300">
+                            <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-user text-gray-400 text-2xl"></i>
+                            </div>
+                            <p class="text-gray-500">Xem trước thông tin thành viên</p>
+                        </div>
+                        
+                        <div id="member-preview" class="hidden">
+                            <div class="bg-white rounded-2xl p-6 shadow-lg">
+                                <img id="preview-member-img" 
+                                     src="" 
+                                     alt="Preview" 
+                                     class="w-20 h-20 rounded-full mx-auto mb-4 object-cover">
+                                <h3 id="preview-name" class="text-lg font-bold text-gray-800 mb-2"></h3>
+                                <p id="preview-position" class="text-indigo-600 font-medium mb-3"></p>
+                                <p id="preview-description" class="text-sm text-gray-600"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center justify-between pt-6 border-t border-gray-200">
+            <a href="{{ url_for('admin_team') }}" 
+               class="inline-flex items-center px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition duration-200">
+                <i class="fas fa-times mr-2"></i>
+                Hủy bỏ
+            </a>
+            
+            <button type="submit" 
+                    class="inline-flex items-center px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-lg transition duration-200 shadow-lg hover:shadow-xl">
+                <i class="fas fa-save mr-2"></i>
+                Lưu thành viên
+            </button>
+        </div>
+        
+        <!-- Hidden field for cropped image data -->
+        <input type="hidden" id="cropped-image-data" name="cropped_image_data">
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const nameInput = document.getElementById('name');
+    const positionInput = document.getElementById('position');
+    const descriptionInput = document.getElementById('description');
+    const previewName = document.getElementById('preview-name');
+    const previewPosition = document.getElementById('preview-position');
+    const previewDescription = document.getElementById('preview-description');
+    const previewPlaceholder = document.getElementById('preview-placeholder');
+    const memberPreview = document.getElementById('member-preview');
+    const previewMemberImg = document.getElementById('preview-member-img');
+
+    function updatePreview() {
+        const name = nameInput.value.trim();
+        const position = positionInput.value.trim();
+        const description = descriptionInput.value.trim();
+
+        if (name || position) {
+            previewName.textContent = name || 'Tên thành viên';
+            previewPosition.textContent = position || 'Chức vụ';
+            previewDescription.textContent = description || 'Mô tả về thành viên';
+            
+            previewPlaceholder.classList.add('hidden');
+            memberPreview.classList.remove('hidden');
+        } else {
+            previewPlaceholder.classList.remove('hidden');
+            memberPreview.classList.add('hidden');
+        }
+    }
+
+    nameInput.addEventListener('input', updatePreview);
+    positionInput.addEventListener('input', updatePreview);
+    descriptionInput.addEventListener('input', updatePreview);
+
+    // Image cropper functionality
+    const imageInput = document.getElementById('image');
+    const cropContainer = document.getElementById('crop-container');
+    const cropCanvas = document.getElementById('crop-canvas');
+    const cropOverlay = document.getElementById('crop-overlay');
+    const previewContainer = document.getElementById('preview-container');
+    const previewImage = document.getElementById('preview-image');
+    const cropBtn = document.getElementById('crop-btn');
+    const resetCropBtn = document.getElementById('reset-crop');
+    const cancelCropBtn = document.getElementById('cancel-crop');
+    const croppedImageData = document.getElementById('cropped-image-data');
+    
+    let originalImage = null;
+    let cropData = { x: 0, y: 0, width: 200, height: 200 };
+    let isDragging = false;
+    let dragStart = { x: 0, y: 0 };
+    
+    imageInput.addEventListener('change', function(e) {
+        if (e.target.files.length > 0) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                originalImage = new Image();
+                originalImage.onload = function() {
+                    initCropper();
+                };
+                originalImage.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    function initCropper() {
+        // Show cropper container
+        cropContainer.style.display = 'block';
+        previewContainer.style.display = 'none';
+        
+        // Set canvas size
+        const maxWidth = 500;
+        const maxHeight = 400;
+        let canvasWidth = originalImage.width;
+        let canvasHeight = originalImage.height;
+        
+        if (canvasWidth > maxWidth) {
+            canvasHeight = (canvasHeight * maxWidth) / canvasWidth;
+            canvasWidth = maxWidth;
+        }
+        if (canvasHeight > maxHeight) {
+            canvasWidth = (canvasWidth * maxHeight) / canvasHeight;
+            canvasHeight = maxHeight;
+        }
+        
+        cropCanvas.width = canvasWidth;
+        cropCanvas.height = canvasHeight;
+        
+        // Draw image on canvas
+        const ctx = cropCanvas.getContext('2d');
+        ctx.drawImage(originalImage, 0, 0, canvasWidth, canvasHeight);
+        
+        // Initialize crop area (center square)
+        const size = Math.min(canvasWidth, canvasHeight) * 0.6;
+        cropData = {
+            x: (canvasWidth - size) / 2,
+            y: (canvasHeight - size) / 2,
+            width: size,
+            height: size
+        };
+        
+        updateCropOverlay();
+        setupCropEvents();
+    }
+    
+    function updateCropOverlay() {
+        const rect = cropCanvas.getBoundingClientRect();
+        const scaleX = rect.width / cropCanvas.width;
+        const scaleY = rect.height / cropCanvas.height;
+        
+        cropOverlay.style.display = 'block';
+        cropOverlay.style.left = (cropData.x * scaleX) + 'px';
+        cropOverlay.style.top = (cropData.y * scaleY) + 'px';
+        cropOverlay.style.width = (cropData.width * scaleX) + 'px';
+        cropOverlay.style.height = (cropData.height * scaleY) + 'px';
+    }
+    
+    function setupCropEvents() {
+        cropOverlay.addEventListener('mousedown', function(e) {
+            isDragging = true;
+            dragStart.x = e.clientX - cropOverlay.offsetLeft;
+            dragStart.y = e.clientY - cropOverlay.offsetTop;
+            e.preventDefault();
+        });
+        
+        document.addEventListener('mousemove', function(e) {
+            if (isDragging) {
+                const rect = cropCanvas.getBoundingClientRect();
+                const scaleX = cropCanvas.width / rect.width;
+                const scaleY = cropCanvas.height / rect.height;
+                
+                let newX = (e.clientX - dragStart.x - rect.left) * scaleX;
+                let newY = (e.clientY - dragStart.y - rect.top) * scaleY;
+                
+                // Keep crop area within canvas bounds
+                newX = Math.max(0, Math.min(newX, cropCanvas.width - cropData.width));
+                newY = Math.max(0, Math.min(newY, cropCanvas.height - cropData.height));
+                
+                cropData.x = newX;
+                cropData.y = newY;
+                updateCropOverlay();
+            }
+        });
+        
+        document.addEventListener('mouseup', function() {
+            isDragging = false;
+        });
+    }
+    
+    cropBtn.addEventListener('click', function() {
+        // Create cropped image
+        const canvas = document.createElement('canvas');
+        canvas.width = 400;
+        canvas.height = 400;
+        const ctx = canvas.getContext('2d');
+        
+        // Calculate source coordinates
+        const scaleX = originalImage.width / cropCanvas.width;
+        const scaleY = originalImage.height / cropCanvas.height;
+        const sourceX = cropData.x * scaleX;
+        const sourceY = cropData.y * scaleY;
+        const sourceWidth = cropData.width * scaleX;
+        const sourceHeight = cropData.height * scaleY;
+        
+        // Draw cropped image
+        ctx.drawImage(originalImage, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, 400, 400);
+        
+        // Update preview
+        const croppedDataURL = canvas.toDataURL('image/jpeg', 0.9);
+        previewImage.src = croppedDataURL;
+        croppedImageData.value = croppedDataURL;
+        
+        // Show preview, hide cropper
+        cropContainer.style.display = 'none';
+        previewContainer.style.display = 'block';
+        
+        // Update main preview
+        previewMemberImg.src = croppedDataURL;
+        previewMemberImg.style.display = 'block';
+    });
+    
+    resetCropBtn.addEventListener('click', function() {
+        if (originalImage) {
+            initCropper();
+        }
+    });
+    
+    cancelCropBtn.addEventListener('click', function() {
+        cropContainer.style.display = 'none';
+        previewContainer.style.display = 'none';
+        imageInput.value = '';
+        croppedImageData.value = '';
+        previewMemberImg.style.display = 'none';
+    });
+});
+</script>
+{% endblock %}

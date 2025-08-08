@@ -8,15 +8,140 @@
 <div class="admin-card p-6">
     <div class="flex items-center justify-between mb-6">
         <h2 class="text-xl font-semibold text-gray-800">Thư viện ảnh</h2>
-        <a href="{{ url_for('admin_gallery_create') }}" class="btn-primary px-4 py-2 rounded-lg">
+        <a href="{{ url_for('admin_gallery_create') }}" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg transition font-medium">
             <i class="fas fa-upload mr-2"></i>Tải lên ảnh
         </a>
     </div>
     
+    {% if images.items %}
+    <!-- Gallery Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {% for image in images.items %}
+        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+            <div class="aspect-w-16 aspect-h-9 bg-gray-200">
+                <img src="{{ url_for('static', filename=image.image_path) }}" 
+                     alt="{{ image.title or 'Gallery Image' }}" 
+                     class="w-full h-48 object-cover">
+            </div>
+            <div class="p-4">
+                <h3 class="font-medium text-gray-900 truncate">{{ image.title or 'Untitled' }}</h3>
+                {% if image.description %}
+                <p class="text-sm text-gray-600 mt-1 line-clamp-2">{{ image.description }}</p>
+                {% endif %}
+                <div class="flex items-center justify-between mt-3">
+                    <div class="flex items-center space-x-2">
+                        {% if image.is_featured %}
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                            <i class="fas fa-star mr-1"></i>Nổi bật
+                        </span>
+                        {% endif %}
+                        {% if image.category %}
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            {{ image.category }}
+                        </span>
+                        {% endif %}
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="copyImageUrl('{{ url_for('static', filename=image.image_path, _external=True) }}')" 
+                                class="text-gray-400 hover:text-blue-600 transition-colors" 
+                                title="Copy URL">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                        <form method="POST" action="{{ url_for('admin_gallery_delete', id=image.id) }}" class="inline">
+                            <button type="button" 
+                                    class="delete-btn text-gray-400 hover:text-red-600 transition-colors" 
+                                    title="Xóa ảnh">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <div class="text-xs text-gray-500 mt-2">
+                    Tải lên: {{ image.created_at.strftime('%d/%m/%Y %H:%M') }}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if images.pages > 1 %}
+    <div class="flex justify-center mt-8">
+        <nav class="flex items-center space-x-2">
+            {% if images.has_prev %}
+            <a href="{{ url_for('admin_gallery', page=images.prev_num) }}" 
+               class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            {% endif %}
+            
+            {% for page_num in images.iter_pages() %}
+                {% if page_num %}
+                    {% if page_num != images.page %}
+                    <a href="{{ url_for('admin_gallery', page=page_num) }}" 
+                       class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                        {{ page_num }}
+                    </a>
+                    {% else %}
+                    <span class="px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-blue-600 rounded-md">
+                        {{ page_num }}
+                    </span>
+                    {% endif %}
+                {% else %}
+                <span class="px-3 py-2 text-sm font-medium text-gray-500">...</span>
+                {% endif %}
+            {% endfor %}
+            
+            {% if images.has_next %}
+            <a href="{{ url_for('admin_gallery', page=images.next_num) }}" 
+               class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+            {% endif %}
+        </nav>
+    </div>
+    {% endif %}
+    
+    {% else %}
+    <!-- Empty State -->
     <div class="text-center py-12">
         <i class="fas fa-images text-gray-400 text-4xl mb-4"></i>
         <p class="text-gray-500">Chưa có hình ảnh nào</p>
         <p class="text-gray-400 text-sm">Hãy tải lên một số hình ảnh đẹp cho trường</p>
     </div>
+    {% endif %}
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Xác nhận xóa
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.delete-btn')) {
+            e.preventDefault();
+            if (confirm('Bạn có chắc chắn muốn xóa ảnh này không?')) {
+                e.target.closest('form').submit();
+            }
+        }
+    });
+
+    // Copy image URL to clipboard
+    function copyImageUrl(url) {
+        navigator.clipboard.writeText(url).then(function() {
+            // Show success message
+            const button = event.target.closest('button');
+            const originalIcon = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-check text-green-600"></i>';
+            button.title = 'Đã copy!';
+            
+            setTimeout(() => {
+                button.innerHTML = originalIcon;
+                button.title = 'Copy URL';
+            }, 2000);
+        }).catch(function(err) {
+            console.error('Could not copy text: ', err);
+            alert('Không thể copy URL. Vui lòng thử lại.');
+        });
+    }
+</script>
 {% endblock %}

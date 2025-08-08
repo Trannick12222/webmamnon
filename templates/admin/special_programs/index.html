@@ -1,0 +1,155 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Quản lý Chương trình đặc biệt - Admin{% endblock %}
+
+{% block page_title %}Chương trình đặc biệt{% endblock %}
+{% block page_description %}Quản lý các chương trình đặc biệt trên trang chương trình{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header Actions -->
+    <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+            <div class="bg-white rounded-lg px-4 py-2 shadow-sm border">
+                <span class="text-sm text-gray-600">Tổng cộng: </span>
+                <span class="font-semibold text-primary">{{ special_programs|length }} chương trình</span>
+            </div>
+        </div>
+        
+        <a href="{{ url_for('admin_special_programs_create') }}" 
+           class="btn-primary px-6 py-2 rounded-lg font-medium">
+            <i class="fas fa-plus mr-2"></i>
+            Thêm chương trình mới
+        </a>
+    </div>
+
+    <!-- Special Programs List -->
+    {% if special_programs %}
+    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+        {% for program in special_programs %}
+        <div class="admin-card p-6 hover:shadow-lg transition">
+            <!-- Preview Card -->
+            <div class="bg-gradient-to-br {{ program.background_gradient }} rounded-2xl p-6 border {{ program.border_color }} mb-4">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-12 h-12 {{ program.icon_bg_color }} rounded-lg flex items-center justify-center">
+                        <i class="{{ program.icon_class }} text-white text-xl"></i>
+                    </div>
+                    <span class="px-2 py-1 text-xs rounded-full {{ 'bg-green-100 text-green-800' if program.is_active else 'bg-red-100 text-red-800' }}">
+                        {{ 'Hiển thị' if program.is_active else 'Ẩn' }}
+                    </span>
+                </div>
+                
+                <h3 class="text-xl font-bold text-gray-800 mb-3">{{ program.title }}</h3>
+                <p class="text-gray-600 mb-4 text-sm">{{ program.description[:100] }}{% if program.description|length > 100 %}...{% endif %}</p>
+                
+                {% if program.features %}
+                <div class="space-y-1 text-sm text-gray-600">
+                    {% set features_list = program.features.split('\n') %}
+                    {% for feature in features_list[:3] %}
+                        {% if feature.strip() %}
+                        <div>• {{ feature.strip() }}</div>
+                        {% endif %}
+                    {% endfor %}
+                    {% if features_list|length > 3 %}
+                    <div class="text-xs text-gray-500">... và {{ features_list|length - 3 }} tính năng khác</div>
+                    {% endif %}
+                </div>
+                {% endif %}
+                
+                {% if program.image_path %}
+                <div class="mt-4">
+                    <img src="{{ program.image_path }}" alt="{{ program.title }}" 
+                         class="w-full h-32 object-cover rounded-lg">
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Meta Information -->
+            <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
+                <span>
+                    <i class="fas fa-sort-numeric-up mr-1"></i>
+                    Thứ tự: {{ program.order_index }}
+                </span>
+                <span>
+                    <i class="fas fa-clock mr-1"></i>
+                    {{ program.updated_at.strftime('%d/%m/%Y') }}
+                </span>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex items-center space-x-2">
+                <a href="{{ url_for('admin_special_programs_edit', id=program.id) }}" 
+                   class="flex-1 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm text-center">
+                    <i class="fas fa-edit mr-1"></i>
+                    Sửa
+                </a>
+                <form method="POST" action="{{ url_for('admin_special_programs_delete', id=program.id) }}" class="inline-block">
+                    <button type="submit" 
+                            class="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm delete-btn"
+                            onclick="return confirm('Bạn có chắc chắn muốn xóa chương trình này?')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="admin-card p-12 text-center">
+        <i class="fas fa-star text-gray-400 text-6xl mb-6"></i>
+        <h3 class="text-xl font-semibold text-gray-800 mb-4">Chưa có chương trình đặc biệt</h3>
+        <p class="text-gray-600 mb-6">Thêm chương trình đầu tiên để giới thiệu các hoạt động đặc biệt của trường</p>
+        <a href="{{ url_for('admin_special_programs_create') }}" 
+           class="btn-primary px-8 py-3 rounded-lg font-medium">
+            <i class="fas fa-plus mr-2"></i>
+            Thêm chương trình đầu tiên
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Color Palette Reference -->
+<div class="mt-8 admin-card p-6">
+    <h4 class="text-lg font-semibold text-gray-800 mb-4">Bảng màu tham khảo:</h4>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+        <div class="space-y-2">
+            <div class="bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-200 p-3 rounded-lg">
+                <div class="w-8 h-8 bg-blue-500 rounded mb-2"></div>
+                <div class="text-xs">Blue Theme</div>
+            </div>
+        </div>
+        <div class="space-y-2">
+            <div class="bg-gradient-to-br from-green-50 to-yellow-50 border border-green-200 p-3 rounded-lg">
+                <div class="w-8 h-8 bg-green-500 rounded mb-2"></div>
+                <div class="text-xs">Green Theme</div>
+            </div>
+        </div>
+        <div class="space-y-2">
+            <div class="bg-gradient-to-br from-pink-50 to-red-50 border border-pink-200 p-3 rounded-lg">
+                <div class="w-8 h-8 bg-pink-500 rounded mb-2"></div>
+                <div class="text-xs">Pink Theme</div>
+            </div>
+        </div>
+        <div class="space-y-2">
+            <div class="bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-200 p-3 rounded-lg">
+                <div class="w-8 h-8 bg-purple-500 rounded mb-2"></div>
+                <div class="text-xs">Purple Theme</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Xác nhận xóa
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.delete-btn')) {
+            e.preventDefault();
+            if (confirm('Bạn có chắc chắn muốn xóa không?')) {
+                e.target.closest('form').submit();
+            }
+        }
+    });
+</script>
+{% endblock %}

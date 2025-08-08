@@ -159,6 +159,18 @@
                 <i class="fas fa-save mr-2"></i>Cập nhật chương trình
             </button>
         </div>
+        
+        <!-- Hidden field for cropped image data -->
+        <input type="hidden" id="cropped-image-data" name="cropped_image_data">
+        
+        <script>
+        // Debug form submission
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const croppedData = document.getElementById('cropped-image-data').value;
+            console.log('DEBUG: Form submitting, cropped data length:', croppedData.length);
+            console.log('DEBUG: Cropped data preview:', croppedData.substring(0, 100) + '...');
+        });
+        </script>
     </form>
 </div>
 
@@ -328,13 +340,19 @@ function setAspectRatio(ratio) {
 function applyCrop() {
     if (programCropper) {
         const canvas = programCropper.getCroppedCanvas({
-            width: 1200,
-            height: 675, // 16:9 ratio
             imageSmoothingEnabled: true,
             imageSmoothingQuality: 'high',
         });
         
         canvas.toBlob(function(blob) {
+            // Store cropped image data as base64
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('cropped-image-data').value = e.target.result;
+                console.log('DEBUG: Cropped image data saved to hidden field, length:', e.target.result.length);
+            };
+            reader.readAsDataURL(blob);
+            
             // Create new file from cropped image
             const croppedFile = new File([blob], programOriginalFile.name, {
                 type: programOriginalFile.type,

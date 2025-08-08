@@ -1,0 +1,209 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Thêm Video - Admin{% endblock %}
+{% block page_title %}Thêm Video Giới Thiệu{% endblock %}
+{% block page_description %}Thêm video giới thiệu trường mới{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <form method="POST" enctype="multipart/form-data" class="space-y-6">
+        <div class="admin-card p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-6">Thông tin video</h2>
+            
+            <div class="grid grid-cols-1 gap-6">
+                <div>
+                    <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
+                        Tiêu đề video <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="title" name="title" required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                           placeholder="Ví dụ: Giới thiệu trường Mầm non Hoa Hướng Dương">
+                </div>
+                
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
+                        Mô tả video
+                    </label>
+                    <textarea id="description" name="description" rows="3"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                              placeholder="Mô tả ngắn gọn về nội dung video..."></textarea>
+                </div>
+                
+                <div>
+                    <label for="video_url" class="block text-sm font-medium text-gray-700 mb-2">
+                        URL Video YouTube <span class="text-red-500">*</span>
+                    </label>
+                    <input type="url" id="video_url" name="video_url" required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                           placeholder="https://www.youtube.com/watch?v=..."
+                           onchange="extractVideoId()">
+                    <p class="text-sm text-gray-500 mt-1">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        Dán URL video YouTube (ví dụ: https://www.youtube.com/watch?v=dQw4w9WgXcQ)
+                    </p>
+                </div>
+                
+                <!-- Video Preview -->
+                <div id="video-preview" class="hidden">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Xem trước video
+                    </label>
+                    <div class="bg-gray-100 rounded-lg p-4">
+                        <div class="aspect-video bg-black rounded-lg overflow-hidden">
+                            <iframe id="preview-iframe" 
+                                    class="w-full h-full" 
+                                    frameborder="0" 
+                                    allowfullscreen>
+                            </iframe>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="order_index" class="block text-sm font-medium text-gray-700 mb-2">
+                        Thứ tự hiển thị
+                    </label>
+                    <input type="number" id="order_index" name="order_index" min="0" value="0"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                    <p class="text-sm text-gray-500 mt-1">Số nhỏ hơn sẽ hiển thị trước (0 = đầu tiên)</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="admin-card p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-6">Thumbnail tùy chỉnh (tùy chọn)</h2>
+            
+            <div class="space-y-4">
+                <div>
+                    <label for="thumbnail_image" class="block text-sm font-medium text-gray-700 mb-2">
+                        Chọn ảnh thumbnail
+                    </label>
+                    <div class="flex items-center justify-center w-full">
+                        <label for="thumbnail_image" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6" id="upload-placeholder">
+                                <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
+                                <p class="mb-2 text-sm text-gray-500">
+                                    <span class="font-semibold">Nhấp để tải lên</span> hoặc kéo thả
+                                </p>
+                                <p class="text-xs text-gray-500">PNG, JPG, JPEG (MAX. 16MB)</p>
+                                <p class="text-xs text-gray-400 mt-2">Nếu không chọn, sẽ dùng thumbnail mặc định của YouTube</p>
+                            </div>
+                            <input id="thumbnail_image" name="thumbnail_image" type="file" class="hidden" 
+                                   accept="image/*" onchange="previewImage(this, 'image-preview')">
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Image Preview -->
+                <div id="image-preview-container" class="hidden">
+                    <div class="border border-gray-300 rounded-lg p-4 bg-white">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Xem trước thumbnail</h3>
+                        <div class="max-w-full max-h-96 overflow-hidden">
+                            <img id="image-preview" class="max-w-full rounded-lg" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="admin-card p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-6">Cài đặt</h2>
+            
+            <div class="flex items-center">
+                <input id="is_active" name="is_active" type="checkbox" checked
+                       class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded">
+                <label for="is_active" class="ml-2 block text-sm text-gray-900">
+                    Kích hoạt và hiển thị trên trang chủ
+                </label>
+            </div>
+        </div>
+        
+        <div class="flex items-center justify-between pt-6">
+            <a href="{{ url_for('admin_videos') }}" 
+               class="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition duration-200">
+                <i class="fas fa-arrow-left mr-2"></i>Quay lại
+            </a>
+            
+            <button type="submit"
+                    class="btn-primary px-6 py-3 rounded-lg hover:bg-orange-600 transition duration-200">
+                <i class="fas fa-plus mr-2"></i>Thêm Video
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function previewImage(input, previewId) {
+        const file = input.files[0];
+        if (file) {
+            const preview = document.getElementById(previewId);
+            const container = document.getElementById('image-preview-container');
+            const placeholder = document.getElementById('upload-placeholder');
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                container.classList.remove('hidden');
+                placeholder.innerHTML = `
+                    <i class="fas fa-check-circle text-4xl text-green-500 mb-4"></i>
+                    <p class="text-sm text-green-600 font-medium">Đã chọn: ${file.name}</p>
+                    <p class="text-xs text-gray-500">Nhấp để thay đổi</p>
+                `;
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+    
+    function extractVideoId() {
+        const url = document.getElementById('video_url').value;
+        const videoId = getYouTubeVideoId(url);
+        
+        if (videoId) {
+            showVideoPreview(videoId);
+        } else {
+            hideVideoPreview();
+        }
+    }
+    
+    function getYouTubeVideoId(url) {
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+        const match = url.match(regExp);
+        return (match && match[2].length === 11) ? match[2] : null;
+    }
+    
+    function showVideoPreview(videoId) {
+        const preview = document.getElementById('video-preview');
+        const iframe = document.getElementById('preview-iframe');
+        
+        iframe.src = `https://www.youtube.com/embed/${videoId}`;
+        preview.classList.remove('hidden');
+    }
+    
+    function hideVideoPreview() {
+        const preview = document.getElementById('video-preview');
+        preview.classList.add('hidden');
+    }
+    
+    // Form validation
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const title = document.getElementById('title').value.trim();
+        const videoUrl = document.getElementById('video_url').value.trim();
+        
+        if (!title || !videoUrl) {
+            e.preventDefault();
+            alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
+            return false;
+        }
+        
+        // Validate YouTube URL
+        const videoId = getYouTubeVideoId(videoUrl);
+        if (!videoId) {
+            e.preventDefault();
+            alert('URL YouTube không hợp lệ! Vui lòng kiểm tra lại.');
+            return false;
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,237 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Quản lý SEO - Admin{% endblock %}
+{% block page_title %}Quản lý SEO{% endblock %}
+{% block page_description %}Tối ưu hóa SEO cho website{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <div class="flex space-x-4">
+        <a href="{{ url_for('admin_seo_create') }}" 
+           class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition duration-200">
+            <i class="fas fa-plus mr-2"></i>Thêm SEO mới
+        </a>
+        
+        <form method="POST" action="{{ url_for('admin_seo_auto_generate') }}" class="inline">
+            <button type="submit" 
+                    class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition duration-200"
+                    onclick="return confirm('Tự động tạo SEO cho các trang chưa có?')">
+                <i class="fas fa-magic mr-2"></i>Tự động tạo SEO
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- SEO Analytics Cards -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="admin-card p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-600">Tổng cài đặt SEO</p>
+                <p class="text-3xl font-bold text-gray-900">{{ seo_settings|length }}</p>
+                <p class="text-sm text-blue-600 mt-1">
+                    <i class="fas fa-search mr-1"></i>
+                    Đã cấu hình
+                </p>
+            </div>
+            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                <i class="fas fa-search text-blue-600 text-xl"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="admin-card p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-600">Trang đã tối ưu</p>
+                <p class="text-3xl font-bold text-gray-900">{{ seo_settings|selectattr('is_active', 'equalto', true)|list|length }}</p>
+                <p class="text-sm text-green-600 mt-1">
+                    <i class="fas fa-check mr-1"></i>
+                    Đang hoạt động
+                </p>
+            </div>
+            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <i class="fas fa-check-circle text-green-600 text-xl"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="admin-card p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-600">Open Graph</p>
+                <p class="text-3xl font-bold text-gray-900">{{ seo_settings|selectattr('og_title')|list|length }}</p>
+                <p class="text-sm text-purple-600 mt-1">
+                    <i class="fab fa-facebook mr-1"></i>
+                    Có OG tags
+                </p>
+            </div>
+            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                <i class="fab fa-facebook text-purple-600 text-xl"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="admin-card p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-600">Schema Markup</p>
+                <p class="text-3xl font-bold text-gray-900">{{ seo_settings|selectattr('schema_markup')|list|length }}</p>
+                <p class="text-sm text-orange-600 mt-1">
+                    <i class="fas fa-code mr-1"></i>
+                    Có Schema
+                </p>
+            </div>
+            <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                <i class="fas fa-code text-orange-600 text-xl"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SEO Settings Table -->
+<div class="admin-card">
+    <div class="p-6 border-b border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-800">
+            <i class="fas fa-search text-blue-500 mr-2"></i>
+            Danh sách cài đặt SEO
+        </h3>
+    </div>
+    
+    {% if seo_settings %}
+    <div class="overflow-x-auto">
+        <table class="w-full">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Loại trang</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Meta Title</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Meta Description</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for seo in seo_settings %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-full flex items-center justify-center mr-3
+                                {% if seo.page_type == 'home' %}bg-blue-100
+                                {% elif seo.page_type == 'about' %}bg-green-100
+                                {% elif seo.page_type == 'news' %}bg-yellow-100
+                                {% elif seo.page_type == 'programs' %}bg-purple-100
+                                {% elif seo.page_type == 'contact' %}bg-red-100
+                                {% else %}bg-gray-100{% endif %}">
+                                <i class="
+                                    {% if seo.page_type == 'home' %}fas fa-home text-blue-600
+                                    {% elif seo.page_type == 'about' %}fas fa-info-circle text-green-600
+                                    {% elif seo.page_type == 'news' %}fas fa-newspaper text-yellow-600
+                                    {% elif seo.page_type == 'programs' %}fas fa-graduation-cap text-purple-600
+                                    {% elif seo.page_type == 'contact' %}fas fa-envelope text-red-600
+                                    {% else %}fas fa-globe text-gray-600{% endif %} text-sm"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-gray-900">
+                                    {% if seo.page_type == 'home' %}Trang chủ
+                                    {% elif seo.page_type == 'about' %}Giới thiệu
+                                    {% elif seo.page_type == 'news' %}Tin tức
+                                    {% elif seo.page_type == 'programs' %}Chương trình
+                                    {% elif seo.page_type == 'contact' %}Liên hệ
+                                    {% elif seo.page_type == 'global' %}Toàn cục
+                                    {% else %}{{ seo.page_type|title }}{% endif %}
+                                </div>
+                                {% if seo.page_id %}
+                                <div class="text-xs text-gray-500">ID: {{ seo.page_id }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="text-sm text-gray-900">
+                            {{ seo.meta_title[:50] }}{% if seo.meta_title and seo.meta_title|length > 50 %}...{% endif %}
+                        </div>
+                        {% if seo.meta_title %}
+                        <div class="text-xs text-gray-500">{{ seo.meta_title|length }} ký tự</div>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="text-sm text-gray-900">
+                            {{ seo.meta_description[:80] if seo.meta_description }}{% if seo.meta_description and seo.meta_description|length > 80 %}...{% endif %}
+                        </div>
+                        {% if seo.meta_description %}
+                        <div class="text-xs text-gray-500">{{ seo.meta_description|length }} ký tự</div>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {% if seo.is_active %}
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            <i class="fas fa-check mr-1"></i>Hoạt động
+                        </span>
+                        {% else %}
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                            <i class="fas fa-pause mr-1"></i>Tạm dừng
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div class="flex space-x-2">
+                            <a href="{{ url_for('admin_seo_edit', id=seo.id) }}" 
+                               class="text-blue-600 hover:text-blue-900 transition duration-200">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <form method="POST" action="{{ url_for('admin_seo_delete', id=seo.id) }}" 
+                                  class="inline" onsubmit="return confirm('Bạn có chắc muốn xóa cài đặt SEO này?')">
+                                <button type="submit" class="text-red-600 hover:text-red-900 transition duration-200">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="p-12 text-center">
+        <i class="fas fa-search text-gray-400 text-6xl mb-4"></i>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">Chưa có cài đặt SEO nào</h3>
+        <p class="text-gray-500 mb-6">Bắt đầu tối ưu SEO cho website của bạn</p>
+        <div class="space-x-4">
+            <a href="{{ url_for('admin_seo_create') }}" 
+               class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition duration-200">
+                <i class="fas fa-plus mr-2"></i>Thêm SEO đầu tiên
+            </a>
+            <form method="POST" action="{{ url_for('admin_seo_auto_generate') }}" class="inline">
+                <button type="submit" 
+                        class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg transition duration-200">
+                    <i class="fas fa-magic mr-2"></i>Tự động tạo SEO
+                </button>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- SEO Tips -->
+<div class="mt-8 admin-card p-6">
+    <h3 class="text-lg font-semibold text-gray-800 mb-4">
+        <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>
+        Mẹo tối ưu SEO
+    </h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="bg-blue-50 p-4 rounded-lg">
+            <h4 class="font-semibold text-blue-800 mb-2">Meta Title</h4>
+            <p class="text-sm text-blue-700">Nên từ 50-60 ký tự, chứa từ khóa chính và hấp dẫn người dùng.</p>
+        </div>
+        <div class="bg-green-50 p-4 rounded-lg">
+            <h4 class="font-semibold text-green-800 mb-2">Meta Description</h4>
+            <p class="text-sm text-green-700">Nên từ 150-160 ký tự, mô tả ngắn gọn nội dung trang.</p>
+        </div>
+        <div class="bg-purple-50 p-4 rounded-lg">
+            <h4 class="font-semibold text-purple-800 mb-2">Open Graph</h4>
+            <p class="text-sm text-purple-700">Tối ưu hiển thị khi chia sẻ trên mạng xã hội.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

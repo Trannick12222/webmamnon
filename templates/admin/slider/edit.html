@@ -501,8 +501,6 @@ document.addEventListener('DOMContentLoaded', function() {
     applyCrop.addEventListener('click', () => {
         if (cropper) {
             const canvas = cropper.getCroppedCanvas({
-                width: 1920,
-                height: 1080,
                 imageSmoothingEnabled: true,
                 imageSmoothingQuality: 'high'
             });

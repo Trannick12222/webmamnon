@@ -1,86 +1,158 @@
 {% extends "admin/base.html" %}
 
-{% block title %}Quản lý Slider{% endblock %}
+{% block title %}Quản lý Slider - Admin{% endblock %}
+{% block page_title %}Slider{% endblock %}
+{% block page_description %}Quản lý slider hiển thị trên trang chủ{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3 class="card-title">Quản lý Slider</h3>
-                    <a href="{{ url_for('admin_slider_create') }}" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Thêm Slider
-                    </a>
-                </div>
-                <div class="card-body">
-                    {% if sliders %}
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped">
-                            <thead>
-                                <tr>
-                                    <th width="80">Hình ảnh</th>
-                                    <th>Tiêu đề</th>
-                                    <th>Mô tả</th>
-                                    <th width="100">Thứ tự</th>
-                                    <th width="100">Trạng thái</th>
-                                    <th width="120">Ngày tạo</th>
-                                    <th width="150">Thao tác</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for slider in sliders %}
-                                <tr>
-                                    <td>
-                                        {% if slider.image_path %}
-                                        <img src="{{ url_for('static', filename=slider.image_path) }}" 
-                                             alt="{{ slider.title }}" class="img-thumbnail" style="width: 60px; height: 40px; object-fit: cover;">
-                                        {% else %}
-                                        <div class="bg-light d-flex align-items-center justify-content-center" style="width: 60px; height: 40px;">
-                                            <i class="fas fa-image text-muted"></i>
-                                        </div>
-                                        {% endif %}
-                                    </td>
-                                    <td>{{ slider.title }}</td>
-                                    <td>{{ slider.description[:50] if slider.description else '' }}{% if slider.description and slider.description|length > 50 %}...{% endif %}</td>
-                                    <td>{{ slider.order_index }}</td>
-                                    <td>
-                                        {% if slider.is_active %}
-                                        <span class="badge badge-success">Hoạt động</span>
-                                        {% else %}
-                                        <span class="badge badge-secondary">Tạm dừng</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>{{ slider.created_at.strftime('%d/%m/%Y') }}</td>
-                                    <td>
-                                        <a href="{{ url_for('admin_slider_edit', id=slider.id) }}" 
-                                           class="btn btn-sm btn-warning">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <a href="{{ url_for('admin_slider_delete', id=slider.id) }}" 
-                                           class="btn btn-sm btn-danger"
-                                           onclick="return confirm('Bạn có chắc chắn muốn xóa slider này?')">
-                                            <i class="fas fa-trash"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    {% else %}
-                    <div class="text-center py-5">
-                        <i class="fas fa-images fa-3x text-muted mb-3"></i>
-                        <h5 class="text-muted">Chưa có slider nào</h5>
-                        <p class="text-muted">Hãy thêm slider đầu tiên cho trang chủ</p>
-                        <a href="{{ url_for('admin_slider_create') }}" class="btn btn-primary">
-                            <i class="fas fa-plus"></i> Thêm Slider
-                        </a>
-                    </div>
-                    {% endif %}
-                </div>
+<div class="admin-card p-6">
+    <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-semibold text-gray-800">Danh sách Slider</h2>
+        <a href="{{ url_for('admin_slider_create') }}" class="btn-primary px-4 py-2 rounded-lg">
+            <i class="fas fa-plus mr-2"></i>Thêm Slider
+        </a>
+    </div>
+    
+    {% if sliders %}
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3">Hình ảnh</th>
+                    <th class="px-6 py-3">Tiêu đề</th>
+                    <th class="px-6 py-3">Mô tả</th>
+                    <th class="px-6 py-3">Thứ tự</th>
+                    <th class="px-6 py-3">Trạng thái</th>
+                    <th class="px-6 py-3">Ngày tạo</th>
+                    <th class="px-6 py-3">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for slider in sliders %}
+                <tr class="bg-white border-b hover:bg-gray-50">
+                    <td class="px-6 py-4">
+                        {% if slider.image_path %}
+                        <img src="{{ url_for('static', filename=slider.image_path) }}" 
+                             alt="{{ slider.title }}" 
+                             class="w-16 h-10 object-cover rounded-lg shadow-sm">
+                        {% else %}
+                        <div class="w-16 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-image text-gray-400"></i>
+                        </div>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 font-medium text-gray-900">
+                        {{ slider.title }}
+                    </td>
+                    <td class="px-6 py-4 text-gray-600">
+                        {% if slider.description %}
+                            {{ slider.description[:50] }}
+                            {% if slider.description|length > 50 %}...{% endif %}
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                            {{ slider.order_index }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4">
+                        {% if slider.is_active %}
+                        <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center w-fit">
+                            <i class="fas fa-check-circle mr-1"></i>Hoạt động
+                        </span>
+                        {% else %}
+                        <span class="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center w-fit">
+                            <i class="fas fa-pause-circle mr-1"></i>Tạm dừng
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 text-gray-500">
+                        {{ slider.created_at.strftime('%d/%m/%Y') }}
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="flex items-center space-x-2">
+                            <a href="{{ url_for('admin_slider_edit', id=slider.id) }}" 
+                               class="inline-flex items-center px-3 py-1.5 bg-amber-100 text-amber-700 text-sm font-medium rounded-lg hover:bg-amber-200 transition-colors">
+                                <i class="fas fa-edit mr-1"></i>Sửa
+                            </a>
+                            <form method="POST" action="{{ url_for('admin_slider_delete', id=slider.id) }}" class="inline">
+                                <button type="submit" class="delete-btn inline-flex items-center px-3 py-1.5 bg-red-100 text-red-700 text-sm font-medium rounded-lg hover:bg-red-200 transition-colors">
+                                    <i class="fas fa-trash mr-1"></i>Xóa
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center py-16">
+        <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="fas fa-sliders-h text-gray-400 text-3xl"></i>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">Chưa có slider nào</h3>
+        <p class="text-gray-500 mb-6">Hãy thêm slider đầu tiên để hiển thị trên trang chủ</p>
+        <a href="{{ url_for('admin_slider_create') }}" class="btn-primary px-6 py-3 rounded-lg">
+            <i class="fas fa-plus mr-2"></i>Thêm Slider Đầu Tiên
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Quick Stats -->
+{% if sliders %}
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+    <div class="admin-card p-4">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-600">Tổng slider</p>
+                <p class="text-2xl font-bold text-gray-900">{{ sliders|length }}</p>
+            </div>
+            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                <i class="fas fa-sliders-h text-blue-600"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="admin-card p-4">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-600">Đang hoạt động</p>
+                <p class="text-2xl font-bold text-green-600">{{ sliders|selectattr('is_active')|list|length }}</p>
+            </div>
+            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <i class="fas fa-check-circle text-green-600"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="admin-card p-4">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-600">Tạm dừng</p>
+                <p class="text-2xl font-bold text-gray-600">{{ sliders|rejectattr('is_active')|list|length }}</p>
+            </div>
+            <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                <i class="fas fa-pause-circle text-gray-600"></i>
             </div>
         </div>
     </div>
 </div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Xác nhận xóa
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.delete-btn')) {
+            e.preventDefault();
+            if (confirm('Bạn có chắc chắn muốn xóa không?')) {
+                e.target.closest('form').submit();
+            }
+        }
+    });
+</script>
 {% endblock %}

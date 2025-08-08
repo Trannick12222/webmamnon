@@ -1,0 +1,223 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Quản lý Video - Admin{% endblock %}
+{% block page_title %}Quản lý Video Giới Thiệu{% endblock %}
+{% block page_description %}Quản lý video giới thiệu trường hiển thị trên trang chủ{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <div class="flex items-center space-x-4">
+        <div class="bg-blue-100 p-3 rounded-lg">
+            <i class="fas fa-video text-blue-600 text-xl"></i>
+        </div>
+        <div>
+            <h3 class="text-lg font-semibold text-gray-800">Video Giới Thiệu</h3>
+            <p class="text-sm text-gray-600">{{ videos|length }} video</p>
+        </div>
+    </div>
+    
+    <a href="{{ url_for('admin_videos_create') }}" 
+       class="btn-primary px-4 py-2 rounded-lg hover:bg-orange-600 transition duration-200">
+        <i class="fas fa-plus mr-2"></i>Thêm Video
+    </a>
+</div>
+
+{% if videos %}
+<div class="admin-card overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Video
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Thông tin
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Thứ tự
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Trạng thái
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Ngày tạo
+                    </th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Thao tác
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for video in videos %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-16 w-24">
+                                {% if video.thumbnail_image %}
+                                <img class="h-16 w-24 rounded-lg object-cover" 
+                                     src="/static/{{ video.thumbnail_image }}" 
+                                     alt="{{ video.title }}">
+                                {% else %}
+                                <div class="h-16 w-24 bg-gradient-to-br from-red-400 to-pink-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-play text-white text-xl"></i>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="text-sm font-medium text-gray-900 mb-1">{{ video.title }}</div>
+                        {% if video.description %}
+                        <div class="text-sm text-gray-500 line-clamp-2">{{ video.description }}</div>
+                        {% endif %}
+                        <div class="text-xs text-blue-600 mt-1">
+                            <i class="fab fa-youtube mr-1"></i>
+                            <a href="{{ video.video_url }}" target="_blank" class="hover:underline">
+                                Xem video
+                            </a>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                            {{ video.order_index }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {% if video.is_active %}
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            <i class="fas fa-check-circle mr-1"></i>Hoạt động
+                        </span>
+                        {% else %}
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                            <i class="fas fa-times-circle mr-1"></i>Tạm dừng
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{ video.created_at.strftime('%d/%m/%Y') }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <div class="flex items-center justify-end space-x-2">
+                            <a href="{{ url_for('admin_videos_edit', id=video.id) }}" 
+                               class="text-blue-600 hover:text-blue-900 p-2 rounded-lg hover:bg-blue-50 transition">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <button onclick="deleteVideo({{ video.id }}, '{{ video.title }}')"
+                                    class="text-red-600 hover:text-red-900 p-2 rounded-lg hover:bg-red-50 transition">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="admin-card p-12 text-center">
+    <div class="max-w-md mx-auto">
+        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-video text-blue-500 text-2xl"></i>
+        </div>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">Chưa có video nào</h3>
+        <p class="text-gray-500 mb-6">Thêm video giới thiệu đầu tiên để hiển thị trên trang chủ</p>
+        <a href="{{ url_for('admin_videos_create') }}" 
+           class="btn-primary px-6 py-3 rounded-lg hover:bg-orange-600 transition duration-200">
+            <i class="fas fa-plus mr-2"></i>Thêm Video Đầu Tiên
+        </a>
+    </div>
+</div>
+{% endif %}
+
+<!-- Hướng dẫn sử dụng -->
+<div class="mt-8 admin-card p-6">
+    <h4 class="text-lg font-semibold text-gray-800 mb-4">
+        <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+        Hướng dẫn sử dụng
+    </h4>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-gray-600">
+        <div>
+            <h5 class="font-semibold text-gray-800 mb-2">Cách thêm video YouTube:</h5>
+            <ul class="space-y-1">
+                <li>• Sao chép URL video từ YouTube</li>
+                <li>• Dán vào trường "URL Video"</li>
+                <li>• Có thể upload thumbnail tùy chỉnh</li>
+                <li>• Đặt thứ tự hiển thị (số nhỏ hiển thị trước)</li>
+            </ul>
+        </div>
+        <div>
+            <h5 class="font-semibold text-gray-800 mb-2">Lưu ý:</h5>
+            <ul class="space-y-1">
+                <li>• Chỉ video có trạng thái "Hoạt động" mới hiển thị</li>
+                <li>• Video sẽ hiển thị theo thứ tự đã đặt</li>
+                <li>• Nên có 1-3 video để trang chủ không quá dài</li>
+                <li>• Video YouTube phải ở chế độ công khai</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div id="deleteModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+        <div class="flex items-center mb-4">
+            <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center mr-3">
+                <i class="fas fa-exclamation-triangle text-red-600"></i>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900">Xác nhận xóa</h3>
+        </div>
+        <p class="text-gray-500 mb-6">
+            Bạn có chắc chắn muốn xóa video "<span id="videoTitle"></span>"? 
+            Hành động này không thể hoàn tác.
+        </p>
+        <div class="flex justify-end space-x-3">
+            <button onclick="closeDeleteModal()" 
+                    class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition">
+                Hủy
+            </button>
+            <form id="deleteForm" method="POST" class="inline">
+                <button type="submit" 
+                        class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
+                    Xóa
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function deleteVideo(id, title) {
+    document.getElementById('videoTitle').textContent = title;
+    document.getElementById('deleteForm').action = `/admin/videos/delete/${id}`;
+    document.getElementById('deleteModal').classList.remove('hidden');
+    document.getElementById('deleteModal').classList.add('flex');
+}
+
+function closeDeleteModal() {
+    document.getElementById('deleteModal').classList.add('hidden');
+    document.getElementById('deleteModal').classList.remove('flex');
+}
+
+// Close modal when clicking outside
+document.getElementById('deleteModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeDeleteModal();
+    }
+});
+</script>
+{% endblock %}

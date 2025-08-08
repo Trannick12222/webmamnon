@@ -1,0 +1,287 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Chỉnh sửa nội dung Sứ mệnh - Admin{% endblock %}
+{% block page_title %}Chỉnh sửa nội dung sứ mệnh{% endblock %}
+{% block page_description %}Cập nhật tiêu đề, hình ảnh và thống kê{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <!-- Header Section -->
+    <div class="mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">
+                    <i class="fas fa-edit text-indigo-600 mr-3"></i>
+                    Chỉnh sửa nội dung sứ mệnh
+                </h1>
+                <p class="text-gray-600">Cập nhật tiêu đề, hình ảnh chính và thống kê</p>
+            </div>
+            <a href="{{ url_for('admin_mission') }}" 
+               class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition duration-200">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Quay lại
+            </a>
+        </div>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" class="space-y-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main Content -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Basic Information Card -->
+                <div class="admin-card p-6">
+                    <div class="flex items-center mb-6">
+                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                            <i class="fas fa-info-circle text-blue-600"></i>
+                        </div>
+                        <h2 class="text-xl font-semibold text-gray-800">Thông tin cơ bản</h2>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <!-- Main Title -->
+                        <div>
+                            <label for="main_title" class="block text-sm font-medium text-gray-700 mb-2">
+                                Tiêu đề chính
+                            </label>
+                            <input type="text" 
+                                   id="main_title" 
+                                   name="main_title" 
+                                   value="{{ mission_content.main_title if mission_content else 'Sứ mệnh của chúng tôi' }}"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200"
+                                   placeholder="Nhập tiêu đề chính...">
+                        </div>
+                        
+                        <!-- Statistics -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="stats_number" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Số liệu thống kê
+                                </label>
+                                <input type="text" 
+                                       id="stats_number" 
+                                       name="stats_number" 
+                                       value="{{ mission_content.stats_number if mission_content else '100%' }}"
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200"
+                                       placeholder="Ví dụ: 100%, 500+...">
+                            </div>
+                            <div>
+                                <label for="stats_text" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Mô tả thống kê
+                                </label>
+                                <input type="text" 
+                                       id="stats_text" 
+                                       name="stats_text" 
+                                       value="{{ mission_content.stats_text if mission_content else 'Hài lòng' }}"
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200"
+                                       placeholder="Ví dụ: Hài lòng, Học sinh...">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Image Upload Card -->
+                <div class="admin-card p-6">
+                    <div class="flex items-center mb-6">
+                        <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                            <i class="fas fa-image text-purple-600"></i>
+                        </div>
+                        <h2 class="text-xl font-semibold text-gray-800">Hình ảnh chính</h2>
+                    </div>
+                    
+                    <!-- Current Image Display -->
+                    {% if mission_content and mission_content.main_image %}
+                    <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+                        <h3 class="text-sm font-medium text-gray-700 mb-3">Hình ảnh hiện tại:</h3>
+                        <div class="relative inline-block">
+                            <img src="{{ url_for('static', filename=mission_content.main_image) }}" 
+                                 alt="Mission Image" 
+                                 class="max-h-48 rounded-lg shadow-md">
+                            <div class="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded text-xs">
+                                <i class="fas fa-check mr-1"></i>Hiện tại
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Custom File Upload -->
+                    <div class="relative">
+                        <input type="file" 
+                               id="main_image" 
+                               name="main_image" 
+                               accept="image/*" 
+                               class="hidden"
+                               onchange="initImageCropper(this, 'preview-image', 16/9)">
+                        
+                        <div id="upload-area" 
+                             class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-indigo-400 hover:bg-indigo-50 transition duration-200 cursor-pointer"
+                             onclick="document.getElementById('main_image').click()">
+                            <div id="upload-content">
+                                <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-cloud-upload-alt text-indigo-600 text-2xl"></i>
+                                </div>
+                                <h3 class="text-lg font-medium text-gray-900 mb-2">
+                                    {% if mission_content and mission_content.main_image %}Thay đổi hình ảnh{% else %}Tải lên hình ảnh{% endif %}
+                                </h3>
+                                <p class="text-gray-600 mb-4">Kéo thả file hoặc click để chọn</p>
+                                <button type="button" 
+                                        class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition duration-200">
+                                    <i class="fas fa-folder-open mr-2"></i>
+                                    Chọn file
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- File Info -->
+                        <div class="mt-4 text-sm text-gray-500">
+                            <div class="flex items-center space-x-4">
+                                {% if mission_content and mission_content.main_image %}
+                                <span><i class="fas fa-info-circle text-blue-500 mr-1"></i> Để trống nếu không muốn thay đổi</span>
+                                {% endif %}
+                                <span><i class="fas fa-check-circle text-green-500 mr-1"></i> JPG, PNG, GIF, WEBP</span>
+                                <span><i class="fas fa-weight-hanging text-blue-500 mr-1"></i> Tối đa 16MB</span>
+                                <span><i class="fas fa-expand-arrows-alt text-purple-500 mr-1"></i> Khuyến nghị: 800x450px</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Image Preview -->
+                    <div class="mt-6">
+                        <img id="preview-image" src="" alt="Preview" style="display: none; max-width: 100%; max-height: 300px;" class="rounded-lg shadow-lg">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="space-y-6">
+                <!-- Preview Card -->
+                <div class="admin-card p-6">
+                    <div class="flex items-center mb-6">
+                        <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center mr-3">
+                            <i class="fas fa-eye text-orange-600"></i>
+                        </div>
+                        <h2 class="text-xl font-semibold text-gray-800">Xem trước</h2>
+                    </div>
+                    
+                    <div id="preview-container">
+                        <div class="space-y-4">
+                            <!-- Title Preview -->
+                            <div>
+                                <h3 id="preview-title" class="text-lg font-bold text-gray-800">
+                                    {{ mission_content.main_title if mission_content else 'Sứ mệnh của chúng tôi' }}
+                                </h3>
+                            </div>
+                            
+                            <!-- Image Preview Area -->
+                            <div>
+                                {% if mission_content and mission_content.main_image %}
+                                <img id="current-image" src="{{ url_for('static', filename=mission_content.main_image) }}" 
+                                     alt="Mission Image" class="w-full h-24 object-cover rounded-lg">
+                                {% else %}
+                                <div id="current-image" class="w-full h-24 bg-gray-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-image text-gray-400"></i>
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Stats Preview -->
+                            <div class="bg-yellow-300 rounded-lg p-3">
+                                <div class="text-center">
+                                    <div id="preview-stats-number" class="text-xl font-bold text-orange-600">
+                                        {{ mission_content.stats_number if mission_content else '100%' }}
+                                    </div>
+                                    <div id="preview-stats-text" class="text-orange-800 font-medium text-sm">
+                                        {{ mission_content.stats_text if mission_content else 'Hài lòng' }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Help Card -->
+                <div class="admin-card p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                            <i class="fas fa-lightbulb text-green-600"></i>
+                        </div>
+                        <h2 class="text-lg font-semibold text-gray-800">Gợi ý</h2>
+                    </div>
+                    
+                    <div class="space-y-3 text-sm text-gray-600">
+                        <div class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2 flex-shrink-0"></i>
+                            <span>Sử dụng hình ảnh chất lượng cao (tỉ lệ 16:9)</span>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2 flex-shrink-0"></i>
+                            <span>Thống kê nên ngắn gọn và ấn tượng</span>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2 flex-shrink-0"></i>
+                            <span>Tiêu đề không nên quá 50 ký tự</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center justify-between pt-6 border-t border-gray-200">
+            <a href="{{ url_for('admin_mission') }}" 
+               class="inline-flex items-center px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition duration-200">
+                <i class="fas fa-times mr-2"></i>
+                Hủy bỏ
+            </a>
+            
+            <button type="submit" 
+                    class="inline-flex items-center px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-lg transition duration-200 shadow-lg hover:shadow-xl">
+                <i class="fas fa-save mr-2"></i>
+                Lưu thay đổi
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const titleInput = document.getElementById('main_title');
+    const statsNumberInput = document.getElementById('stats_number');
+    const statsTextInput = document.getElementById('stats_text');
+    const previewTitle = document.getElementById('preview-title');
+    const previewStatsNumber = document.getElementById('preview-stats-number');
+    const previewStatsText = document.getElementById('preview-stats-text');
+    const currentImage = document.getElementById('current-image');
+
+    function updatePreview() {
+        previewTitle.textContent = titleInput.value || 'Sứ mệnh của chúng tôi';
+        previewStatsNumber.textContent = statsNumberInput.value || '100%';
+        previewStatsText.textContent = statsTextInput.value || 'Hài lòng';
+    }
+
+    titleInput.addEventListener('input', updatePreview);
+    statsNumberInput.addEventListener('input', updatePreview);
+    statsTextInput.addEventListener('input', updatePreview);
+
+    // Image preview
+    const imageInput = document.getElementById('main_image');
+    imageInput.addEventListener('change', function(e) {
+        if (e.target.files.length > 0) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                if (currentImage.tagName === 'IMG') {
+                    currentImage.src = e.target.result;
+                } else {
+                    const newImg = document.createElement('img');
+                    newImg.src = e.target.result;
+                    newImg.className = 'w-full h-24 object-cover rounded-lg';
+                    newImg.alt = 'New Mission Image';
+                    currentImage.parentNode.replaceChild(newImg, currentImage);
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+});
+</script>
+{% endblock %}

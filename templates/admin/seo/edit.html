@@ -1,0 +1,289 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Chỉnh sửa SEO - Admin{% endblock %}
+{% block page_title %}Chỉnh sửa cài đặt SEO{% endblock %}
+{% block page_description %}Cập nhật cài đặt SEO cho "{{ seo.page_type|title }}"{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <form method="POST" class="space-y-8">
+        <!-- Basic SEO Settings -->
+        <div class="admin-card p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-6">
+                <i class="fas fa-cog text-blue-500 mr-2"></i>
+                Cài đặt cơ bản
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Page Type -->
+                <div>
+                    <label for="page_type" class="block text-sm font-medium text-gray-700 mb-2">
+                        Loại trang <span class="text-red-500">*</span>
+                    </label>
+                    <select id="page_type" name="page_type" required
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="">Chọn loại trang</option>
+                        <option value="global" {{ 'selected' if seo.page_type == 'global' }}>Toàn cục (mặc định)</option>
+                        <option value="home" {{ 'selected' if seo.page_type == 'home' }}>Trang chủ</option>
+                        <option value="about" {{ 'selected' if seo.page_type == 'about' }}>Giới thiệu</option>
+                        <option value="news" {{ 'selected' if seo.page_type == 'news' }}>Tin tức</option>
+                        <option value="programs" {{ 'selected' if seo.page_type == 'programs' }}>Chương trình</option>
+                        <option value="contact" {{ 'selected' if seo.page_type == 'contact' }}>Liên hệ</option>
+                        <option value="gallery" {{ 'selected' if seo.page_type == 'gallery' }}>Thư viện ảnh</option>
+                        <option value="events" {{ 'selected' if seo.page_type == 'events' }}>Sự kiện</option>
+                    </select>
+                    <p class="text-sm text-gray-500 mt-1">Chọn loại trang để áp dụng SEO</p>
+                </div>
+                
+                <!-- Page ID (Optional) -->
+                <div>
+                    <label for="page_id" class="block text-sm font-medium text-gray-700 mb-2">
+                        ID trang cụ thể (tùy chọn)
+                    </label>
+                    <input type="number" id="page_id" name="page_id" value="{{ seo.page_id or '' }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           placeholder="VD: 1, 2, 3...">
+                    <p class="text-sm text-gray-500 mt-1">Để trống nếu áp dụng cho toàn bộ loại trang</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Meta Tags -->
+        <div class="admin-card p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-6">
+                <i class="fas fa-tags text-green-500 mr-2"></i>
+                Meta Tags
+            </h3>
+            
+            <div class="space-y-6">
+                <!-- Meta Title -->
+                <div>
+                    <label for="meta_title" class="block text-sm font-medium text-gray-700 mb-2">
+                        Meta Title
+                    </label>
+                    <input type="text" id="meta_title" name="meta_title" value="{{ seo.meta_title or '' }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                           placeholder="VD: Trường Mầm non Hoa Hướng Dương - Giáo dục chất lượng cao"
+                           maxlength="255">
+                    <div class="flex justify-between items-center mt-1">
+                        <p class="text-sm text-gray-500">Nên từ 50-60 ký tự để hiển thị tốt trên Google</p>
+                        <span id="title-count" class="text-sm text-gray-400">{{ (seo.meta_title or '')|length }}/255</span>
+                    </div>
+                </div>
+                
+                <!-- Meta Description -->
+                <div>
+                    <label for="meta_description" class="block text-sm font-medium text-gray-700 mb-2">
+                        Meta Description
+                    </label>
+                    <textarea id="meta_description" name="meta_description" rows="3"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                              placeholder="VD: Trường Mầm non Hoa Hướng Dương cung cấp môi trường giáo dục an toàn, chất lượng cao với đội ngũ giáo viên chuyên nghiệp. Đăng ký ngay hôm nay!"
+                              maxlength="500">{{ seo.meta_description or '' }}</textarea>
+                    <div class="flex justify-between items-center mt-1">
+                        <p class="text-sm text-gray-500">Nên từ 150-160 ký tự để hiển thị đầy đủ trên Google</p>
+                        <span id="desc-count" class="text-sm text-gray-400">{{ (seo.meta_description or '')|length }}/500</span>
+                    </div>
+                </div>
+                
+                <!-- Meta Keywords -->
+                <div>
+                    <label for="meta_keywords" class="block text-sm font-medium text-gray-700 mb-2">
+                        Meta Keywords
+                    </label>
+                    <input type="text" id="meta_keywords" name="meta_keywords" value="{{ seo.meta_keywords or '' }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                           placeholder="VD: trường mầm non, giáo dục mầm non, hoa hướng dương, trẻ em">
+                    <p class="text-sm text-gray-500 mt-1">Các từ khóa cách nhau bằng dấu phẩy</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Open Graph -->
+        <div class="admin-card p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-6">
+                <i class="fab fa-facebook text-blue-600 mr-2"></i>
+                Open Graph (Facebook, Twitter)
+            </h3>
+            
+            <div class="space-y-6">
+                <!-- OG Title -->
+                <div>
+                    <label for="og_title" class="block text-sm font-medium text-gray-700 mb-2">
+                        OG Title
+                    </label>
+                    <input type="text" id="og_title" name="og_title" value="{{ seo.og_title or '' }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           placeholder="VD: Trường Mầm non Hoa Hướng Dương"
+                           maxlength="255">
+                    <p class="text-sm text-gray-500 mt-1">Tiêu đề hiển thị khi chia sẻ trên mạng xã hội</p>
+                </div>
+                
+                <!-- OG Description -->
+                <div>
+                    <label for="og_description" class="block text-sm font-medium text-gray-700 mb-2">
+                        OG Description
+                    </label>
+                    <textarea id="og_description" name="og_description" rows="3"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              placeholder="VD: Môi trường giáo dục an toàn, chất lượng cao cho trẻ em"
+                              maxlength="300">{{ seo.og_description or '' }}</textarea>
+                    <p class="text-sm text-gray-500 mt-1">Mô tả hiển thị khi chia sẻ trên mạng xã hội</p>
+                </div>
+                
+                <!-- OG Image -->
+                <div>
+                    <label for="og_image" class="block text-sm font-medium text-gray-700 mb-2">
+                        OG Image URL
+                    </label>
+                    <input type="url" id="og_image" name="og_image" value="{{ seo.og_image or '' }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           placeholder="VD: /static/images/mnhhd.jpg hoặc https://example.com/image.jpg">
+                    <p class="text-sm text-gray-500 mt-1">Hình ảnh hiển thị khi chia sẻ (khuyến nghị 1200x630px)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Advanced Settings -->
+        <div class="admin-card p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-6">
+                <i class="fas fa-cogs text-purple-500 mr-2"></i>
+                Cài đặt nâng cao
+            </h3>
+            
+            <div class="space-y-6">
+                <!-- Canonical URL -->
+                <div>
+                    <label for="canonical_url" class="block text-sm font-medium text-gray-700 mb-2">
+                        Canonical URL
+                    </label>
+                    <input type="url" id="canonical_url" name="canonical_url" value="{{ seo.canonical_url or '' }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                           placeholder="VD: https://hoahuongduong.edu.vn/gioi-thieu">
+                    <p class="text-sm text-gray-500 mt-1">URL chính thức của trang (tránh duplicate content)</p>
+                </div>
+                
+                <!-- Robots Meta -->
+                <div>
+                    <label for="robots_meta" class="block text-sm font-medium text-gray-700 mb-2">
+                        Robots Meta
+                    </label>
+                    <select id="robots_meta" name="robots_meta"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        <option value="index,follow" {{ 'selected' if seo.robots_meta == 'index,follow' }}>index,follow (mặc định)</option>
+                        <option value="noindex,follow" {{ 'selected' if seo.robots_meta == 'noindex,follow' }}>noindex,follow</option>
+                        <option value="index,nofollow" {{ 'selected' if seo.robots_meta == 'index,nofollow' }}>index,nofollow</option>
+                        <option value="noindex,nofollow" {{ 'selected' if seo.robots_meta == 'noindex,nofollow' }}>noindex,nofollow</option>
+                    </select>
+                    <p class="text-sm text-gray-500 mt-1">Hướng dẫn cho search engine crawlers</p>
+                </div>
+                
+                <!-- Schema Markup -->
+                <div>
+                    <label for="schema_markup" class="block text-sm font-medium text-gray-700 mb-2">
+                        Schema Markup (JSON-LD)
+                    </label>
+                    <textarea id="schema_markup" name="schema_markup" rows="6"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent font-mono text-sm"
+                              placeholder='VD: {
+  "@context": "https://schema.org",
+  "@type": "EducationalOrganization",
+  "name": "Trường Mầm non Hoa Hướng Dương",
+  "description": "Trường mầm non chất lượng cao"
+}'>{{ seo.schema_markup or '' }}</textarea>
+                    <p class="text-sm text-gray-500 mt-1">Structured data để search engine hiểu rõ nội dung</p>
+                </div>
+                
+                <!-- Is Active -->
+                <div class="flex items-center">
+                    <input type="checkbox" id="is_active" name="is_active" value="1" {{ 'checked' if seo.is_active }}
+                           class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                    <label for="is_active" class="ml-2 block text-sm text-gray-900">
+                        Kích hoạt cài đặt SEO này
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex justify-between items-center">
+            <a href="{{ url_for('admin_seo') }}" 
+               class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg transition duration-200">
+                <i class="fas fa-arrow-left mr-2"></i>Quay lại
+            </a>
+            
+            <button type="submit" 
+                    class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition duration-200">
+                <i class="fas fa-save mr-2"></i>Cập nhật SEO
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Character counters
+    const metaTitle = document.getElementById('meta_title');
+    const metaDescription = document.getElementById('meta_description');
+    const titleCount = document.getElementById('title-count');
+    const descCount = document.getElementById('desc-count');
+    
+    function updateCounter(input, counter) {
+        const length = input.value.length;
+        const maxLength = input.getAttribute('maxlength');
+        counter.textContent = `${length}/${maxLength}`;
+        
+        // Color coding
+        if (input === metaTitle) {
+            if (length >= 50 && length <= 60) {
+                counter.className = 'text-sm text-green-600';
+            } else if (length > 60) {
+                counter.className = 'text-sm text-red-600';
+            } else {
+                counter.className = 'text-sm text-gray-400';
+            }
+        } else if (input === metaDescription) {
+            if (length >= 150 && length <= 160) {
+                counter.className = 'text-sm text-green-600';
+            } else if (length > 160) {
+                counter.className = 'text-sm text-red-600';
+            } else {
+                counter.className = 'text-sm text-gray-400';
+            }
+        }
+    }
+    
+    // Initialize counters
+    updateCounter(metaTitle, titleCount);
+    updateCounter(metaDescription, descCount);
+    
+    metaTitle.addEventListener('input', () => updateCounter(metaTitle, titleCount));
+    metaDescription.addEventListener('input', () => updateCounter(metaDescription, descCount));
+    
+    // Schema markup validation
+    const schemaMarkup = document.getElementById('schema_markup');
+    
+    function validateSchema() {
+        if (schemaMarkup.value.trim()) {
+            try {
+                JSON.parse(schemaMarkup.value);
+                schemaMarkup.classList.remove('border-red-300');
+                schemaMarkup.classList.add('border-green-300');
+            } catch (e) {
+                schemaMarkup.classList.remove('border-green-300');
+                schemaMarkup.classList.add('border-red-300');
+            }
+        } else {
+            schemaMarkup.classList.remove('border-red-300', 'border-green-300');
+        }
+    }
+    
+    // Validate on load
+    validateSchema();
+    
+    schemaMarkup.addEventListener('blur', validateSchema);
+});
+</script>
+{% endblock %}

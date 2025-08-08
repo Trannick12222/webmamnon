@@ -333,90 +333,111 @@
         
         <div class="max-w-4xl mx-auto">
             <div class="space-y-6">
-                <div class="admin-card">
-                    <button class="w-full p-6 text-left focus:outline-none" onclick="toggleFAQ(1)">
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-lg font-semibold text-gray-800">
-                                Trường nhận trẻ từ độ tuổi nào?
-                            </h3>
-                            <i id="faq-icon-1" class="fas fa-plus text-primary"></i>
+                {% if faqs %}
+                    {% for faq in faqs %}
+                    <div class="admin-card">
+                        <button class="w-full p-6 text-left focus:outline-none" onclick="toggleFAQ({{ faq.id }})">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-lg font-semibold text-gray-800">
+                                    {{ faq.question }}
+                                </h3>
+                                <i id="faq-icon-{{ faq.id }}" class="fas fa-plus text-primary"></i>
+                            </div>
+                        </button>
+                        <div id="faq-content-{{ faq.id }}" class="px-6 pb-6 hidden">
+                            <p class="text-gray-600">
+                                {{ faq.answer }}
+                            </p>
                         </div>
-                    </button>
-                    <div id="faq-content-1" class="hidden px-6 pb-6">
-                        <p class="text-gray-600">
-                            Trường Mầm non Hoa Hướng Dương nhận trẻ từ 18 tháng tuổi đến 5 tuổi. 
-                            Chúng tôi có các lớp phù hợp với từng độ tuổi để đảm bảo sự phát triển tốt nhất cho trẻ.
-                        </p>
                     </div>
-                </div>
-                
-                <div class="admin-card">
-                    <button class="w-full p-6 text-left focus:outline-none" onclick="toggleFAQ(2)">
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-lg font-semibold text-gray-800">
-                                Học phí một tháng là bao nhiêu?
-                            </h3>
-                            <i id="faq-icon-2" class="fas fa-plus text-primary"></i>
+                    {% endfor %}
+                {% else %}
+                    <!-- Default FAQs if no data in database -->
+                    <div class="admin-card">
+                        <button class="w-full p-6 text-left focus:outline-none" onclick="toggleFAQ(1)">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-lg font-semibold text-gray-800">
+                                    Trường nhận trẻ từ độ tuổi nào?
+                                </h3>
+                                <i id="faq-icon-1" class="fas fa-plus text-primary"></i>
+                            </div>
+                        </button>
+                        <div id="faq-content-1" class="hidden px-6 pb-6">
+                            <p class="text-gray-600">
+                                Trường Mầm non Hoa Hướng Dương nhận trẻ từ 18 tháng tuổi đến 5 tuổi. 
+                                Chúng tôi có các lớp phù hợp với từng độ tuổi để đảm bảo sự phát triển tốt nhất cho trẻ.
+                            </p>
                         </div>
-                    </button>
-                    <div id="faq-content-2" class="hidden px-6 pb-6">
-                        <p class="text-gray-600">
-                            Học phí dao động từ 2.500.000 - 3.200.000 VNĐ/tháng tùy theo độ tuổi và chương trình học. 
-                            Đã bao gồm ăn sáng, ăn trưa, ăn xế và các hoạt động ngoại khóa.
-                        </p>
                     </div>
-                </div>
-                
-                <div class="admin-card">
-                    <button class="w-full p-6 text-left focus:outline-none" onclick="toggleFAQ(3)">
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-lg font-semibold text-gray-800">
-                                Trường có xe đưa đón không?
-                            </h3>
-                            <i id="faq-icon-3" class="fas fa-plus text-primary"></i>
+                    
+                    <div class="admin-card">
+                        <button class="w-full p-6 text-left focus:outline-none" onclick="toggleFAQ(2)">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-lg font-semibold text-gray-800">
+                                    Học phí một tháng là bao nhiêu?
+                                </h3>
+                                <i id="faq-icon-2" class="fas fa-plus text-primary"></i>
+                            </div>
+                        </button>
+                        <div id="faq-content-2" class="hidden px-6 pb-6">
+                            <p class="text-gray-600">
+                                Học phí dao động từ 2.500.000 - 3.200.000 VNĐ/tháng tùy theo độ tuổi và chương trình học. 
+                                Đã bao gồm ăn sáng, ăn trưa, ăn xế và các hoạt động ngoại khóa.
+                            </p>
                         </div>
-                    </button>
-                    <div id="faq-content-3" class="hidden px-6 pb-6">
-                        <p class="text-gray-600">
-                            Có, trường có dịch vụ xe đưa đón với các chú tài xế kinh nghiệm và cô giáo đi kèm. 
-                            Phụ huynh có thể đăng ký thêm dịch vụ này với chi phí bổ sung.
-                        </p>
                     </div>
-                </div>
-                
-                <div class="admin-card">
-                    <button class="w-full p-6 text-left focus:outline-none" onclick="toggleFAQ(4)">
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-lg font-semibold text-gray-800">
-                                Thời gian học trong ngày như thế nào?
-                            </h3>
-                            <i id="faq-icon-4" class="fas fa-plus text-primary"></i>
+                    
+                    <div class="admin-card">
+                        <button class="w-full p-6 text-left focus:outline-none" onclick="toggleFAQ(3)">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-lg font-semibold text-gray-800">
+                                    Trường có xe đưa đón không?
+                                </h3>
+                                <i id="faq-icon-3" class="fas fa-plus text-primary"></i>
+                            </div>
+                        </button>
+                        <div id="faq-content-3" class="hidden px-6 pb-6">
+                            <p class="text-gray-600">
+                                Có, trường có dịch vụ xe đưa đón với các chú tài xế kinh nghiệm và cô giáo đi kèm. 
+                                Phụ huynh có thể đăng ký thêm dịch vụ này với chi phí bổ sung.
+                            </p>
                         </div>
-                    </button>
-                    <div id="faq-content-4" class="hidden px-6 pb-6">
-                        <p class="text-gray-600">
-                            Trường hoạt động từ 7:00 - 17:00 từ thứ 2 đến thứ 6. 
-                            Thời gian học chính thức từ 8:00 - 16:00, các hoạt động trước và sau giờ học được bố trí linh hoạt.
-                        </p>
                     </div>
-                </div>
-                
-                <div class="admin-card">
-                    <button class="w-full p-6 text-left focus:outline-none" onclick="toggleFAQ(5)">
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-lg font-semibold text-gray-800">
-                                Phụ huynh có thể tham quan trường không?
-                            </h3>
-                            <i id="faq-icon-5" class="fas fa-plus text-primary"></i>
+                    
+                    <div class="admin-card">
+                        <button class="w-full p-6 text-left focus:outline-none" onclick="toggleFAQ(4)">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-lg font-semibold text-gray-800">
+                                    Thời gian học trong ngày như thế nào?
+                                </h3>
+                                <i id="faq-icon-4" class="fas fa-plus text-primary"></i>
+                            </div>
+                        </button>
+                        <div id="faq-content-4" class="hidden px-6 pb-6">
+                            <p class="text-gray-600">
+                                Trường hoạt động từ 7:00 - 17:00 từ thứ 2 đến thứ 6. 
+                                Thời gian học chính thức từ 8:00 - 16:00, các hoạt động trước và sau giờ học được bố trí linh hoạt.
+                            </p>
                         </div>
-                    </button>
-                    <div id="faq-content-5" class="hidden px-6 pb-6">
-                        <p class="text-gray-600">
-                            Hoàn toàn có thể. Chúng tôi khuyến khích phụ huynh đến tham quan và trải nghiệm môi trường học tập. 
-                            Vui lòng liên hệ trước để được sắp xếp thời gian phù hợp.
-                        </p>
                     </div>
-                </div>
+                    
+                    <div class="admin-card">
+                        <button class="w-full p-6 text-left focus:outline-none" onclick="toggleFAQ(5)">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-lg font-semibold text-gray-800">
+                                    Phụ huynh có thể tham quan trường không?
+                                </h3>
+                                <i id="faq-icon-5" class="fas fa-plus text-primary"></i>
+                            </div>
+                        </button>
+                        <div id="faq-content-5" class="hidden px-6 pb-6">
+                            <p class="text-gray-600">
+                                Hoàn toàn có thể. Chúng tôi khuyến khích phụ huynh đến tham quan và trải nghiệm môi trường học tập. 
+                                Vui lòng liên hệ trước để được sắp xếp thời gian phù hợp.
+                            </p>
+                        </div>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>

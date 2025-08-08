@@ -17,7 +17,7 @@ def create_database():
         connection = mysql.connector.connect(
             host=os.getenv('DB_HOST', '127.0.0.1'),
             user=os.getenv('DB_USER', 'root'),
-            password=os.getenv('DB_PASSWORD', '173915Snow')
+            password=os.getenv('DB_PASSWORD', '!QAZxsw2#EDC')
         )
         
         if connection.is_connected():

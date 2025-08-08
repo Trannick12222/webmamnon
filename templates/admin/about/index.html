@@ -1,0 +1,137 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Quản lý "Về chúng tôi" - Admin{% endblock %}
+
+{% block page_title %}Về chúng tôi{% endblock %}
+{% block page_description %}Quản lý nội dung phần "Về chúng tôi" trên trang chủ{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Content Section -->
+    <div class="admin-card p-6">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h3 class="text-xl font-bold text-gray-800">Nội dung chính</h3>
+                <p class="text-gray-600">Quản lý tiêu đề, mô tả và hình ảnh</p>
+            </div>
+            <a href="{{ url_for('admin_about_content') }}" 
+               class="btn-primary px-6 py-2 rounded-lg font-medium">
+                <i class="fas fa-edit mr-2"></i>
+                Chỉnh sửa nội dung
+            </a>
+        </div>
+        
+        {% if about_section %}
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
+                <h4 class="font-semibold text-gray-800 mb-2">{{ about_section.title }}</h4>
+                <p class="text-gray-600 mb-4">{{ about_section.description_1[:100] }}...</p>
+                <div class="flex items-center text-sm text-gray-500">
+                    <i class="fas fa-clock mr-2"></i>
+                    Cập nhật: {{ about_section.updated_at.strftime('%d/%m/%Y %H:%M') }}
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                {% if about_section.image_1 %}
+                <img src="/static/{{ about_section.image_1 }}" alt="Hình 1" class="rounded-lg shadow-md w-full h-24 object-cover">
+                {% else %}
+                <div class="bg-gray-200 rounded-lg h-24 flex items-center justify-center">
+                    <i class="fas fa-image text-gray-400"></i>
+                </div>
+                {% endif %}
+                
+                {% if about_section.image_2 %}
+                <img src="/static/{{ about_section.image_2 }}" alt="Hình 2" class="rounded-lg shadow-md w-full h-24 object-cover">
+                {% else %}
+                <div class="bg-gray-200 rounded-lg h-24 flex items-center justify-center">
+                    <i class="fas fa-image text-gray-400"></i>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
+        <div class="text-center py-8">
+            <i class="fas fa-info-circle text-gray-400 text-4xl mb-4"></i>
+            <p class="text-gray-600 mb-4">Chưa có nội dung "Về chúng tôi"</p>
+            <a href="{{ url_for('admin_about_content') }}" class="btn-primary px-6 py-2 rounded-lg">
+                Tạo nội dung mới
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Statistics Section -->
+    <div class="admin-card p-6">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h3 class="text-xl font-bold text-gray-800">Thống kê</h3>
+                <p class="text-gray-600">Quản lý các số liệu thống kê (học sinh, giáo viên, ...)</p>
+            </div>
+            <a href="{{ url_for('admin_about_stats_create') }}" 
+               class="btn-primary px-6 py-2 rounded-lg font-medium">
+                <i class="fas fa-plus mr-2"></i>
+                Thêm thống kê
+            </a>
+        </div>
+        
+        {% if about_stats %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% for stat in about_stats %}
+            <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="w-12 h-12 {{ stat.color_class }} rounded-lg flex items-center justify-center">
+                        <i class="{{ stat.icon_class }} text-white"></i>
+                    </div>
+                    <div class="flex space-x-2">
+                        <a href="{{ url_for('admin_about_stats_edit', id=stat.id) }}" 
+                           class="text-blue-600 hover:text-blue-800">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <form method="POST" action="{{ url_for('admin_about_stats_delete', id=stat.id) }}" class="inline-block">
+                            <button type="submit" 
+                                    class="text-red-600 hover:text-red-800 delete-btn bg-transparent border-0 p-0"
+                                    onclick="return confirm('Bạn có chắc chắn muốn xóa thống kê này?')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <h4 class="text-2xl font-bold {{ stat.color_class.replace('bg-', 'text-') }} mb-1">{{ stat.stat_value }}</h4>
+                <p class="text-gray-600 text-sm">{{ stat.stat_label }}</p>
+                <div class="mt-2 text-xs text-gray-500">
+                    Thứ tự: {{ stat.order_index }} | 
+                    {% if stat.is_active %}
+                    <span class="text-green-600">Hiển thị</span>
+                    {% else %}
+                    <span class="text-red-600">Ẩn</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-8">
+            <i class="fas fa-chart-bar text-gray-400 text-4xl mb-4"></i>
+            <p class="text-gray-600 mb-4">Chưa có thống kê nào</p>
+            <a href="{{ url_for('admin_about_stats_create') }}" class="btn-primary px-6 py-2 rounded-lg">
+                Thêm thống kê đầu tiên
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Xác nhận xóa
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.delete-btn')) {
+            e.preventDefault();
+            if (confirm('Bạn có chắc chắn muốn xóa không?')) {
+                e.target.closest('form').submit();
+            }
+        }
+    });
+</script>
+{% endblock %}

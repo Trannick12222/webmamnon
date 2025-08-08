@@ -1,0 +1,357 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Chỉnh sửa chương trình đặc biệt - Admin{% endblock %}
+
+{% block page_title %}Chỉnh sửa chương trình{% endblock %}
+{% block page_description %}Cập nhật chương trình "{{ special_program.title }}"{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Form Section -->
+        <div class="admin-card p-6">
+            <form method="POST" enctype="multipart/form-data" class="space-y-6">
+                <!-- Title -->
+                <div>
+                    <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
+                        Tên chương trình <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="title" name="title" 
+                           value="{{ special_program.title }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                           placeholder="Ví dụ: Tiếng Anh cho trẻ em"
+                           required>
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
+                        Mô tả chương trình <span class="text-red-500">*</span>
+                    </label>
+                    <textarea id="description" name="description" rows="4"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                              placeholder="Mô tả chi tiết về chương trình..."
+                              required>{{ special_program.description }}</textarea>
+                </div>
+
+                <!-- Features -->
+                <div>
+                    <label for="features" class="block text-sm font-medium text-gray-700 mb-2">
+                        Tính năng nổi bật
+                    </label>
+                    <textarea id="features" name="features" rows="4"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                              placeholder="Mỗi tính năng một dòng:&#10;• Giáo viên bản ngữ&#10;• Lớp học nhỏ (6-8 trẻ)&#10;• Phương pháp TPR">{{ special_program.features or '' }}</textarea>
+                    <p class="text-sm text-gray-500 mt-1">Mỗi tính năng trên một dòng, có thể bắt đầu bằng dấu •</p>
+                </div>
+
+                <!-- Current Image -->
+                {% if special_program.image_path %}
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Hình ảnh hiện tại</label>
+                    <div class="mb-3">
+                        <img src="{{ special_program.image_path }}" alt="{{ special_program.title }}" 
+                             class="w-32 h-24 object-cover rounded-lg border">
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Image Upload -->
+                <div>
+                    <label for="image" class="block text-sm font-medium text-gray-700 mb-2">
+                        {{ 'Thay đổi hình ảnh' if special_program.image_path else 'Hình ảnh chương trình' }}
+                    </label>
+                    <input type="file" id="image" name="image" accept="image/*"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                    <p class="text-sm text-gray-500 mt-1">{{ 'Để trống nếu không muốn thay đổi. ' if special_program.image_path else 'Tùy chọn. ' }}Kích thước khuyến nghị: 400x300px</p>
+                </div>
+
+                <!-- Design Settings -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="icon_class" class="block text-sm font-medium text-gray-700 mb-2">
+                            Icon FontAwesome
+                        </label>
+                        <select id="icon_class" name="icon_class" 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                            <option value="fas fa-language" {{ 'selected' if special_program.icon_class == 'fas fa-language' }}>fas fa-language (Ngôn ngữ)</option>
+                            <option value="fas fa-paint-brush" {{ 'selected' if special_program.icon_class == 'fas fa-paint-brush' }}>fas fa-paint-brush (Mỹ thuật)</option>
+                            <option value="fas fa-music" {{ 'selected' if special_program.icon_class == 'fas fa-music' }}>fas fa-music (Âm nhạc)</option>
+                            <option value="fas fa-running" {{ 'selected' if special_program.icon_class == 'fas fa-running' }}>fas fa-running (Thể thao)</option>
+                            <option value="fas fa-book" {{ 'selected' if special_program.icon_class == 'fas fa-book' }}>fas fa-book (Học tập)</option>
+                            <option value="fas fa-star" {{ 'selected' if special_program.icon_class == 'fas fa-star' }}>fas fa-star (Đặc biệt)</option>
+                            <option value="fas fa-heart" {{ 'selected' if special_program.icon_class == 'fas fa-heart' }}>fas fa-heart (Yêu thương)</option>
+                            <option value="fas fa-graduation-cap" {{ 'selected' if special_program.icon_class == 'fas fa-graduation-cap' }}>fas fa-graduation-cap (Giáo dục)</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="order_index" class="block text-sm font-medium text-gray-700 mb-2">
+                            Thứ tự hiển thị
+                        </label>
+                        <input type="number" id="order_index" name="order_index" 
+                               value="{{ special_program.order_index }}"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                               min="0">
+                    </div>
+                </div>
+
+                <!-- Color Theme -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Chủ đề màu sắc</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        {% set current_theme = 'blue' %}
+                        {% if 'green' in special_program.background_gradient %}
+                            {% set current_theme = 'green' %}
+                        {% elif 'pink' in special_program.background_gradient %}
+                            {% set current_theme = 'pink' %}
+                        {% elif 'purple' in special_program.background_gradient %}
+                            {% set current_theme = 'purple' %}
+                        {% endif %}
+                        
+                        <label class="cursor-pointer">
+                            <input type="radio" name="color_theme" value="blue" {{ 'checked' if current_theme == 'blue' }} class="sr-only">
+                            <div class="theme-option border-2 {{ 'border-orange-500' if current_theme == 'blue' else 'border-transparent' }} rounded-lg p-3 bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-6 h-6 bg-blue-500 rounded"></div>
+                                    <span class="text-sm font-medium">Blue Theme</span>
+                                </div>
+                            </div>
+                        </label>
+                        
+                        <label class="cursor-pointer">
+                            <input type="radio" name="color_theme" value="green" {{ 'checked' if current_theme == 'green' }} class="sr-only">
+                            <div class="theme-option border-2 {{ 'border-orange-500' if current_theme == 'green' else 'border-transparent' }} rounded-lg p-3 bg-gradient-to-br from-green-50 to-yellow-50 border-green-200">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-6 h-6 bg-green-500 rounded"></div>
+                                    <span class="text-sm font-medium">Green Theme</span>
+                                </div>
+                            </div>
+                        </label>
+                        
+                        <label class="cursor-pointer">
+                            <input type="radio" name="color_theme" value="pink" {{ 'checked' if current_theme == 'pink' }} class="sr-only">
+                            <div class="theme-option border-2 {{ 'border-orange-500' if current_theme == 'pink' else 'border-transparent' }} rounded-lg p-3 bg-gradient-to-br from-pink-50 to-red-50 border-pink-200">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-6 h-6 bg-pink-500 rounded"></div>
+                                    <span class="text-sm font-medium">Pink Theme</span>
+                                </div>
+                            </div>
+                        </label>
+                        
+                        <label class="cursor-pointer">
+                            <input type="radio" name="color_theme" value="purple" {{ 'checked' if current_theme == 'purple' }} class="sr-only">
+                            <div class="theme-option border-2 {{ 'border-orange-500' if current_theme == 'purple' else 'border-transparent' }} rounded-lg p-3 bg-gradient-to-br from-purple-50 to-indigo-50 border-purple-200">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-6 h-6 bg-purple-500 rounded"></div>
+                                    <span class="text-sm font-medium">Purple Theme</span>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Hidden fields for color values -->
+                <input type="hidden" id="background_gradient" name="background_gradient" value="{{ special_program.background_gradient }}">
+                <input type="hidden" id="border_color" name="border_color" value="{{ special_program.border_color }}">
+                <input type="hidden" id="icon_bg_color" name="icon_bg_color" value="{{ special_program.icon_bg_color }}">
+
+                <!-- Active Status -->
+                <div class="flex items-center">
+                    <input type="checkbox" id="is_active" name="is_active" value="1" {{ 'checked' if special_program.is_active }}
+                           class="w-4 h-4 text-orange-600 bg-gray-100 border-gray-300 rounded focus:ring-orange-500">
+                    <label for="is_active" class="ml-3 text-sm font-medium text-gray-700">
+                        Hiển thị trên website
+                    </label>
+                </div>
+
+                <!-- Meta Information -->
+                <div class="bg-blue-50 rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-700 mb-2">Thông tin:</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+                        <div>
+                            <i class="fas fa-calendar-plus mr-2"></i>
+                            Tạo: {{ special_program.created_at.strftime('%d/%m/%Y %H:%M') }}
+                        </div>
+                        <div>
+                            <i class="fas fa-calendar-edit mr-2"></i>
+                            Cập nhật: {{ special_program.updated_at.strftime('%d/%m/%Y %H:%M') }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex items-center justify-between pt-6 border-t border-gray-200">
+                    <a href="{{ url_for('admin_special_programs') }}" 
+                       class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Quay lại
+                    </a>
+                    
+                    <div class="flex space-x-3">
+                        <form method="POST" action="{{ url_for('admin_special_programs_delete', id=special_program.id) }}" class="inline-block">
+                            <button type="submit" 
+                                    class="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition delete-btn"
+                                    onclick="return confirm('Bạn có chắc chắn muốn xóa chương trình này?')">
+                                <i class="fas fa-trash mr-2"></i>
+                                Xóa
+                            </button>
+                        </form>
+                        
+                        <button type="submit" 
+                                class="btn-primary px-8 py-3 rounded-lg font-medium">
+                            <i class="fas fa-save mr-2"></i>
+                            Lưu thay đổi
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Preview Section -->
+        <div class="admin-card p-6">
+            <h4 class="text-lg font-semibold text-gray-800 mb-4">Xem trước:</h4>
+            
+            <div id="preview-card" class="bg-gradient-to-br {{ special_program.background_gradient }} rounded-2xl p-6 border {{ special_program.border_color }}">
+                <div class="w-12 h-12 {{ special_program.icon_bg_color }} rounded-lg flex items-center justify-center mb-4">
+                    <i id="preview-icon" class="{{ special_program.icon_class }} text-white text-xl"></i>
+                </div>
+                <h3 id="preview-title" class="text-xl font-bold text-gray-800 mb-3">{{ special_program.title }}</h3>
+                <p id="preview-description" class="text-gray-600 mb-4">{{ special_program.description }}</p>
+                
+                <div id="preview-features" class="space-y-2 text-sm text-gray-600">
+                    {% if special_program.features %}
+                        {% set features_list = special_program.features.split('\n') %}
+                        {% for feature in features_list %}
+                            {% if feature.strip() %}
+                            <div>{{ feature.strip() }}</div>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <div>Các tính năng sẽ hiển thị ở đây...</div>
+                    {% endif %}
+                </div>
+                
+                <div id="preview-image" class="{{ 'hidden' if not special_program.image_path }}">
+                    <img id="preview-img" src="{{ special_program.image_path or '' }}" alt="Preview" class="w-full h-32 object-cover rounded-lg mt-4">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Live preview update (same as create.html)
+document.addEventListener('DOMContentLoaded', function() {
+    const titleInput = document.getElementById('title');
+    const descriptionInput = document.getElementById('description');
+    const featuresInput = document.getElementById('features');
+    const iconSelect = document.getElementById('icon_class');
+    const imageInput = document.getElementById('image');
+    
+    const previewTitle = document.getElementById('preview-title');
+    const previewDescription = document.getElementById('preview-description');
+    const previewFeatures = document.getElementById('preview-features');
+    const previewIcon = document.getElementById('preview-icon');
+    const previewImage = document.getElementById('preview-image');
+    const previewImg = document.getElementById('preview-img');
+    
+    function updatePreview() {
+        const title = titleInput.value.trim();
+        const description = descriptionInput.value.trim();
+        const features = featuresInput.value.trim();
+        const iconClass = iconSelect.value;
+        
+        previewTitle.textContent = title || 'Tên chương trình sẽ hiển thị ở đây';
+        previewDescription.textContent = description || 'Mô tả chương trình sẽ hiển thị ở đây...';
+        
+        // Update icon
+        previewIcon.className = iconClass + ' text-white text-xl';
+        
+        // Update features
+        if (features) {
+            const featuresList = features.split('\n').filter(f => f.trim());
+            previewFeatures.innerHTML = featuresList.map(f => `<div>${f.trim()}</div>`).join('');
+        } else {
+            previewFeatures.innerHTML = '<div>Các tính năng sẽ hiển thị ở đây...</div>';
+        }
+    }
+    
+    // Handle image preview
+    imageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                previewImage.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    // Handle color theme selection (same as create.html)
+    const themeRadios = document.querySelectorAll('input[name="color_theme"]');
+    const previewCard = document.getElementById('preview-card');
+    const backgroundGradientInput = document.getElementById('background_gradient');
+    const borderColorInput = document.getElementById('border_color');
+    const iconBgColorInput = document.getElementById('icon_bg_color');
+    
+    const themes = {
+        blue: {
+            gradient: 'from-blue-50 to-purple-50',
+            border: 'border-blue-200',
+            iconBg: 'bg-blue-500'
+        },
+        green: {
+            gradient: 'from-green-50 to-yellow-50',
+            border: 'border-green-200',
+            iconBg: 'bg-green-500'
+        },
+        pink: {
+            gradient: 'from-pink-50 to-red-50',
+            border: 'border-pink-200',
+            iconBg: 'bg-pink-500'
+        },
+        purple: {
+            gradient: 'from-purple-50 to-indigo-50',
+            border: 'border-purple-200',
+            iconBg: 'bg-purple-500'
+        }
+    };
+    
+    themeRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.checked) {
+                const theme = themes[this.value];
+                
+                // Update preview card
+                previewCard.className = `bg-gradient-to-br ${theme.gradient} rounded-2xl p-6 border ${theme.border}`;
+                
+                // Update icon background
+                const iconContainer = previewCard.querySelector('.w-12.h-12');
+                iconContainer.className = `w-12 h-12 ${theme.iconBg} rounded-lg flex items-center justify-center mb-4`;
+                
+                // Update hidden inputs
+                backgroundGradientInput.value = theme.gradient;
+                borderColorInput.value = theme.border;
+                iconBgColorInput.value = theme.iconBg;
+                
+                // Update theme option borders
+                document.querySelectorAll('.theme-option').forEach(option => {
+                    option.classList.remove('border-orange-500');
+                    option.classList.add('border-transparent');
+                });
+                this.parentElement.querySelector('.theme-option').classList.remove('border-transparent');
+                this.parentElement.querySelector('.theme-option').classList.add('border-orange-500');
+            }
+        });
+    });
+    
+    titleInput.addEventListener('input', updatePreview);
+    descriptionInput.addEventListener('input', updatePreview);
+    featuresInput.addEventListener('input', updatePreview);
+    iconSelect.addEventListener('change', updatePreview);
+});
+</script>
+{% endblock %}

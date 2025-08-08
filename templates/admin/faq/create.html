@@ -1,0 +1,133 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Thêm câu hỏi thường gặp - Admin{% endblock %}
+
+{% block page_title %}Thêm câu hỏi mới{% endblock %}
+{% block page_description %}Tạo câu hỏi thường gặp mới cho trang liên hệ{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="admin-card p-6">
+        <form method="POST" class="space-y-6">
+            <!-- Question -->
+            <div>
+                <label for="question" class="block text-sm font-medium text-gray-700 mb-2">
+                    Câu hỏi <span class="text-red-500">*</span>
+                </label>
+                <input type="text" id="question" name="question" 
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                       placeholder="Ví dụ: Trường nhận trẻ từ độ tuổi nào?"
+                       required>
+            </div>
+
+            <!-- Answer -->
+            <div>
+                <label for="answer" class="block text-sm font-medium text-gray-700 mb-2">
+                    Câu trả lời <span class="text-red-500">*</span>
+                </label>
+                <textarea id="answer" name="answer" rows="5"
+                          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                          placeholder="Nhập câu trả lời chi tiết..."
+                          required></textarea>
+                <p class="text-sm text-gray-500 mt-1">Câu trả lời nên rõ ràng, dễ hiểu và cung cấp thông tin hữu ích</p>
+            </div>
+
+            <!-- Category and Order -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div>
+                    <label for="category" class="block text-sm font-medium text-gray-700 mb-2">
+                        Danh mục
+                    </label>
+                    <select id="category" name="category" 
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                        <option value="general">Chung</option>
+                        <option value="admission">Tuyển sinh</option>
+                        <option value="tuition">Học phí</option>
+                        <option value="schedule">Thời gian biểu</option>
+                        <option value="facilities">Cơ sở vật chất</option>
+                        <option value="activities">Hoạt động</option>
+                        <option value="health">Sức khỏe</option>
+                        <option value="transport">Đưa đón</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="order_index" class="block text-sm font-medium text-gray-700 mb-2">
+                        Thứ tự hiển thị
+                    </label>
+                    <input type="number" id="order_index" name="order_index" 
+                           value="0"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                           min="0">
+                    <p class="text-sm text-gray-500 mt-1">Số nhỏ hơn sẽ hiển thị trước</p>
+                </div>
+            </div>
+
+            <!-- Active Status -->
+            <div class="flex items-center">
+                <input type="checkbox" id="is_active" name="is_active" value="1" checked
+                       class="w-4 h-4 text-orange-600 bg-gray-100 border-gray-300 rounded focus:ring-orange-500">
+                <label for="is_active" class="ml-3 text-sm font-medium text-gray-700">
+                    Hiển thị trên website
+                </label>
+            </div>
+
+            <!-- Preview -->
+            <div class="bg-gray-50 rounded-lg p-6">
+                <h4 class="text-sm font-medium text-gray-700 mb-4">Xem trước:</h4>
+                <div class="admin-card max-w-2xl">
+                    <button class="w-full p-4 text-left focus:outline-none">
+                        <div class="flex items-center justify-between">
+                            <h3 id="preview-question" class="text-lg font-semibold text-gray-800">
+                                Câu hỏi sẽ hiển thị ở đây...
+                            </h3>
+                            <i class="fas fa-plus text-primary"></i>
+                        </div>
+                    </button>
+                    <div class="px-4 pb-4">
+                        <p id="preview-answer" class="text-gray-600">
+                            Câu trả lời sẽ hiển thị ở đây...
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center justify-between pt-6 border-t border-gray-200">
+                <a href="{{ url_for('admin_faq') }}" 
+                   class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    Quay lại
+                </a>
+                
+                <button type="submit" 
+                        class="btn-primary px-8 py-3 rounded-lg font-medium">
+                    <i class="fas fa-plus mr-2"></i>
+                    Thêm câu hỏi
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Live preview update
+document.addEventListener('DOMContentLoaded', function() {
+    const questionInput = document.getElementById('question');
+    const answerInput = document.getElementById('answer');
+    const previewQuestion = document.getElementById('preview-question');
+    const previewAnswer = document.getElementById('preview-answer');
+    
+    function updatePreview() {
+        const question = questionInput.value.trim();
+        const answer = answerInput.value.trim();
+        
+        previewQuestion.textContent = question || 'Câu hỏi sẽ hiển thị ở đây...';
+        previewAnswer.textContent = answer || 'Câu trả lời sẽ hiển thị ở đây...';
+    }
+    
+    questionInput.addEventListener('input', updatePreview);
+    answerInput.addEventListener('input', updatePreview);
+});
+</script>
+{% endblock %}

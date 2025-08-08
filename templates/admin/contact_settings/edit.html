@@ -155,11 +155,14 @@
             </div>
             
             <div class="flex items-center justify-between pt-6 border-t">
-                <a href="{{ url_for('admin_contact_settings_delete', id=setting.id) }}" 
-                   class="px-4 py-2 text-red-700 bg-red-100 rounded-lg hover:bg-red-200 transition-colors delete-btn">
-                    <i class="fas fa-trash mr-2"></i>
-                    Xóa
-                </a>
+                <form method="POST" action="{{ url_for('admin_contact_settings_delete', id=setting.id) }}" class="inline-block">
+                    <button type="submit" 
+                            class="px-4 py-2 text-red-700 bg-red-100 rounded-lg hover:bg-red-200 transition-colors delete-btn"
+                            onclick="return confirm('Bạn có chắc chắn muốn xóa cài đặt này?')">
+                        <i class="fas fa-trash mr-2"></i>
+                        Xóa
+                    </button>
+                </form>
                 
                 <div class="flex items-center space-x-4">
                     <a href="{{ url_for('admin_contact_settings') }}" 
