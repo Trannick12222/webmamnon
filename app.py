@@ -14,29 +14,7 @@ load_dotenv()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'hoa-huong-duong-secret-key-2023'
-
-# Database configuration for Railway MySQL
-def get_database_url():
-    # Try to get Railway MySQL URL first
-    mysql_url = os.environ.get('MYSQL_URL')
-    if mysql_url:
-        # Convert mysql:// to mysql+pymysql:// for SQLAlchemy
-        return mysql_url.replace('mysql://', 'mysql+pymysql://')
-    
-    # Fallback to constructing from individual environment variables
-    mysql_host = os.environ.get('MYSQLHOST', 'localhost')
-    mysql_user = os.environ.get('MYSQLUSER', 'root')
-    mysql_password = os.environ.get('MYSQLPASSWORD', '')
-    mysql_port = os.environ.get('MYSQLPORT', '3306')
-    mysql_database = os.environ.get('MYSQLDATABASE', 'railway')
-    
-    if mysql_host and mysql_user and mysql_password:
-        return f'mysql+pymysql://{mysql_user}:{mysql_password}@{mysql_host}:{mysql_port}/{mysql_database}'
-    
-    # Final fallback to SQLite for local development
-    return 'sqlite:///hoa_huong_duong.db'
-
-app.config['SQLALCHEMY_DATABASE_URI'] = get_database_url()
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///hoa_huong_duong.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
@@ -481,27 +459,10 @@ def health_check():
     """Health check endpoint for Railway deployment"""
     try:
         # Simple database connectivity check
-        from sqlalchemy import text
-        result = db.session.execute(text('SELECT VERSION()'))
-        version = result.fetchone()
-        
-        # Get database URL (without password for security)
-        db_url = app.config['SQLALCHEMY_DATABASE_URI']
-        safe_db_url = db_url.split('@')[1] if '@' in db_url else 'local'
-        
-        return {
-            'status': 'healthy', 
-            'database': 'connected',
-            'mysql_version': version[0] if version else 'unknown',
-            'database_host': safe_db_url,
-            'environment': os.environ.get('RAILWAY_ENVIRONMENT', 'local')
-        }, 200
+        db.session.execute('SELECT 1')
+        return {'status': 'healthy', 'database': 'connected'}, 200
     except Exception as e:
-        return {
-            'status': 'unhealthy', 
-            'error': str(e),
-            'database_url': app.config['SQLALCHEMY_DATABASE_URI'].split('@')[1] if '@' in app.config['SQLALCHEMY_DATABASE_URI'] else 'local'
-        }, 500
+        return {'status': 'unhealthy', 'error': str(e)}, 500
 
 @app.route('/gioi-thieu')
 def about():
