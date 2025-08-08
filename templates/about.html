@@ -13,10 +13,15 @@
                     <img src="{{ url_for('static', filename='images/mnhhd.jpg') }}" alt="Logo Hoa Hướng Dương" class="w-full h-full object-cover">
                 </div>
             </div>
-            <h1 class="text-5xl md:text-6xl font-bold font-patrick mb-6">Giới thiệu</h1>
-            <p class="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto">
-                Khám phá hành trình giáo dục đầy ý nghĩa tại Trường Mầm non Hoa Hướng Dương
-            </p>
+            <h1 class="text-6xl md:text-7xl font-bold font-patrick mb-8 hero-title">
+                Giới thiệu
+            </h1>
+            <div class="description-box bg-white/20 backdrop-blur-sm rounded-2xl p-6 border border-white/30 shadow-2xl max-w-4xl mx-auto">
+                <p class="text-2xl md:text-3xl text-white font-semibold leading-relaxed">
+                    ✨ Khám phá hành trình giáo dục đầy ý nghĩa tại 
+                    <span class="text-yellow-300 font-bold">Trường Mầm non Hoa Hướng Dương</span> ✨
+                </p>
+            </div>
         </div>
     </div>
     <div class="absolute top-10 right-10 w-32 h-32 bg-yellow-300/20 rounded-full"></div>
@@ -35,7 +40,7 @@
                 {% if mission_items %}
                 <div class="space-y-6">
                     {% for item in mission_items %}
-                    <div class="flex items-start">
+                    <div class="flex items-start mission-item">
                         <div class="w-12 h-12 {{ item.color }} rounded-full flex items-center justify-center mr-4 flex-shrink-0">
                             <i class="{{ item.icon }} text-white"></i>
                         </div>
@@ -51,7 +56,7 @@
                 {% else %}
                 <!-- Default content when no mission items -->
                 <div class="space-y-6">
-                    <div class="flex items-start">
+                    <div class="flex items-start mission-item">
                         <div class="w-12 h-12 bg-primary rounded-full flex items-center justify-center mr-4 flex-shrink-0">
                             <i class="fas fa-heart text-white"></i>
                         </div>
@@ -65,7 +70,7 @@
                         </div>
                     </div>
                     
-                    <div class="flex items-start">
+                    <div class="flex items-start mission-item">
                         <div class="w-12 h-12 bg-secondary rounded-full flex items-center justify-center mr-4 flex-shrink-0">
                             <i class="fas fa-lightbulb text-white"></i>
                         </div>
@@ -79,7 +84,7 @@
                         </div>
                     </div>
                     
-                    <div class="flex items-start">
+                    <div class="flex items-start mission-item">
                         <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
                             <i class="fas fa-seedling text-white"></i>
                         </div>
@@ -140,7 +145,7 @@
                 {% for event in history_events %}
                 <div class="flex items-center {{ 'flex-row-reverse' if event.position == 'right' or (loop.index0 % 2 == 1 and event.position != 'left') }}">
                     <div class="w-1/2 {{ 'pl-8' if event.position == 'left' or (loop.index0 % 2 == 0 and event.position != 'right') else 'pr-8 text-right' }}">
-                        <div class="bg-white p-6 rounded-2xl shadow-lg">
+                        <div class="bg-white p-6 rounded-2xl shadow-lg timeline-item">
                             <h3 class="text-xl font-bold {{ event.color.replace('bg-', 'text-') }} mb-2">{{ event.year }}</h3>
                             <h4 class="text-lg font-semibold text-gray-800 mb-3">{{ event.title }}</h4>
                             <p class="text-gray-600">{{ event.description }}</p>
@@ -160,7 +165,7 @@
             <div class="space-y-12">
                 <div class="flex items-center">
                     <div class="w-1/2 pr-8 text-right">
-                        <div class="bg-white p-6 rounded-2xl shadow-lg">
+                        <div class="bg-white p-6 rounded-2xl shadow-lg timeline-item">
                             <h3 class="text-xl font-bold text-primary mb-2">2014</h3>
                             <h4 class="text-lg font-semibold text-gray-800 mb-3">Thành lập trường</h4>
                             <p class="text-gray-600">
@@ -177,7 +182,7 @@
                     <div class="w-1/2 pr-8"></div>
                     <div class="w-8 h-8 bg-secondary rounded-full border-4 border-white shadow-lg relative z-10"></div>
                     <div class="w-1/2 pl-8">
-                        <div class="bg-white p-6 rounded-2xl shadow-lg">
+                        <div class="bg-white p-6 rounded-2xl shadow-lg timeline-item">
                             <h3 class="text-xl font-bold text-secondary mb-2">2017</h3>
                             <h4 class="text-lg font-semibold text-gray-800 mb-3">Mở rộng cơ sở</h4>
                             <p class="text-gray-600">
@@ -190,7 +195,7 @@
                 
                 <div class="flex items-center">
                     <div class="w-1/2 pr-8 text-right">
-                        <div class="bg-white p-6 rounded-2xl shadow-lg">
+                        <div class="bg-white p-6 rounded-2xl shadow-lg timeline-item">
                             <h3 class="text-xl font-bold text-green-500 mb-2">2020</h3>
                             <h4 class="text-lg font-semibold text-gray-800 mb-3">Đạt chuẩn quốc gia</h4>
                             <p class="text-gray-600">
@@ -207,7 +212,7 @@
                     <div class="w-1/2 pr-8"></div>
                     <div class="w-8 h-8 bg-purple-500 rounded-full border-4 border-white shadow-lg relative z-10"></div>
                     <div class="w-1/2 pl-8">
-                        <div class="bg-white p-6 rounded-2xl shadow-lg">
+                        <div class="bg-white p-6 rounded-2xl shadow-lg timeline-item">
                             <h3 class="text-xl font-bold text-purple-500 mb-2">2024</h3>
                             <h4 class="text-lg font-semibold text-gray-800 mb-3">Phát triển vượt bậc</h4>
                             <p class="text-gray-600">
@@ -276,7 +281,7 @@
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div class="text-center p-8 bg-blue-50 rounded-3xl">
+            <div class="text-center p-8 bg-blue-50 rounded-3xl value-card">
                 <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-6">
                     <i class="fas fa-heart text-white text-2xl"></i>
                 </div>
@@ -287,7 +292,7 @@
                 </p>
             </div>
             
-            <div class="text-center p-8 bg-green-50 rounded-3xl">
+            <div class="text-center p-8 bg-green-50 rounded-3xl value-card">
                 <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
                     <i class="fas fa-handshake text-white text-2xl"></i>
                 </div>
@@ -298,7 +303,7 @@
                 </p>
             </div>
             
-            <div class="text-center p-8 bg-yellow-50 rounded-3xl">
+            <div class="text-center p-8 bg-yellow-50 rounded-3xl value-card">
                 <div class="w-16 h-16 bg-yellow-500 rounded-full flex items-center justify-center mx-auto mb-6">
                     <i class="fas fa-star text-white text-2xl"></i>
                 </div>
@@ -309,7 +314,7 @@
                 </p>
             </div>
             
-            <div class="text-center p-8 bg-purple-50 rounded-3xl">
+            <div class="text-center p-8 bg-purple-50 rounded-3xl value-card">
                 <div class="w-16 h-16 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-6">
                     <i class="fas fa-users text-white text-2xl"></i>
                 </div>
@@ -320,7 +325,7 @@
                 </p>
             </div>
             
-            <div class="text-center p-8 bg-pink-50 rounded-3xl">
+            <div class="text-center p-8 bg-pink-50 rounded-3xl value-card">
                 <div class="w-16 h-16 bg-pink-500 rounded-full flex items-center justify-center mx-auto mb-6">
                     <i class="fas fa-lightbulb text-white text-2xl"></i>
                 </div>
@@ -331,7 +336,7 @@
                 </p>
             </div>
             
-            <div class="text-center p-8 bg-red-50 rounded-3xl">
+            <div class="text-center p-8 bg-red-50 rounded-3xl value-card">
                 <div class="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
                     <i class="fas fa-shield-alt text-white text-2xl"></i>
                 </div>
@@ -360,7 +365,7 @@
         {% if team_members %}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {% for member in team_members %}
-            <div class="bg-white rounded-3xl shadow-lg overflow-hidden text-center p-8 hover:shadow-xl transition-shadow duration-300">
+            <div class="bg-white rounded-3xl shadow-lg overflow-hidden text-center p-8 hover:shadow-xl transition-shadow duration-300 team-card">
                 {% if member.image_path %}
                 <img src="{{ url_for('static', filename=member.image_path) }}" 
                      alt="{{ member.name }}" 
@@ -415,4 +420,177 @@
         </div>
     </div>
 </section>
+
+<style>
+/* Custom animations for About page */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+/* Enhanced title styling */
+.hero-title {
+    background: linear-gradient(45deg, #fbbf24, #ffffff, #fbbf24, #ffffff);
+    background-size: 400% 400%;
+    animation: shimmer 3s ease-in-out infinite;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 30px rgba(251, 191, 36, 0.5);
+}
+
+/* Enhanced description box */
+.description-box {
+    animation: fadeInUp 1s ease-out 0.5s both;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Floating animation for decorative elements */
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+.floating-element {
+    animation: float 6s ease-in-out infinite;
+}
+
+/* Mission items animation */
+.mission-item {
+    transition: all 0.3s ease;
+}
+
+.mission-item:hover {
+    transform: translateX(10px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Timeline enhancements */
+.timeline-item {
+    transition: all 0.3s ease;
+}
+
+.timeline-item:hover {
+    transform: scale(1.05);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* Value cards hover effect */
+.value-card {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.value-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.value-card:hover::before {
+    left: 100%;
+}
+
+.value-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Team member cards */
+.team-card {
+    transition: all 0.3s ease;
+}
+
+.team-card:hover {
+    transform: translateY(-10px) scale(1.02);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 3rem !important;
+    }
+    
+    .description-box p {
+        font-size: 1.25rem !important;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add classes for animations
+    const missionItems = document.querySelectorAll('.mission-item');
+    missionItems.forEach(item => {
+        item.classList.add('mission-item');
+    });
+    
+    const timelineItems = document.querySelectorAll('.timeline-item');
+    timelineItems.forEach(item => {
+        item.classList.add('timeline-item');
+    });
+    
+    const valueCards = document.querySelectorAll('.value-card');
+    valueCards.forEach(card => {
+        card.classList.add('value-card');
+    });
+    
+    const teamCards = document.querySelectorAll('.team-card');
+    teamCards.forEach(card => {
+        card.classList.add('team-card');
+    });
+    
+    // Add floating animation to decorative elements
+    const decorativeElements = document.querySelectorAll('.absolute.w-32, .absolute.w-20');
+    decorativeElements.forEach(element => {
+        element.classList.add('floating-element');
+    });
+    
+    // Intersection Observer for scroll animations
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.animation = 'fadeInUp 0.8s ease-out forwards';
+            }
+        });
+    }, observerOptions);
+    
+    // Observe sections for scroll animations
+    const sections = document.querySelectorAll('section');
+    sections.forEach(section => {
+        observer.observe(section);
+    });
+});
+</script>
 {% endblock %}
