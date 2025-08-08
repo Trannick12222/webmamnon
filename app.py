@@ -14,14 +14,23 @@ load_dotenv()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'hoa-huong-duong-secret-key-2023'
-# Database configuration - Railway MySQL
-mysql_url = os.environ.get('MYSQL_URL')
-if mysql_url:
-    # Convert mysql:// to mysql+pymysql:// for SQLAlchemy
-    app.config['SQLALCHEMY_DATABASE_URI'] = mysql_url.replace('mysql://', 'mysql+pymysql://')
-else:
-    # Fallback to SQLite for local development
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hoa_huong_duong.db'
+# Database configuration helper function
+def _e(keys, default=None):
+    """Get environment variable from multiple possible keys"""
+    for key in keys:
+        value = os.environ.get(key)
+        if value:
+            return value
+    return default
+
+# Database configuration - Local MySQL by default, Railway MySQL when deployed
+mysql_host = _e(["MYSQL_HOST", "MYSQLHOST"], "127.0.0.1")
+mysql_port = int(_e(["MYSQL_PORT", "MYSQLPORT"], 3306))
+mysql_user = _e(["MYSQL_USER", "MYSQLUSER"], "root")
+mysql_password = _e(["MYSQL_PASSWORD", "MYSQLPASSWORD", "MYSQL_ROOT_PASSWORD"], "173915Snow")
+mysql_database = _e(["MYSQL_DATABASE"], "hoa_huong_duong")
+
+app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{mysql_user}:{mysql_password}@{mysql_host}:{mysql_port}/{mysql_database}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
