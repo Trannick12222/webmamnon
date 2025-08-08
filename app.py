@@ -14,7 +14,7 @@ load_dotenv()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'hoa-huong-duong-secret-key-2023'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hoa_huong_duong.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///hoa_huong_duong.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
@@ -453,6 +453,16 @@ def index():
                          contact_settings=contact_settings,
                          about_section=about_section,
                          about_stats=about_stats)
+
+@app.route('/health')
+def health_check():
+    """Health check endpoint for Railway deployment"""
+    try:
+        # Simple database connectivity check
+        db.session.execute('SELECT 1')
+        return {'status': 'healthy', 'database': 'connected'}, 200
+    except Exception as e:
+        return {'status': 'unhealthy', 'error': str(e)}, 500
 
 @app.route('/gioi-thieu')
 def about():
