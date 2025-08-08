@@ -1,6 +1,4 @@
-[providers]
-python = "3.9"
-nodejs = "18"
+providers = ["python", "nodejs"]
 
 [phases.install]
 cmds = [
@@ -12,6 +10,3 @@ cmds = [
 cmds = [
     'python -c "from app import app, db; app.app_context().push(); db.create_all(); print(\"Database initialized\")"'
 ]
-
-[start]
-cmd = 'gunicorn app:app --bind 0.0.0.0:$PORT --timeout 120 --workers 1'
