@@ -14,7 +14,14 @@ load_dotenv()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'hoa-huong-duong-secret-key-2023'
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///hoa_huong_duong.db')
+# Database configuration - Railway MySQL
+mysql_url = os.environ.get('MYSQL_URL')
+if mysql_url:
+    # Convert mysql:// to mysql+pymysql:// for SQLAlchemy
+    app.config['SQLALCHEMY_DATABASE_URI'] = mysql_url.replace('mysql://', 'mysql+pymysql://')
+else:
+    # Fallback to SQLite for local development
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hoa_huong_duong.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
