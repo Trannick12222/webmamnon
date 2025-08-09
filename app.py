@@ -22,7 +22,7 @@ def _e(keys, default=None):
         if value:
             return value
     return default
-
+#test commit
 # Database configuration - Local MySQL by default, Railway MySQL when deployed
 mysql_host = _e(["MYSQL_HOST", "MYSQLHOST"], "127.0.0.1")
 mysql_port = int(_e(["MYSQL_PORT", "MYSQLPORT"], 3306))
@@ -32,7 +32,7 @@ mysql_database = _e(["MYSQL_DATABASE"], "hoa_huong_duong")
 
 app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{mysql_user}:{mysql_password}@{mysql_host}:{mysql_port}/{mysql_database}?charset=utf8mb4'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['UPLOAD_FOLDER'] = 'static/uploads'
+app.config['UPLOAD_FOLDER'] = os.environ.get('UPLOAD_FOLDER', 'static/uploads')
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 db = SQLAlchemy(app)
