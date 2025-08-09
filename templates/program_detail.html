@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block title %}{{ program.name }} - Trường Mầm non Hoa Hướng Dương{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="relative py-20 md:py-32 flex items-center justify-center overflow-hidden">
+    <!-- Animated Background -->
+    <div class="absolute inset-0 bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500"></div>
+    
+    <!-- Floating Elements -->
+    <div class="absolute top-20 left-20 w-16 h-16 bg-white/20 rounded-full animate-float"></div>
+    <div class="absolute top-40 right-32 w-12 h-12 bg-yellow-300/30 rounded-full animate-float-delay-1"></div>
+    <div class="absolute bottom-32 left-16 w-20 h-20 bg-pink-300/25 rounded-full animate-float-delay-2"></div>
+    <div class="absolute bottom-20 right-20 w-14 h-14 bg-blue-300/30 rounded-full animate-float-delay-3"></div>
+    
+    <!-- Content -->
+    <div class="container mx-auto px-4 relative z-10 text-center">
+        <div class="max-w-4xl mx-auto">
+            <!-- Badge -->
+            <div class="inline-flex items-center px-6 py-3 bg-white/20 backdrop-blur-sm rounded-full text-white mb-8 animate-fade-in-up">
+                <i class="fas fa-graduation-cap mr-2"></i>
+                <span class="font-medium">Chi tiết chương trình</span>
+            </div>
+            
+            <!-- Main Title -->
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-8 animate-fade-in-up animation-delay-200">
+                <span class="bg-gradient-to-r from-white to-yellow-200 bg-clip-text text-transparent font-patrick">
+                    {{ program.name }}
+                </span>
+            </h1>
+            
+            <!-- Age Group -->
+            {% if program.age_group %}
+            <p class="text-xl md:text-2xl text-white/95 mb-4 animate-fade-in-up animation-delay-400">
+                <i class="fas fa-child mr-2"></i>
+                Độ tuổi: <span class="text-yellow-200 font-semibold">{{ program.age_group }}</span>
+            </p>
+            {% endif %}
+            
+            <!-- Price and Duration -->
+            <div class="flex flex-col sm:flex-row gap-4 justify-center mb-8 animate-fade-in-up animation-delay-500">
+                {% if program.price %}
+                <div class="bg-white/20 backdrop-blur-sm rounded-full px-6 py-3 text-white">
+                    <i class="fas fa-tag mr-2"></i>
+                    <span class="font-semibold">{{ program.price }}</span>
+                </div>
+                {% endif %}
+                {% if program.duration %}
+                <div class="bg-white/20 backdrop-blur-sm rounded-full px-6 py-3 text-white">
+                    <i class="fas fa-clock mr-2"></i>
+                    <span class="font-semibold">{{ program.duration }}</span>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- CTA Buttons -->
+            <div class="flex flex-col sm:flex-row gap-6 justify-center animate-fade-in-up animation-delay-600">
+                <a href="/lien-he" class="group bg-white text-gray-800 px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-100 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
+                    <i class="fas fa-phone mr-2 group-hover:animate-bounce"></i>
+                    Đăng ký ngay
+                </a>
+                <a href="/chuong-trinh" class="group border-2 border-white text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-white hover:text-gray-800 transition-all duration-300 transform hover:scale-105">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    Quay lại danh sách
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Program Details Section -->
+<section class="py-20 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid lg:grid-cols-2 gap-12 items-start">
+                <!-- Program Image -->
+                <div class="order-2 lg:order-1">
+                    {% if program.featured_image %}
+                    <div class="relative rounded-3xl overflow-hidden shadow-2xl group">
+                        <img src="{{ url_for('static', filename=program.featured_image.replace('uploads/', '')) }}" 
+                             alt="{{ program.name }}" 
+                             class="w-full h-96 object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </div>
+                    {% else %}
+                    <div class="relative rounded-3xl overflow-hidden shadow-2xl bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500 h-96 flex items-center justify-center">
+                        <div class="text-center text-white">
+                            <i class="fas fa-graduation-cap text-6xl mb-4 opacity-50"></i>
+                            <p class="text-xl font-semibold">{{ program.name }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Program Info -->
+                <div class="order-1 lg:order-2">
+                    <div class="bg-white rounded-3xl p-8 shadow-xl">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">
+                            <i class="fas fa-info-circle text-blue-500 mr-3"></i>
+                            Thông tin chương trình
+                        </h2>
+                        
+                        <!-- Description -->
+                        {% if program.description %}
+                        <div class="mb-8">
+                            <h3 class="text-xl font-semibold text-gray-700 mb-4">
+                                <i class="fas fa-file-alt text-green-500 mr-2"></i>
+                                Mô tả
+                            </h3>
+                            <p class="text-gray-600 leading-relaxed">{{ program.description }}</p>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Program Details Grid -->
+                        <div class="grid sm:grid-cols-2 gap-6">
+                            {% if program.age_group %}
+                            <div class="bg-blue-50 rounded-2xl p-6 text-center">
+                                <i class="fas fa-child text-3xl text-blue-500 mb-3"></i>
+                                <h4 class="font-semibold text-gray-700 mb-2">Độ tuổi</h4>
+                                <p class="text-blue-600 font-bold">{{ program.age_group }}</p>
+                            </div>
+                            {% endif %}
+                            
+                            {% if program.price %}
+                            <div class="bg-green-50 rounded-2xl p-6 text-center">
+                                <i class="fas fa-tag text-3xl text-green-500 mb-3"></i>
+                                <h4 class="font-semibold text-gray-700 mb-2">Học phí</h4>
+                                <p class="text-green-600 font-bold">{{ program.price }}</p>
+                            </div>
+                            {% endif %}
+                            
+                            {% if program.duration %}
+                            <div class="bg-purple-50 rounded-2xl p-6 text-center">
+                                <i class="fas fa-clock text-3xl text-purple-500 mb-3"></i>
+                                <h4 class="font-semibold text-gray-700 mb-2">Thời gian</h4>
+                                <p class="text-purple-600 font-bold">{{ program.duration }}</p>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="bg-yellow-50 rounded-2xl p-6 text-center">
+                                <i class="fas fa-star text-3xl text-yellow-500 mb-3"></i>
+                                <h4 class="font-semibold text-gray-700 mb-2">Trạng thái</h4>
+                                <p class="text-yellow-600 font-bold">
+                                    {% if program.is_active %}
+                                    <i class="fas fa-check-circle mr-1"></i>Đang mở
+                                    {% else %}
+                                    <i class="fas fa-pause-circle mr-1"></i>Tạm dừng
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="mt-8 flex flex-col sm:flex-row gap-4">
+                            <a href="/lien-he" class="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-4 rounded-2xl font-bold text-center hover:from-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                                <i class="fas fa-phone mr-2"></i>
+                                Liên hệ tư vấn
+                            </a>
+                            <a href="/chuong-trinh" class="flex-1 bg-gray-100 text-gray-700 px-6 py-4 rounded-2xl font-bold text-center hover:bg-gray-200 transition-all duration-300 border-2 border-gray-200">
+                                <i class="fas fa-list mr-2"></i>
+                                Xem tất cả chương trình
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Related Programs Section -->
+<section class="py-20 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
+                <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent font-patrick">
+                    Chương trình khác
+                </span>
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Khám phá thêm các chương trình giáo dục đa dạng khác tại trường
+            </p>
+        </div>
+        
+        <div class="text-center">
+            <a href="/chuong-trinh" class="inline-flex items-center bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-4 rounded-full font-bold text-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                <i class="fas fa-graduation-cap mr-2"></i>
+                Xem tất cả chương trình
+                <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Contact CTA Section -->
+<section class="py-20 bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500 relative overflow-hidden">
+    <!-- Floating Elements -->
+    <div class="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full animate-float"></div>
+    <div class="absolute top-32 right-16 w-16 h-16 bg-yellow-300/20 rounded-full animate-float-delay-1"></div>
+    <div class="absolute bottom-16 left-20 w-24 h-24 bg-pink-300/15 rounded-full animate-float-delay-2"></div>
+    <div class="absolute bottom-32 right-12 w-12 h-12 bg-blue-300/25 rounded-full animate-float-delay-3"></div>
+    
+    <div class="container mx-auto px-4 relative z-10">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-4xl md:text-5xl font-bold text-white mb-6 font-patrick">
+                Sẵn sàng đăng ký?
+            </h2>
+            <p class="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+                Liên hệ với chúng tôi ngay hôm nay để được tư vấn chi tiết về chương trình 
+                <span class="font-semibold text-yellow-200">{{ program.name }}</span>
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-6 justify-center">
+                <a href="/lien-he" class="group bg-white text-gray-800 px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-100 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
+                    <i class="fas fa-phone mr-2 group-hover:animate-bounce"></i>
+                    Liên hệ ngay
+                </a>
+                <a href="tel:028-3823-4567" class="group border-2 border-white text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-white hover:text-gray-800 transition-all duration-300 transform hover:scale-105">
+                    <i class="fas fa-phone-alt mr-2"></i>
+                    028-3823-4567
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
