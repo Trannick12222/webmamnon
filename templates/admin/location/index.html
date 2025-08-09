@@ -59,30 +59,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <div class="info-item">
-                                                <div class="d-flex align-items-start">
-                                                    <i class="fas fa-globe mr-2 mt-1" style="opacity: 0.8;"></i>
-                                                    <div>
-                                                        <small class="d-block opacity-75">Vĩ độ</small>
-                                                        <span class="font-weight-medium">{{ location_settings.latitude or 'Chưa thiết lập' }}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="info-item">
-                                                <div class="d-flex align-items-start">
-                                                    <i class="fas fa-globe mr-2 mt-1" style="opacity: 0.8;"></i>
-                                                    <div>
-                                                        <small class="d-block opacity-75">Kinh độ</small>
-                                                        <span class="font-weight-medium">{{ location_settings.longitude or 'Chưa thiết lập' }}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+
                                     <div class="info-item mt-3">
                                         <div class="d-flex align-items-start">
                                             <i class="fas fa-tag mr-2 mt-1" style="opacity: 0.8;"></i>
@@ -92,17 +69,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    {% if location_settings.marker_info %}
-                                    <div class="info-item mt-3">
-                                        <div class="d-flex align-items-start">
-                                            <i class="fas fa-info-circle mr-2 mt-1" style="opacity: 0.8;"></i>
-                                            <div>
-                                                <small class="d-block opacity-75">Thông tin marker</small>
-                                                <span class="font-weight-medium">{{ location_settings.marker_info }}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    {% endif %}
+
                                 </div>
                             </div>
                             
@@ -130,54 +97,7 @@
                                             {% endif %}
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <div class="info-item mb-3">
-                                                <div class="d-flex align-items-start">
-                                                    <i class="fas fa-search-plus mr-2 mt-1" style="opacity: 0.8;"></i>
-                                                    <div>
-                                                        <small class="d-block opacity-75">Mức zoom</small>
-                                                        <span class="font-weight-medium">{{ location_settings.map_zoom_level }}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="info-item mb-3">
-                                                <div class="d-flex align-items-start">
-                                                    <i class="fas fa-layer-group mr-2 mt-1" style="opacity: 0.8;"></i>
-                                                    <div>
-                                                        <small class="d-block opacity-75">Kiểu bản đồ</small>
-                                                        <span class="font-weight-medium text-capitalize">{{ location_settings.map_style }}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="info-item mb-3">
-                                        <div class="d-flex align-items-start">
-                                            <i class="fas fa-arrows-alt-v mr-2 mt-1" style="opacity: 0.8;"></i>
-                                            <div>
-                                                <small class="d-block opacity-75">Chiều cao</small>
-                                                <span class="font-weight-medium">{{ location_settings.map_height }}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div class="d-flex align-items-center">
-                                            <i class="fas fa-eye mr-2" style="opacity: 0.8;"></i>
-                                            <span>Hiển thị footer</span>
-                                        </div>
-                                        {% if location_settings.show_in_footer %}
-                                            <span class="status-badge success">
-                                                <i class="fas fa-check mr-1"></i>Có
-                                            </span>
-                                        {% else %}
-                                            <span class="status-badge info">
-                                                <i class="fas fa-times mr-1"></i>Không
-                                            </span>
-                                        {% endif %}
-                                    </div>
+
                                     <div class="d-flex justify-content-between align-items-center mt-3">
                                         <div class="d-flex align-items-center">
                                             <i class="fas fa-power-off mr-2" style="opacity: 0.8;"></i>

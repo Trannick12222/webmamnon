@@ -1,79 +1,746 @@
 {% extends "admin/base.html" %}
 
-{% block title %}Chỉnh sửa Vị trí & Bản đồ{% endblock %}
+{% block title %}Cài đặt Vị trí & Bản đồ{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+<style>
+.location-edit-container {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+.main-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+.card-header-custom {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+    position: relative;
+}
+
+.card-header-custom::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    opacity: 0.3;
+}
+
+.card-header-custom h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.card-header-custom p {
+    font-size: 1.1rem;
+    margin: 0.5rem 0 0 0;
+    opacity: 0.9;
+    position: relative;
+    z-index: 1;
+}
+
+.section-card {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    border: 1px solid #f0f0f0;
+    transition: all 0.3s ease;
+}
+
+.section-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+}
+
+.section-title {
+    color: #2d3748;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.section-title i {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+}
+
+/* Form Elements */
+.form-label {
+    font-weight: 600;
+    color: #2d3748;
+    font-size: 1.1rem;
+}
+
+.code-input-container {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.code-textarea {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    background: #f8fafc;
+    transition: all 0.3s ease;
+    resize: vertical;
+    min-height: 150px;
+}
+
+.code-textarea:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    background: white;
+}
+
+.btn-clear {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    opacity: 0.8;
+}
+
+.btn-clear:hover {
+    opacity: 1;
+    transform: scale(1.1);
+    background: #dc2626;
+}
+
+/* Guide Card */
+.guide-card {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    border: 1px solid #bae6fd;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.guide-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    color: #0369a1;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.guide-header i {
+    margin-right: 0.5rem;
+    font-size: 1.2rem;
+}
+
+.guide-steps {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.step {
+    display: flex;
+    align-items: center;
+    color: #1e40af;
+}
+
+.step-number {
+    background: #3b82f6;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-right: 0.75rem;
+    flex-shrink: 0;
+}
+
+.step a {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.step a:hover {
+    text-decoration: underline;
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.btn-action {
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    text-align: left;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-action::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    transition: left 0.5s;
+}
+
+.btn-action:hover::before {
+    left: 100%;
+}
+
+.btn-analyze {
+    border-color: #3b82f6;
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+}
+
+.btn-analyze:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(59, 130, 246, 0.3);
+    border-color: #2563eb;
+}
+
+.btn-preview {
+    border-color: #10b981;
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+}
+
+.btn-preview:hover:not(:disabled) {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(16, 185, 129, 0.3);
+    border-color: #059669;
+}
+
+.btn-preview:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+    border-color: #d1d5db;
+}
+
+.btn-icon {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1.5rem;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.btn-analyze .btn-icon {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+}
+
+.btn-preview .btn-icon {
+    background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+}
+
+.btn-preview:disabled .btn-icon {
+    background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+}
+
+.btn-content h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.btn-content p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 0.95rem;
+}
+
+/* Status Badge */
+.status-badge {
+    display: flex;
+    align-items: center;
+    background: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #9ca3af;
+    margin-right: 0.5rem;
+}
+
+.status-dot.active {
+    background: #10b981;
+}
+
+.status-dot.warning {
+    background: #f59e0b;
+}
+
+/* Map Preview */
+.map-preview-container {
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    margin-top: 1.5rem;
+}
+
+.map-display {
+    height: 400px;
+    width: 100%;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.map-placeholder {
+    text-align: center;
+    color: #64748b;
+}
+
+.placeholder-icon {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 2rem;
+}
+
+.map-placeholder h4 {
+    color: #374151;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.map-placeholder p {
+    color: #6b7280;
+    margin: 0;
+}
+
+/* Form Actions */
+.form-actions {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-top: 2rem;
+    border: 1px solid #e2e8f0;
+}
+
+.actions-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.action-info h4 {
+    color: #1f2937;
+    margin: 0 0 0.5rem 0;
+    font-weight: 600;
+    font-size: 1.25rem;
+}
+
+.action-info p {
+    color: #6b7280;
+    margin: 0;
+}
+
+.action-buttons-footer {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn-secondary-action, .btn-primary-action {
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-secondary-action {
+    background: #6b7280;
+    color: white;
+}
+
+.btn-secondary-action:hover {
+    background: #4b5563;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(107, 114, 128, 0.3);
+    color: white;
+    text-decoration: none;
+}
+
+.btn-primary-action {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.btn-primary-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.btn-secondary-action i, .btn-primary-action i {
+    margin-right: 0.5rem;
+}
+
+/* Address Input Styling */
+.address-input {
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #f8fafc;
+}
+
+.address-input:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    background: white;
+}
+
+.address-preview {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    border: 1px solid #bae6fd;
+    border-radius: 12px;
+    overflow: hidden;
+    height: fit-content;
+}
+
+.preview-header {
+    background: #0369a1;
+    color: white;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+
+.preview-header i {
+    margin-right: 0.5rem;
+}
+
+.preview-content {
+    padding: 1rem;
+}
+
+.address-display {
+    color: #1e40af;
+    font-weight: 500;
+    line-height: 1.5;
+    min-height: 1.5rem;
+}
+
+/* Form Control Styling */
+.form-control {
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+    background: #f8fafc;
+}
+
+.form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    background: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .location-edit-container {
+        padding: 1rem 0;
+    }
+    
+    .card-header-custom {
+        padding: 1.5rem;
+    }
+    
+    .card-header-custom h1 {
+        font-size: 2rem;
+    }
+    
+    .section-card {
+        padding: 1.5rem;
+    }
+    
+    .action-buttons {
+        grid-template-columns: 1fr;
+    }
+    
+    .actions-content {
+        flex-direction: column;
+        gap: 1.5rem;
+        text-align: center;
+    }
+    
+    .action-buttons-footer {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .map-display {
+        height: 300px;
+    }
+    
+    .address-preview {
+        margin-top: 1rem;
+    }
+}
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <!-- Page Header -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h2 class="text-gradient font-weight-bold mb-2">
-                        <i class="fas fa-edit mr-2"></i>
-                        Chỉnh sửa Vị trí & Bản đồ
-                    </h2>
-                    <p class="text-muted mb-0">Cấu hình thông tin địa chỉ và bản đồ Google Maps cho website</p>
-                </div>
-                <a href="{{ url_for('admin_location') }}" class="btn btn-secondary btn-enhanced">
-                    <i class="fas fa-arrow-left"></i> Quay lại
-                </a>
+<div class="location-edit-container">
+    <div class="container">
+        <!-- Main Card -->
+        <div class="main-card">
+            <!-- Header -->
+            <div class="card-header-custom">
+                <h1><i class="fas fa-map-marked-alt mr-3"></i>Cài đặt Vị trí & Bản đồ</h1>
+                <p>Cấu hình thông tin địa chỉ và hiển thị bản đồ Google Maps cho website của bạn</p>
             </div>
-        </div>
-    </div>
-    
-    <div class="row">
-        <div class="col-12">
-            <form method="POST">
-                <!-- Google Maps Configuration Section -->
-                <div class="form-section">
-                    <h5>
-                        <i class="fas fa-map-marked-alt"></i>
-                        Cài đặt bản đồ từ Google Maps
-                    </h5>
-                    <p class="text-muted mb-4">Chỉ cần paste code iframe từ Google Maps để hiển thị bản đồ trên website.</p>
-                    
-                    <div class="form-group">
-                        <label for="google_maps_embed" class="font-weight-bold">
-                            <i class="fas fa-code mr-2 text-primary"></i>
-                            Code nhúng Google Maps (iframe)
-                        </label>
-                        <textarea class="form-control form-control-enhanced" id="google_maps_embed" rows="6" placeholder='Paste code iframe từ Google Maps vào đây, ví dụ: <iframe src="https://www.google.com/maps/embed?pb=..." ...></iframe>'>{{ location_settings.google_maps_embed if location_settings else '' }}</textarea>
-                        <div class="mt-3 p-3 bg-light rounded-lg">
-                            <h6 class="font-weight-bold text-primary mb-2">
-                                <i class="fas fa-info-circle mr-2"></i>
-                                Cách lấy code iframe:
-                            </h6>
-                            <ol class="mb-0 text-muted">
-                                <li>Truy cập <a href="https://www.google.com/maps" target="_blank" class="text-primary">Google Maps</a></li>
-                                <li>Tìm địa điểm của bạn</li>
-                                <li>Click "Chia sẻ" → "Nhúng bản đồ"</li>
-                                <li>Copy toàn bộ code iframe và paste vào đây</li>
-                            </ol>
+            
+            <!-- Content -->
+            <div class="p-4">
+                <form method="POST">
+                    <!-- Step 1: Google Maps Configuration -->
+                    <div class="section-card">
+                        <div class="section-title">
+                            <i class="fas fa-code"></i>
+                            <div>
+                                <h3 class="mb-1">Bước 1: Nhúng bản đồ Google Maps</h3>
+                                <small class="text-muted">Paste code iframe từ Google Maps để hiển thị bản đồ</small>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="google_maps_embed" class="form-label mb-3">
+                                <i class="fas fa-code mr-2"></i>
+                                Code iframe từ Google Maps
+                            </label>
+                            <div class="code-input-container">
+                                <textarea 
+                                    class="form-control code-textarea" 
+                                    id="google_maps_embed" 
+                                    rows="6" 
+                                    placeholder='Paste code iframe từ Google Maps vào đây...'
+                                >{{ location_settings.google_maps_embed if location_settings else '' }}</textarea>
+                                <button type="button" class="btn btn-clear" id="clear-embed" title="Xóa nội dung">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Quick Guide -->
+                        <div class="guide-card">
+                            <div class="guide-header">
+                                <i class="fas fa-lightbulb"></i>
+                                <span>Hướng dẫn lấy code iframe</span>
+                            </div>
+                            <div class="guide-steps">
+                                <div class="step">
+                                    <span class="step-number">1</span>
+                                    <span>Truy cập <a href="https://www.google.com/maps" target="_blank">Google Maps</a></span>
+                                </div>
+                                <div class="step">
+                                    <span class="step-number">2</span>
+                                    <span>Tìm kiếm địa điểm của bạn</span>
+                                </div>
+                                <div class="step">
+                                    <span class="step-number">3</span>
+                                    <span>Click "Chia sẻ" → "Nhúng bản đồ"</span>
+                                </div>
+                                <div class="step">
+                                    <span class="step-number">4</span>
+                                    <span>Copy toàn bộ code iframe</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="action-buttons">
+                            <button type="button" class="btn-action btn-analyze" id="extract-from-embed">
+                                <div class="btn-icon">
+                                    <i class="fas fa-magic"></i>
+                                </div>
+                                <div class="btn-content">
+                                    <h4>Tự động phân tích</h4>
+                                    <p>Trích xuất thông tin từ code iframe</p>
+                                </div>
+                            </button>
+                            
+                            <button type="button" class="btn-action btn-preview" id="apply-location" disabled>
+                                <div class="btn-icon">
+                                    <i class="fas fa-eye"></i>
+                                </div>
+                                <div class="btn-content">
+                                    <h4>Xem trước bản đồ</h4>
+                                    <p>Hiển thị bản đồ ở bên dưới</p>
+                                </div>
+                            </button>
                         </div>
                     </div>
                     
-                    <div class="d-flex flex-wrap gap-2 mb-4">
-                        <button type="button" class="btn btn-enhanced btn-info" id="extract-from-embed">
-                            <i class="fas fa-magic"></i> 
-                            Tự động lấy thông tin từ iframe
-                        </button>
-                        <button type="button" class="btn btn-enhanced btn-success" id="apply-location" disabled>
-                            <i class="fas fa-map"></i> 
-                            Áp dụng & Hiển thị bản đồ
-                        </button>
+                    <!-- Step 1.5: Address Information -->
+                    <div class="section-card">
+                        <div class="section-title">
+                            <i class="fas fa-home"></i>
+                            <div>
+                                <h3 class="mb-1">Thông tin địa chỉ</h3>
+                                <small class="text-muted">Cập nhật địa chỉ hiển thị trên website</small>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label for="address_display" class="form-label mb-3">
+                                        <i class="fas fa-map-marker-alt mr-2"></i>
+                                        Địa chỉ hiển thị
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        class="form-control address-input" 
+                                        id="address_display" 
+                                        name="address"
+                                        value="{{ location_settings.address if location_settings else '123 Đường Hoa Hướng Dương, Quận 1, TP.HCM' }}"
+                                        placeholder="Nhập địa chỉ đầy đủ của trường..."
+                                    >
+                                    <small class="form-text text-muted mt-2">
+                                        <i class="fas fa-info-circle mr-1"></i>
+                                        Địa chỉ này sẽ hiển thị trên website và trong thông tin liên hệ
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="address-preview">
+                                    <div class="preview-header">
+                                        <i class="fas fa-eye"></i>
+                                        <span>Xem trước</span>
+                                    </div>
+                                    <div class="preview-content">
+                                        <div class="address-display" id="address-preview">
+                                            {{ location_settings.address if location_settings else '123 Đường Hoa Hướng Dương, Quận 1, TP.HCM' }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="marker_title_display" class="form-label">
+                                        <i class="fas fa-tag mr-2"></i>
+                                        Tiêu đề marker
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        class="form-control" 
+                                        id="marker_title_display" 
+                                        name="marker_title"
+                                        value="{{ location_settings.marker_title if location_settings else 'Trường Mầm non Hoa Hướng Dương' }}"
+                                        placeholder="Tiêu đề hiển thị trên bản đồ..."
+                                    >
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="marker_info_display" class="form-label">
+                                        <i class="fas fa-info-circle mr-2"></i>
+                                        Thông tin marker
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        class="form-control" 
+                                        id="marker_info_display" 
+                                        name="marker_info"
+                                        value="{{ location_settings.marker_info if location_settings else 'Trường Mầm non Hoa Hướng Dương - Nuôi dưỡng tâm hồn, phát triển tài năng' }}"
+                                        placeholder="Mô tả chi tiết..."
+                                    >
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     
                     <!-- Hidden fields for form submission -->
-                    <input type="hidden" id="address" name="address" value="{{ location_settings.address if location_settings else '' }}">
                     <input type="hidden" id="latitude" name="latitude" value="{{ location_settings.latitude if location_settings else '' }}">
                     <input type="hidden" id="longitude" name="longitude" value="{{ location_settings.longitude if location_settings else '' }}">
-                    <input type="hidden" id="marker_title" name="marker_title" value="{{ location_settings.marker_title if location_settings else '' }}">
-                    <input type="hidden" id="marker_info" name="marker_info" value="{{ location_settings.marker_info if location_settings else '' }}">
                     <input type="hidden" id="google_maps_api_key" name="google_maps_api_key" value="{{ location_settings.google_maps_api_key if location_settings else '' }}">
                     <input type="hidden" id="google_maps_embed" name="google_maps_embed" value="{{ location_settings.google_maps_embed if location_settings else '' }}">
                     <input type="hidden" id="map_zoom_level" name="map_zoom_level" value="{{ location_settings.map_zoom_level if location_settings else '15' }}">
@@ -83,46 +750,56 @@
                     <input type="hidden" id="is_active" name="is_active" value="{{ 'true' if not location_settings or location_settings.is_active else 'false' }}">
                 </div>
                 
-                <!-- Map Preview Section -->
-                <div class="form-section">
-                    <h5>
-                        <i class="fas fa-eye"></i>
-                        Xem trước bản đồ
-                    </h5>
-                    <div class="alert-enhanced alert-info mb-4">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-info-circle fa-2x mr-3"></i>
+                    <!-- Step 2: Map Preview -->
+                    <div class="section-card">
+                        <div class="section-title">
+                            <i class="fas fa-map"></i>
                             <div>
-                                <h6 class="font-weight-bold mb-1">Hướng dẫn sử dụng</h6>
-                                <p class="mb-0">Paste code iframe ở trên và click "Áp dụng & Hiển thị bản đồ" để xem bản đồ.</p>
+                                <h3 class="mb-1">Bước 2: Xem trước bản đồ</h3>
+                                <small class="text-muted">Kiểm tra bản đồ trước khi lưu</small>
+                            </div>
+                            <div class="ml-auto">
+                                <div class="status-badge" id="map-status-badge">
+                                    <div class="status-dot" id="map-status"></div>
+                                    <span id="map-status-text">Chưa có bản đồ</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="map-preview-container">
+                            <div id="location-picker-map" class="map-display">
+                                <div class="map-placeholder">
+                                    <div class="placeholder-icon">
+                                        <i class="fas fa-map-marked-alt"></i>
+                                    </div>
+                                    <h4>Chưa có bản đồ</h4>
+                                    <p>Paste code iframe và nhấn "Xem trước bản đồ" để hiển thị</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="map-container-enhanced">
-                        <div id="location-picker-map" style="height: 400px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; color: #6c757d;"></div>
-                    </div>
-                </div>
-                
-                <!-- Form Actions -->
-                <div class="form-section">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="font-weight-bold text-muted mb-1">Sẵn sàng lưu thay đổi?</h6>
-                            <small class="text-muted">Kiểm tra lại thông tin trước khi lưu</small>
-                        </div>
-                        <div class="d-flex gap-2">
-                            <a href="{{ url_for('admin_location') }}" class="btn btn-enhanced btn-secondary">
-                                <i class="fas fa-arrow-left"></i> 
-                                Quay lại
-                            </a>
-                            <button type="submit" class="btn btn-enhanced btn-primary">
-                                <i class="fas fa-save"></i> 
-                                Lưu thay đổi
-                            </button>
+                    
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <div class="actions-content">
+                            <div class="action-info">
+                                <h4>Hoàn tất cài đặt</h4>
+                                <p>Kiểm tra lại thông tin và lưu cài đặt</p>
+                            </div>
+                            <div class="action-buttons-footer">
+                                <a href="{{ url_for('admin_location') }}" class="btn-secondary-action">
+                                    <i class="fas fa-arrow-left"></i>
+                                    Quay lại
+                                </a>
+                                <button type="submit" class="btn-primary-action">
+                                    <i class="fas fa-save"></i>
+                                    Lưu cài đặt
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
 </div>
@@ -595,108 +1272,95 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('apply-location').disabled = false;
     }
 });
+
+// Clear embed button functionality
+document.getElementById('clear-embed').addEventListener('click', function() {
+    if (confirm('Bạn có chắc muốn xóa code iframe?')) {
+        document.getElementById('google_maps_embed').value = '';
+        document.getElementById('apply-location').disabled = true;
+        updateMapStatus('empty');
+        
+        // Clear map preview
+        const mapContainer = document.getElementById('location-picker-map');
+        mapContainer.innerHTML = `
+            <div class="map-placeholder">
+                <div class="placeholder-icon">
+                    <i class="fas fa-map-marked-alt"></i>
+                </div>
+                <h4>Chưa có bản đồ</h4>
+                <p>Paste code iframe và nhấn "Xem trước bản đồ" để hiển thị</p>
+            </div>
+        `;
+    }
+});
+
+// Update map status function
+function updateMapStatus(status) {
+    const statusDot = document.getElementById('map-status');
+    const statusText = document.getElementById('map-status-text');
+    
+    statusDot.className = 'status-dot';
+    
+    switch(status) {
+        case 'ready':
+            statusDot.classList.add('active');
+            statusText.textContent = 'Sẵn sàng xem trước';
+            break;
+        case 'invalid':
+            statusDot.classList.add('warning');
+            statusText.textContent = 'Code không hợp lệ';
+            break;
+        default:
+            statusText.textContent = 'Chưa có bản đồ';
+    }
+}
+
+// Update map status when embed code is added
+document.getElementById('google_maps_embed').addEventListener('input', function() {
+    const embedCode = this.value.trim();
+    
+    if (embedCode.length > 0) {
+        if (embedCode.includes('<iframe') && embedCode.includes('google.com/maps')) {
+            updateMapStatus('ready');
+        } else {
+            updateMapStatus('invalid');
+        }
+    } else {
+        updateMapStatus('empty');
+    }
+});
+
+// Address preview functionality
+document.getElementById('address_display').addEventListener('input', function() {
+    const addressPreview = document.getElementById('address-preview');
+    const newAddress = this.value.trim();
+    
+    if (newAddress) {
+        addressPreview.textContent = newAddress;
+        // Also update the hidden address field if it exists
+        const hiddenAddressField = document.getElementById('address');
+        if (hiddenAddressField) {
+            hiddenAddressField.value = newAddress;
+        }
+    } else {
+        addressPreview.textContent = '123 Đường Hoa Hướng Dương, Quận 1, TP.HCM';
+    }
+});
+
+// Sync marker title and info fields
+document.getElementById('marker_title_display').addEventListener('input', function() {
+    const hiddenField = document.getElementById('marker_title');
+    if (hiddenField) {
+        hiddenField.value = this.value;
+    }
+});
+
+document.getElementById('marker_info_display').addEventListener('input', function() {
+    const hiddenField = document.getElementById('marker_info');
+    if (hiddenField) {
+        hiddenField.value = this.value;
+    }
+});
 </script>
-
-<style>
-/* Additional inline styles for edit page */
-.text-gradient {
-    background: linear-gradient(45deg, #ff6b35, #f7931e);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.gap-2 {
-    gap: 0.5rem;
-}
-
-.rounded-lg {
-    border-radius: 0.5rem;
-}
-
-.font-weight-medium {
-    font-weight: 500;
-}
-
-/* Enhanced button styles for better compatibility */
-.btn-enhanced.btn-secondary {
-    background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
-    color: white;
-    box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
-}
-
-.btn-enhanced.btn-secondary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(108, 117, 125, 0.4);
-    color: white;
-}
-
-.btn-enhanced.btn-primary {
-    background: linear-gradient(45deg, #ff6b35, #f7931e);
-    color: white;
-    box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
-}
-
-.btn-enhanced.btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(255, 107, 53, 0.4);
-    color: white;
-}
-
-/* Form animations */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.form-section {
-    animation: fadeInUp 0.6s ease-out;
-}
-
-.form-section:nth-child(2) {
-    animation-delay: 0.1s;
-}
-
-.form-section:nth-child(3) {
-    animation-delay: 0.2s;
-}
-
-.form-section:nth-child(4) {
-    animation-delay: 0.3s;
-}
-
-/* Loading state for map */
-#location-picker-map:empty::before {
-    content: "Đang tải bản đồ...";
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    color: #6c757d;
-    font-style: italic;
-}
-
-/* Responsive improvements */
-@media (max-width: 768px) {
-    .d-flex.gap-2 {
-        flex-direction: column;
-    }
-    
-    .btn-enhanced {
-        width: 100%;
-        margin-bottom: 0.5rem;
-    }
-    
-    .form-section {
-        padding: 1.5rem;
-    }
-}
-</style>
 
 {% endblock %}

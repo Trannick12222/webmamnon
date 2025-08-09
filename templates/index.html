@@ -206,7 +206,7 @@
             </p>
         </div>
         
-        <div class="grid grid-cols-1 {% if intro_videos|length > 1 %}lg:grid-cols-2{% endif %} {% if intro_videos|length > 2 %}xl:grid-cols-3{% endif %} gap-8 max-w-6xl mx-auto">
+        <div class="{% if intro_videos|length == 1 %}max-w-4xl mx-auto{% else %}grid grid-cols-1 {% if intro_videos|length > 1 %}lg:grid-cols-2{% endif %} {% if intro_videos|length > 2 %}xl:grid-cols-3{% endif %} gap-8 max-w-7xl mx-auto{% endif %}">
             {% for video in intro_videos %}
             <div class="group transform hover:scale-105 transition-all duration-300">
                 <div class="bg-white/80 backdrop-blur-sm rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-white/50">
@@ -224,8 +224,8 @@
                                  class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
                             <div class="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-colors duration-300"></div>
                             <div class="absolute inset-0 flex items-center justify-center">
-                                <div class="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                    <i class="fas fa-play text-white text-2xl ml-1"></i>
+                                <div class="w-24 h-24 bg-red-600 rounded-full flex items-center justify-center shadow-2xl group-hover:scale-125 transition-all duration-300 hover:bg-red-700 ring-4 ring-white/30">
+                                    <i class="fas fa-play text-white text-3xl ml-1"></i>
                                 </div>
                             </div>
                         </div>
@@ -240,8 +240,8 @@
                                  onerror="this.src='https://img.youtube.com/vi/{{ video_id }}/hqdefault.jpg'">
                             <div class="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-colors duration-300"></div>
                             <div class="absolute inset-0 flex items-center justify-center">
-                                <div class="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                    <i class="fas fa-play text-white text-2xl ml-1"></i>
+                                <div class="w-24 h-24 bg-red-600 rounded-full flex items-center justify-center shadow-2xl group-hover:scale-125 transition-all duration-300 hover:bg-red-700 ring-4 ring-white/30">
+                                    <i class="fas fa-play text-white text-3xl ml-1"></i>
                                 </div>
                             </div>
                         </div>
@@ -742,6 +742,29 @@
 .slider-dots {
     z-index: 10;
 }
+
+/* Video Modal Styles */
+.video-container {
+    aspect-ratio: 16/9;
+    min-height: 350px;
+    max-height: 85vh;
+    height: clamp(350px, 65vh, 900px);
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .video-container {
+        min-height: 250px;
+        height: clamp(250px, 50vh, 400px);
+    }
+}
+
+@media (min-width: 1024px) {
+    .video-container {
+        min-height: 500px;
+        height: clamp(500px, 70vh, 1000px);
+    }
+}
 </style>
 
 <script>
@@ -837,16 +860,17 @@ document.addEventListener('DOMContentLoaded', function() {
     // Create video modal
     const videoModal = document.createElement('div');
     videoModal.id = 'videoModal';
-    videoModal.className = 'fixed inset-0 bg-black bg-opacity-75 hidden items-center justify-center z-50 p-4';
+    videoModal.className = 'fixed inset-0 bg-black bg-opacity-90 backdrop-blur-sm hidden items-center justify-center z-50 p-4 md:p-8 transition-opacity duration-300';
+    videoModal.style.opacity = '0';
     videoModal.innerHTML = `
-        <div class="relative max-w-4xl w-full">
-            <button id="closeVideoModal" class="absolute -top-12 right-0 text-white text-2xl hover:text-gray-300 transition">
+        <div class="relative max-w-7xl w-full mx-auto transform scale-95 transition-transform duration-300">
+            <button id="closeVideoModal" class="absolute -top-8 md:-top-12 right-0 text-white text-2xl md:text-3xl hover:text-gray-300 transition-all duration-300 hover:scale-110 z-10 bg-black/50 rounded-full w-10 h-10 md:w-12 md:h-12 flex items-center justify-center">
                 <i class="fas fa-times"></i>
             </button>
-            <div class="aspect-video bg-black rounded-lg overflow-hidden">
-                <iframe id="videoIframe" class="w-full h-full" frameborder="0" allowfullscreen></iframe>
+            <div class="bg-black rounded-lg md:rounded-2xl overflow-hidden shadow-2xl video-container">
+                <iframe id="videoIframe" class="w-full h-full" frameborder="0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
             </div>
-            <div id="videoTitle" class="text-white text-center mt-4 text-lg font-semibold"></div>
+            <div id="videoTitle" class="text-white text-center mt-4 md:mt-6 text-lg md:text-xl font-bold px-4"></div>
         </div>
     `;
     document.body.appendChild(videoModal);
@@ -857,21 +881,33 @@ document.addEventListener('DOMContentLoaded', function() {
         const titleElement = document.getElementById('videoTitle');
         const modal = document.getElementById('videoModal');
         
-        iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+        iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&showinfo=0`;
         titleElement.textContent = title;
         modal.classList.remove('hidden');
         modal.classList.add('flex');
         document.body.style.overflow = 'hidden';
+        
+        // Add smooth animation
+        setTimeout(() => {
+            modal.style.opacity = '1';
+            modal.querySelector('.relative').style.transform = 'scale(1)';
+        }, 10);
     }
     
     function closeVideo() {
         const iframe = document.getElementById('videoIframe');
         const modal = document.getElementById('videoModal');
         
-        iframe.src = '';
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-        document.body.style.overflow = 'auto';
+        // Add smooth close animation
+        modal.style.opacity = '0';
+        modal.querySelector('.relative').style.transform = 'scale(0.95)';
+        
+        setTimeout(() => {
+            iframe.src = '';
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.body.style.overflow = 'auto';
+        }, 300);
     }
     
     // Extract YouTube video ID from URL

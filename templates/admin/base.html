@@ -177,7 +177,7 @@
                             </a>
                             <a href="{{ url_for('admin_location') }}" 
                                class="flex items-center px-4 py-2 text-sm text-gray-600 rounded-lg hover:bg-gray-100 transition duration-200 {{ 'bg-gray-100' if 'location' in request.endpoint }}">
-                                <i class="fas fa-map-marker-alt mr-2 text-xs"></i>
+                                <i class="fas fa-map-marked-alt mr-2 text-xs"></i>
                                 <span>Vị trí & Bản đồ</span>
                             </a>
                         </div>
@@ -290,7 +290,9 @@
         
         if (contactsDropdownBtn && contactsSubmenu) {
             // Check if we're on a contacts page and show submenu by default
-            if (window.location.pathname.includes('/admin/contacts') || window.location.pathname.includes('/admin/contact-settings')) {
+            if (window.location.pathname.includes('/admin/contacts') || 
+                window.location.pathname.includes('/admin/contact-settings') ||
+                window.location.pathname.includes('/admin/location')) {
                 contactsSubmenu.classList.remove('hidden');
                 contactsChevron.classList.add('rotate-180');
             }
