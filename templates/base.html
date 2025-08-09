@@ -105,6 +105,91 @@
             backdrop-filter: blur(10px);
             box-shadow: 0 2px 20px rgba(0,0,0,0.1);
         }
+        
+        /* Professional Map Styling */
+        .map-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            background: linear-gradient(145deg, #374151, #4b5563);
+        }
+        
+        .map-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255, 107, 53, 0.1), rgba(247, 147, 30, 0.1));
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .map-overlay {
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 2;
+        }
+        
+        .map-iframe {
+            transition: all 0.3s ease;
+            border-radius: 12px;
+        }
+        
+        .map-iframe:hover {
+            transform: scale(1.01);
+        }
+        
+        /* Action buttons styling */
+        .map-actions a {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .map-actions a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .map-actions a:hover::before {
+            left: 100%;
+        }
+        
+        /* Responsive map adjustments */
+        @media (max-width: 768px) {
+            .map-container {
+                border-radius: 12px;
+                margin: 0 1rem;
+            }
+            
+            .map-overlay {
+                position: relative !important;
+                top: auto !important;
+                left: auto !important;
+                margin-top: 1rem;
+                max-width: none;
+            }
+            
+            .map-actions {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .map-actions a {
+                width: 100%;
+                justify-content: center;
+            }
+        }
     </style>
     
     <!-- Schema Markup -->
@@ -270,16 +355,27 @@
                     <div class="space-y-3">
                         <div class="flex items-start">
                             <i class="fas fa-map-marker-alt text-primary mr-3 mt-1"></i>
-                            <span class="text-gray-300 text-sm">123 Đường Hoa Hướng Dương, Quận 1, TP.HCM</span>
+                            <span class="text-gray-300 text-sm">
+                                {% if global_location_settings and global_location_settings.address %}
+                                    {{ global_location_settings.address }}
+                                {% else %}
+                                    123 Đường Hoa Hướng Dương, Quận 1, TP.HCM
+                                {% endif %}
+                            </span>
                         </div>
-                        <div class="flex items-center">
-                            <i class="fas fa-phone text-primary mr-3"></i>
-                            <span class="text-gray-300 text-sm">028-3823-4567</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="fas fa-envelope text-primary mr-3"></i>
-                            <span class="text-gray-300 text-sm">info@hoahuongduong.edu.vn</span>
-                        </div>
+                        {% for setting in global_contact_settings %}
+                            {% if setting.setting_type == 'phone' %}
+                            <div class="flex items-center">
+                                <i class="fas fa-phone text-primary mr-3"></i>
+                                <span class="text-gray-300 text-sm">{{ setting.setting_value }}</span>
+                            </div>
+                            {% elif setting.setting_type == 'email' %}
+                            <div class="flex items-center">
+                                <i class="fas fa-envelope text-primary mr-3"></i>
+                                <span class="text-gray-300 text-sm">{{ setting.setting_value }}</span>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
                     </div>
                 </div>
                 
@@ -336,6 +432,74 @@
                 </div>
             </div>
             
+            <!-- Google Maps Section -->
+            {% if global_location_settings and global_location_settings.show_in_footer and global_location_settings.google_maps_embed %}
+            <div class="border-t border-gray-700 mt-8 pt-8">
+                <div class="text-center mb-6">
+                    <h4 class="text-xl font-bold text-white mb-2">
+                        <i class="fas fa-map-marker-alt text-primary mr-2"></i>
+                        Vị trí trường
+                    </h4>
+                    <p class="text-gray-400 text-sm">Tìm hiểu cách đến trường một cách dễ dàng</p>
+                </div>
+                
+                <div class="relative max-w-4xl mx-auto">
+                    <!-- Map Container with Professional Styling -->
+                    <div class="map-container p-1">
+                        <div class="relative rounded-xl overflow-hidden" style="height: {{ global_location_settings.map_height }};">
+                            <!-- Iframe with responsive styling -->
+                            <div class="w-full h-full map-iframe">
+                                {{ global_location_settings.google_maps_embed|replace('width="600"', 'width="100%"')|replace('height="450"', 'height="100%"')|replace('style="border:0;"', 'style="border:0; border-radius: 12px;"')|safe }}
+                            </div>
+                            
+                            <!-- Overlay with school info -->
+                            <div class="absolute top-4 left-4 bg-white bg-opacity-95 map-overlay rounded-lg p-3 shadow-lg max-w-xs">
+                                <div class="flex items-start space-x-3">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                                            <i class="fas fa-graduation-cap text-white text-sm"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <h5 class="text-sm font-semibold text-gray-900 truncate">
+                                            {{ global_location_settings.marker_title or 'Trường Mầm non Hoa Hướng Dương' }}
+                                        </h5>
+                                        <p class="text-xs text-gray-600 mt-1">
+                                            {{ global_location_settings.address or '123 Đường Hoa Hướng Dương, Quận 1, TP.HCM' }}
+                                        </p>
+                                        <div class="flex items-center mt-2 space-x-2">
+                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                <i class="fas fa-check-circle mr-1"></i>
+                                                Đang hoạt động
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Bottom gradient overlay -->
+                            <div class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/20 to-transparent pointer-events-none"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Action buttons below map -->
+                    <div class="flex justify-center mt-6 space-x-4 map-actions">
+                        <a href="https://www.google.com/maps/dir//{{ global_location_settings.latitude }},{{ global_location_settings.longitude }}" 
+                           target="_blank" 
+                           class="inline-flex items-center px-6 py-3 bg-primary hover:bg-primary text-white text-sm font-medium rounded-lg shadow-lg">
+                            <i class="fas fa-directions mr-2"></i>
+                            Chỉ đường
+                        </a>
+                        <a href="tel:{{ global_contact_settings.phone if global_contact_settings else '028-3823-4567' }}" 
+                           class="inline-flex items-center px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium rounded-lg shadow-lg">
+                            <i class="fas fa-phone mr-2"></i>
+                            Gọi điện
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
             <div class="border-t border-gray-700 mt-8 pt-8 text-center">
                 <p class="text-gray-400 text-sm">
                     © 2024 Trường Mầm non Hoa Hướng Dương. Tất cả quyền được bảo lưu.
@@ -376,6 +540,108 @@
             });
         });
     </script>
+    
+    <!-- Google Maps JavaScript -->
+    {% if false %}
+    <script>
+        function initFooterMap() {
+            const location = { 
+                lat: {{ global_location_settings.latitude }}, 
+                lng: {{ global_location_settings.longitude }} 
+            };
+            
+            const map = new google.maps.Map(document.getElementById("footer-map"), {
+                zoom: {{ global_location_settings.map_zoom_level }},
+                center: location,
+                mapTypeId: '{{ global_location_settings.map_style }}',
+                mapId: 'footer-map', // Required for AdvancedMarkerElement
+                styles: [
+                    {
+                        "featureType": "all",
+                        "elementType": "labels.text.fill",
+                        "stylers": [{"color": "#ffffff"}]
+                    },
+                    {
+                        "featureType": "all",
+                        "elementType": "labels.text.stroke",
+                        "stylers": [{"color": "#000000"}, {"lightness": 13}]
+                    }
+                ]
+            });
+            
+            let marker;
+            // Use AdvancedMarkerElement if available, fallback to Marker
+            if (google.maps.marker && google.maps.marker.AdvancedMarkerElement) {
+                marker = new google.maps.marker.AdvancedMarkerElement({
+                    position: location,
+                    map: map,
+                    title: '{{ global_location_settings.marker_title }}'
+                });
+            } else {
+                marker = new google.maps.Marker({
+                    position: location,
+                    map: map,
+                    title: '{{ global_location_settings.marker_title }}',
+                    animation: google.maps.Animation.DROP
+                });
+            }
+            
+            {% if global_location_settings.marker_info %}
+            const infoWindow = new google.maps.InfoWindow({
+                content: `
+                    <div style="padding: 10px; max-width: 250px;">
+                        <h6 style="margin: 0 0 8px 0; font-weight: bold; color: #333;">
+                            {{ global_location_settings.marker_title }}
+                        </h6>
+                        <p style="margin: 0; color: #666; font-size: 14px;">
+                            {{ global_location_settings.marker_info }}
+                        </p>
+                        <p style="margin: 8px 0 0 0; color: #666; font-size: 12px;">
+                            <strong>Địa chỉ:</strong><br>
+                            {{ global_location_settings.address }}
+                        </p>
+                    </div>
+                `
+            });
+            
+            marker.addListener('click', function() {
+                infoWindow.open(map, marker);
+            });
+            
+            // Auto open info window after 2 seconds
+            setTimeout(function() {
+                infoWindow.open(map, marker);
+            }, 2000);
+            {% endif %}
+        }
+        
+        // Load Google Maps API
+        function loadGoogleMaps() {
+            if (typeof google === 'undefined') {
+                const script = document.createElement('script');
+                script.src = 'https://maps.googleapis.com/maps/api/js?key={{ global_location_settings.google_maps_api_key }}&libraries=marker&loading=async&callback=initFooterMap';
+                script.async = true;
+                script.defer = true;
+                script.onerror = function() {
+                    console.error('Failed to load Google Maps API for footer');
+                    document.getElementById('footer-map').innerHTML = 
+                        '<div style="display: flex; align-items: center; justify-content: center; height: 100%; background: #f8f9fa; color: #6c757d; text-align: center;">' +
+                        '<div><i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 10px;"></i><br>Không thể tải bản đồ</div>' +
+                        '</div>';
+                };
+                document.head.appendChild(script);
+            } else {
+                initFooterMap();
+            }
+        }
+        
+        // Initialize map when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Delay loading to improve page performance
+            setTimeout(loadGoogleMaps, 1000);
+        });
+    </script>
+    {% endif %}
     
     {% block extra_js %}{% endblock %}
 </body>

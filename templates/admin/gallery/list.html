@@ -8,9 +8,28 @@
 <div class="admin-card p-6">
     <div class="flex items-center justify-between mb-6">
         <h2 class="text-xl font-semibold text-gray-800">Thư viện ảnh</h2>
-        <a href="{{ url_for('admin_gallery_create') }}" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg transition font-medium">
-            <i class="fas fa-upload mr-2"></i>Tải lên ảnh
-        </a>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <a href="{{ url_for('admin_gallery_create') }}" 
+               style="background: linear-gradient(45deg, #ff6b35, #f7931e); 
+                      color: white; 
+                      padding: 12px 24px; 
+                      border-radius: 8px; 
+                      text-decoration: none; 
+                      font-weight: 600; 
+                      font-size: 16px;
+                      box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+                      transition: all 0.3s ease;
+                      display: inline-flex;
+                      align-items: center;
+                      gap: 8px;
+                      border: none;
+                      cursor: pointer;"
+               onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(255, 107, 53, 0.4)'"
+               onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(255, 107, 53, 0.3)'">
+                <span style="font-size: 18px; font-weight: bold;">📸</span>
+                Tải lên ảnh mới
+            </a>
+        </div>
     </div>
     
     {% if images.items %}
@@ -115,6 +134,10 @@
 
 {% block extra_js %}
 <script>
+    // Debug: Check if page loads correctly
+    console.log('Gallery list page loaded');
+    console.log('Add button exists:', document.querySelector('a[href*="gallery/create"]') !== null);
+    
     // Xác nhận xóa
     document.addEventListener('click', function(e) {
         if (e.target.closest('.delete-btn')) {

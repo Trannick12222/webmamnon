@@ -292,6 +292,23 @@ class SEOSettings(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+class LocationSettings(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    address = db.Column(db.Text, nullable=False)  # Địa chỉ đầy đủ
+    latitude = db.Column(db.Float)  # Vĩ độ
+    longitude = db.Column(db.Float)  # Kinh độ
+    google_maps_api_key = db.Column(db.String(255))  # Google Maps API Key
+    google_maps_embed = db.Column(db.Text)  # Google Maps iframe embed code
+    map_zoom_level = db.Column(db.Integer, default=15)  # Mức zoom mặc định
+    map_style = db.Column(db.String(50), default='roadmap')  # roadmap, satellite, hybrid, terrain
+    show_in_footer = db.Column(db.Boolean, default=True)  # Hiển thị trong footer
+    map_height = db.Column(db.String(20), default='300px')  # Chiều cao bản đồ
+    marker_title = db.Column(db.String(200), default='Trường Mầm non Hoa Hướng Dương')  # Tiêu đề marker
+    marker_info = db.Column(db.Text)  # Thông tin hiển thị khi click marker
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -337,10 +354,13 @@ def inject_unread_contacts():
         unread_contacts = Contact.query.filter_by(is_read=False).count()
         # Also inject contact settings for global use (header, footer)
         contact_settings = ContactSettings.query.filter_by(is_active=True).order_by(ContactSettings.order_index.asc()).all()
+        # Inject location settings for global use (footer)
+        location_settings = LocationSettings.query.filter_by(is_active=True).first()
     except:
         unread_contacts = 0
         contact_settings = []
-    return dict(unread_contacts=unread_contacts, global_contact_settings=contact_settings, get_seo_settings=get_seo_settings)
+        location_settings = None
+    return dict(unread_contacts=unread_contacts, global_contact_settings=contact_settings, global_location_settings=location_settings, get_seo_settings=get_seo_settings)
 
 # Custom Jinja2 filter to extract YouTube video ID
 def extract_youtube_id(url):
@@ -1884,6 +1904,23 @@ if __name__ == '__main__':
             for setting in default_settings:
                 db.session.add(setting)
             db.session.commit()
+        
+        # Add default location settings if none exist
+        if not LocationSettings.query.first():
+            default_location = LocationSettings(
+                address='123 Đường Hoa Hướng Dương, Quận 1, TP.HCM',
+                latitude=10.7769,  # Tọa độ mẫu của TP.HCM
+                longitude=106.7009,
+                map_zoom_level=15,
+                map_style='roadmap',
+                show_in_footer=True,
+                map_height='300px',
+                marker_title='Trường Mầm non Hoa Hướng Dương',
+                marker_info='Trường Mầm non Hoa Hướng Dương - Nuôi dưỡng tâm hồn, phát triển tài năng',
+                is_active=True
+            )
+            db.session.add(default_location)
+            db.session.commit()
 
 # Video Management Routes
 @app.route('/admin/videos')
@@ -2096,6 +2133,43 @@ def admin_seo_auto_generate():
     db.session.commit()
     flash('Đã tự động tạo SEO cho các trang chưa có!', 'success')
     return redirect(url_for('admin_seo'))
+
+# Location Settings Management Routes
+@app.route('/admin/location')
+@login_required
+def admin_location():
+    location_settings = LocationSettings.query.first()
+    return render_template('admin/location/index.html', location_settings=location_settings)
+
+@app.route('/admin/location/edit', methods=['GET', 'POST'])
+@login_required
+def admin_location_edit():
+    location_settings = LocationSettings.query.first()
+    if not location_settings:
+        location_settings = LocationSettings()
+        db.session.add(location_settings)
+        db.session.commit()
+    
+    if request.method == 'POST':
+        location_settings.address = request.form.get('address', '')
+        location_settings.latitude = float(request.form['latitude']) if request.form.get('latitude') else None
+        location_settings.longitude = float(request.form['longitude']) if request.form.get('longitude') else None
+        location_settings.google_maps_api_key = request.form.get('google_maps_api_key', '')
+        location_settings.google_maps_embed = request.form.get('google_maps_embed', '')  # Save iframe code
+        location_settings.map_zoom_level = int(request.form.get('map_zoom_level', 15))
+        location_settings.map_style = request.form.get('map_style', 'roadmap')
+        location_settings.show_in_footer = request.form.get('show_in_footer') == 'true'
+        location_settings.map_height = request.form.get('map_height', '400px')
+        location_settings.marker_title = request.form.get('marker_title', '')
+        location_settings.marker_info = request.form.get('marker_info', '')
+        location_settings.is_active = request.form.get('is_active') == 'true'
+        location_settings.updated_at = datetime.utcnow()
+        
+        db.session.commit()
+        flash('Cài đặt vị trí đã được cập nhật!', 'success')
+        return redirect(url_for('admin_location'))
+    
+    return render_template('admin/location/edit.html', location_settings=location_settings)
 
 @app.route('/debug/team-images')
 def debug_team_images():
