@@ -314,9 +314,130 @@ class LocationSettings(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+class ThemeSettings(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    theme_name = db.Column(db.String(100), nullable=False)  # Tên theme
+    primary_color = db.Column(db.String(7), nullable=False)  # Màu chính (hex)
+    secondary_color = db.Column(db.String(7), nullable=False)  # Màu phụ (hex)
+    accent_color = db.Column(db.String(7))  # Màu nhấn (hex)
+    background_color = db.Column(db.String(7))  # Màu nền (hex)
+    text_color = db.Column(db.String(7))  # Màu chữ (hex)
+    is_active = db.Column(db.Boolean, default=False)  # Theme đang được sử dụng
+    is_default = db.Column(db.Boolean, default=False)  # Theme mặc định
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+def get_current_theme():
+    """Lấy theme hiện tại đang được sử dụng"""
+    theme = ThemeSettings.query.filter_by(is_active=True).first()
+    if not theme:
+        # Nếu không có theme nào được kích hoạt, trả về theme mặc định
+        theme = ThemeSettings.query.filter_by(is_default=True).first()
+        if not theme:
+            # Nếu không có theme mặc định, tạo theme cam mặc định
+            init_default_themes()
+            theme = ThemeSettings.query.filter_by(is_default=True).first()
+    return theme
+
+def init_default_themes():
+    """Khởi tạo các theme mặc định"""
+    default_themes = [
+        {
+            'theme_name': 'Cam Hướng Dương',
+            'primary_color': '#ff6b35',
+            'secondary_color': '#f7931e',
+            'accent_color': '#ffd700',
+            'background_color': '#ffffff',
+            'text_color': '#333333',
+            'is_default': True,
+            'is_active': True
+        },
+        {
+            'theme_name': 'Xanh Biển',
+            'primary_color': '#2563eb',
+            'secondary_color': '#3b82f6',
+            'accent_color': '#60a5fa',
+            'background_color': '#ffffff',
+            'text_color': '#1f2937',
+            'is_default': False,
+            'is_active': False
+        },
+        {
+            'theme_name': 'Tím Lavender',
+            'primary_color': '#7c3aed',
+            'secondary_color': '#a855f7',
+            'accent_color': '#c084fc',
+            'background_color': '#ffffff',
+            'text_color': '#374151',
+            'is_default': False,
+            'is_active': False
+        },
+        {
+            'theme_name': 'Đỏ Cherry',
+            'primary_color': '#dc2626',
+            'secondary_color': '#ef4444',
+            'accent_color': '#f87171',
+            'background_color': '#ffffff',
+            'text_color': '#1f2937',
+            'is_default': False,
+            'is_active': False
+        },
+        {
+            'theme_name': 'Xanh Lá',
+            'primary_color': '#059669',
+            'secondary_color': '#10b981',
+            'accent_color': '#34d399',
+            'background_color': '#ffffff',
+            'text_color': '#1f2937',
+            'is_default': False,
+            'is_active': False
+        },
+        {
+            'theme_name': 'Hồng Pastel',
+            'primary_color': '#ec4899',
+            'secondary_color': '#f472b6',
+            'accent_color': '#f9a8d4',
+            'background_color': '#ffffff',
+            'text_color': '#374151',
+            'is_default': False,
+            'is_active': False
+        }
+    ]
+    
+    for theme_data in default_themes:
+        # Kiểm tra xem theme đã tồn tại chưa
+        existing_theme = ThemeSettings.query.filter_by(theme_name=theme_data['theme_name']).first()
+        if not existing_theme:
+            theme = ThemeSettings(**theme_data)
+            db.session.add(theme)
+    
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error initializing themes: {e}")
+
+def switch_theme(theme_id):
+    """Chuyển đổi theme"""
+    try:
+        # Tắt tất cả theme hiện tại
+        ThemeSettings.query.update({'is_active': False})
+        
+        # Kích hoạt theme mới
+        new_theme = ThemeSettings.query.get(theme_id)
+        if new_theme:
+            new_theme.is_active = True
+            db.session.commit()
+            return True
+        return False
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error switching theme: {e}")
+        return False
 
 def get_seo_settings(page_type, page_id=None):
     """Lấy SEO settings cho trang cụ thể"""
@@ -361,11 +482,20 @@ def inject_unread_contacts():
         contact_settings = ContactSettings.query.filter_by(is_active=True).order_by(ContactSettings.order_index.asc()).all()
         # Inject location settings for global use (footer)
         location_settings = LocationSettings.query.filter_by(is_active=True).first()
+        # Inject current theme for global use
+        current_theme = get_current_theme()
     except:
         unread_contacts = 0
         contact_settings = []
         location_settings = None
-    return dict(unread_contacts=unread_contacts, global_contact_settings=contact_settings, global_location_settings=location_settings, get_seo_settings=get_seo_settings)
+        current_theme = None
+    return dict(
+        unread_contacts=unread_contacts, 
+        global_contact_settings=contact_settings, 
+        global_location_settings=location_settings, 
+        current_theme=current_theme,
+        get_seo_settings=get_seo_settings
+    )
 
 # Custom Jinja2 filter to extract YouTube video ID
 def extract_youtube_id(url):
@@ -1225,6 +1355,124 @@ def admin_contact_settings_delete(id):
     db.session.commit()
     flash('Thông tin liên hệ đã được xóa!', 'success')
     return redirect(url_for('admin_contact_settings'))
+
+# Theme Management Routes
+@app.route('/admin/themes')
+@login_required
+def admin_themes():
+    themes = ThemeSettings.query.order_by(ThemeSettings.created_at.desc()).all()
+    return render_template('admin/themes/list.html', themes=themes)
+
+@app.route('/admin/themes/switch/<int:theme_id>', methods=['POST'])
+@login_required
+def admin_theme_switch(theme_id):
+    if switch_theme(theme_id):
+        flash('Theme đã được thay đổi thành công!', 'success')
+    else:
+        flash('Có lỗi xảy ra khi thay đổi theme!', 'error')
+    return redirect(url_for('admin_themes'))
+
+@app.route('/admin/themes/create', methods=['GET', 'POST'])
+@login_required
+def admin_theme_create():
+    if request.method == 'POST':
+        theme_name = request.form['theme_name']
+        primary_color = request.form['primary_color']
+        secondary_color = request.form['secondary_color']
+        accent_color = request.form.get('accent_color', '')
+        background_color = request.form.get('background_color', '#ffffff')
+        text_color = request.form.get('text_color', '#333333')
+        
+        theme = ThemeSettings(
+            theme_name=theme_name,
+            primary_color=primary_color,
+            secondary_color=secondary_color,
+            accent_color=accent_color,
+            background_color=background_color,
+            text_color=text_color
+        )
+        
+        db.session.add(theme)
+        db.session.commit()
+        flash('Theme mới đã được tạo thành công!', 'success')
+        return redirect(url_for('admin_themes'))
+    
+    return render_template('admin/themes/create.html')
+
+@app.route('/admin/themes/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
+def admin_theme_edit(id):
+    theme = ThemeSettings.query.get_or_404(id)
+    
+    if request.method == 'POST':
+        theme.theme_name = request.form['theme_name']
+        theme.primary_color = request.form['primary_color']
+        theme.secondary_color = request.form['secondary_color']
+        theme.accent_color = request.form.get('accent_color', '')
+        theme.background_color = request.form.get('background_color', '#ffffff')
+        theme.text_color = request.form.get('text_color', '#333333')
+        
+        db.session.commit()
+        flash('Theme đã được cập nhật thành công!', 'success')
+        return redirect(url_for('admin_themes'))
+    
+    return render_template('admin/themes/edit.html', theme=theme)
+
+@app.route('/admin/themes/delete/<int:id>', methods=['POST'])
+@login_required
+def admin_theme_delete(id):
+    theme = ThemeSettings.query.get_or_404(id)
+    
+    # Không cho phép xóa theme đang được sử dụng hoặc theme mặc định
+    if theme.is_active:
+        flash('Không thể xóa theme đang được sử dụng!', 'error')
+        return redirect(url_for('admin_themes'))
+    
+    if theme.is_default:
+        flash('Không thể xóa theme mặc định!', 'error')
+        return redirect(url_for('admin_themes'))
+    
+    db.session.delete(theme)
+    db.session.commit()
+    flash('Theme đã được xóa thành công!', 'success')
+    return redirect(url_for('admin_themes'))
+
+# API endpoint for theme switching (for frontend)
+@app.route('/api/switch-theme', methods=['POST'])
+def api_switch_theme():
+    try:
+        data = request.get_json()
+        theme_id = data.get('theme_id')
+        
+        if not theme_id:
+            return jsonify({'success': False, 'message': 'Theme ID is required'})
+        
+        if switch_theme(theme_id):
+            return jsonify({'success': True, 'message': 'Theme switched successfully'})
+        else:
+            return jsonify({'success': False, 'message': 'Failed to switch theme'})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)})
+
+# API endpoint to get all themes
+@app.route('/api/themes', methods=['GET'])
+def api_get_themes():
+    try:
+        themes = ThemeSettings.query.all()
+        themes_data = []
+        for theme in themes:
+            themes_data.append({
+                'id': theme.id,
+                'theme_name': theme.theme_name,
+                'primary_color': theme.primary_color,
+                'secondary_color': theme.secondary_color,
+                'accent_color': theme.accent_color,
+                'is_active': theme.is_active,
+                'is_default': theme.is_default
+            })
+        return jsonify({'success': True, 'themes': themes_data})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)})
 
 # Team Management Routes
 @app.route('/admin/team')

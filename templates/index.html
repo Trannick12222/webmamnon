@@ -99,7 +99,7 @@
 </section>
 
 <!-- About Section -->
-<section class="py-20 bg-gradient-to-br from-blue-50 to-purple-50 relative overflow-hidden">
+<section class="py-20 bg-theme-light relative overflow-hidden">
     <div class="container mx-auto px-4">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
@@ -183,7 +183,7 @@
 
 <!-- Video Section -->
 {% if intro_videos %}
-<section class="py-20 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 relative overflow-hidden">
+<section class="py-20 bg-theme-lighter relative overflow-hidden">
     <!-- Background decorative elements -->
     <div class="absolute inset-0 overflow-hidden">
         <div class="absolute -top-20 -right-20 w-80 h-80 bg-white/10 rounded-full animate-pulse"></div>
@@ -317,14 +317,14 @@
                          alt="{{ program.name }}" class="w-full h-48 object-cover">
                     {% endif %}
                 {% else %}
-                <div class="w-full h-48 flex items-center justify-center" style="background: linear-gradient(to bottom right, #ff6b35, #f7931e);">
+                <div class="w-full h-48 flex items-center justify-center bg-theme-gradient-primary">
                     <i class="fas fa-graduation-cap text-white text-4xl"></i>
                 </div>
                 {% endif %}
                 
                 <div class="p-8">
                     <div class="flex items-center justify-between mb-4">
-                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                        <span class="bg-theme-primary-20 text-theme-primary px-3 py-1 rounded-full text-sm font-medium">
                             {{ program.age_group }}
                         </span>
                         <span class="text-primary font-bold text-lg">{{ program.price }}</span>
@@ -359,12 +359,12 @@
 </section>
 
 <!-- Features Section -->
-<section class="py-20 relative overflow-hidden" style="background: linear-gradient(to right, #ff6b35, #f7931e);">
+<section class="py-20 relative overflow-hidden bg-theme-gradient-horizontal">
     <!-- Background decorative elements -->
     <div class="absolute inset-0 overflow-hidden">
-        <div class="absolute -top-20 -left-20 w-80 h-80 bg-white/5 rounded-full animate-pulse"></div>
-        <div class="absolute top-40 -right-20 w-60 h-60 bg-white/10 rounded-full animate-pulse" style="animation-delay: 2s;"></div>
-        <div class="absolute -bottom-10 left-1/3 w-40 h-40 bg-white/5 rounded-full animate-pulse" style="animation-delay: 4s;"></div>
+        <div class="absolute -top-20 -left-20 w-80 h-80 bg-theme-decorative-light rounded-full animate-pulse"></div>
+        <div class="absolute top-40 -right-20 w-60 h-60 bg-theme-decorative-medium rounded-full animate-pulse" style="animation-delay: 2s;"></div>
+        <div class="absolute -bottom-10 left-1/3 w-40 h-40 bg-theme-decorative-light rounded-full animate-pulse" style="animation-delay: 4s;"></div>
     </div>
     
     <div class="container mx-auto px-4 relative z-10">
@@ -524,7 +524,7 @@
                          alt="{{ article.title }}" class="w-full h-48 object-cover">
                     {% endif %}
                 {% else %}
-                <div class="w-full h-48 bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
+                <div class="w-full h-48 bg-theme-gradient-br flex items-center justify-center">
                     <i class="fas fa-newspaper text-white text-3xl"></i>
                 </div>
                 {% endif %}
@@ -602,7 +602,7 @@
 
 <!-- Events Section -->
 {% if upcoming_events %}
-<section class="py-20 bg-blue-50">
+<section class="py-20 bg-theme-primary-light">
     <div class="container mx-auto px-4">
         <div class="text-center mb-16">
             <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
@@ -620,7 +620,7 @@
                 <img src="/static/{{ event.featured_image }}" 
                      alt="{{ event.title }}" class="w-full h-48 object-cover">
                 {% else %}
-                <div class="w-full h-48 bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center">
+                <div class="w-full h-48 bg-theme-gradient-br flex items-center justify-center">
                     <i class="fas fa-calendar-alt text-white text-3xl"></i>
                 </div>
                 {% endif %}
@@ -657,7 +657,7 @@
 {% endif %}
 
 <!-- CTA Section -->
-<section class="py-20 bg-gradient-to-r from-purple-600 to-pink-600 relative overflow-hidden">
+<section class="py-20 bg-theme-gradient relative overflow-hidden">
     <div class="container mx-auto px-4 relative z-10">
         <div class="text-center text-white">
             <h2 class="text-4xl md:text-5xl font-bold mb-6 font-patrick">
@@ -668,11 +668,11 @@
                 phù hợp với độ tuổi của con bạn
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="/lien-he" class="bg-white text-purple-600 px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition">
+                <a href="/lien-he" class="bg-white text-theme-primary px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition">
                     <i class="fas fa-phone mr-2"></i>
                     Liên hệ ngay
                 </a>
-                <a href="/chuong-trinh" class="border-2 border-white text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-white hover:text-purple-600 transition">
+                <a href="/chuong-trinh" class="border-2 border-white text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-white transition cta-secondary-btn">
                     <i class="fas fa-book mr-2"></i>
                     Tìm hiểu chương trình
                 </a>

@@ -1,0 +1,206 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Tạo Theme Mới{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Tạo Theme Mới</h3>
+                    <div class="card-tools">
+                        <a href="{{ url_for('admin_themes') }}" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-arrow-left"></i> Quay lại
+                        </a>
+                    </div>
+                </div>
+                <form method="POST">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="theme_name">Tên Theme <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="theme_name" name="theme_name" required>
+                                    <small class="form-text text-muted">Ví dụ: Cam Hướng Dương, Xanh Biển, Tím Lavender</small>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="primary_color">Màu Chính <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <input type="color" class="form-control" id="primary_color" name="primary_color" value="#ff6b35" required>
+                                        <div class="input-group-append">
+                                            <input type="text" class="form-control" id="primary_color_text" value="#ff6b35" readonly>
+                                        </div>
+                                    </div>
+                                    <small class="form-text text-muted">Màu chính sẽ được sử dụng cho logo, tiêu đề, nút bấm</small>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="secondary_color">Màu Phụ <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <input type="color" class="form-control" id="secondary_color" name="secondary_color" value="#f7931e" required>
+                                        <div class="input-group-append">
+                                            <input type="text" class="form-control" id="secondary_color_text" value="#f7931e" readonly>
+                                        </div>
+                                    </div>
+                                    <small class="form-text text-muted">Màu phụ sẽ được sử dụng cho gradient, hover effects</small>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="accent_color">Màu Nhấn</label>
+                                    <div class="input-group">
+                                        <input type="color" class="form-control" id="accent_color" name="accent_color" value="#ffd700">
+                                        <div class="input-group-append">
+                                            <input type="text" class="form-control" id="accent_color_text" value="#ffd700">
+                                        </div>
+                                    </div>
+                                    <small class="form-text text-muted">Màu nhấn cho các chi tiết đặc biệt (tùy chọn)</small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="background_color">Màu Nền</label>
+                                    <div class="input-group">
+                                        <input type="color" class="form-control" id="background_color" name="background_color" value="#ffffff">
+                                        <div class="input-group-append">
+                                            <input type="text" class="form-control" id="background_color_text" value="#ffffff">
+                                        </div>
+                                    </div>
+                                    <small class="form-text text-muted">Màu nền chính của website</small>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="text_color">Màu Chữ</label>
+                                    <div class="input-group">
+                                        <input type="color" class="form-control" id="text_color" name="text_color" value="#333333">
+                                        <div class="input-group-append">
+                                            <input type="text" class="form-control" id="text_color_text" value="#333333">
+                                        </div>
+                                    </div>
+                                    <small class="form-text text-muted">Màu chữ chính của website</small>
+                                </div>
+                                
+                                <!-- Preview Section -->
+                                <div class="form-group">
+                                    <label>Xem Trước Theme</label>
+                                    <div class="theme-preview" id="theme-preview">
+                                        <div class="preview-header">
+                                            <h5 class="preview-title">Trường Mầm non Hoa Hướng Dương</h5>
+                                        </div>
+                                        <div class="preview-content">
+                                            <div class="preview-button">Nút Chính</div>
+                                            <div class="preview-text">Đây là văn bản mẫu để xem trước theme</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Lưu Theme
+                        </button>
+                        <a href="{{ url_for('admin_themes') }}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Hủy
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.theme-preview {
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    background: var(--bg-color, #ffffff);
+    color: var(--text-color, #333333);
+    transition: all 0.3s ease;
+}
+
+.preview-header {
+    background: linear-gradient(45deg, var(--primary-color, #ff6b35), var(--secondary-color, #f7931e));
+    color: white;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+}
+
+.preview-title {
+    margin: 0;
+    font-weight: bold;
+}
+
+.preview-button {
+    background: linear-gradient(45deg, var(--primary-color, #ff6b35), var(--secondary-color, #f7931e));
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+    display: inline-block;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.preview-text {
+    color: var(--text-color, #333333);
+    line-height: 1.6;
+}
+
+.input-group .form-control[type="color"] {
+    width: 60px;
+    padding: 2px;
+    border-right: 0;
+}
+
+.input-group .form-control[readonly] {
+    background-color: #f8f9fa;
+    font-family: monospace;
+    font-size: 12px;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const colorInputs = ['primary_color', 'secondary_color', 'accent_color', 'background_color', 'text_color'];
+    
+    colorInputs.forEach(function(inputId) {
+        const colorInput = document.getElementById(inputId);
+        const textInput = document.getElementById(inputId + '_text');
+        
+        if (colorInput && textInput) {
+            colorInput.addEventListener('input', function() {
+                textInput.value = this.value;
+                updatePreview();
+            });
+            
+            textInput.addEventListener('input', function() {
+                if (this.value.match(/^#[0-9A-F]{6}$/i)) {
+                    colorInput.value = this.value;
+                    updatePreview();
+                }
+            });
+        }
+    });
+    
+    function updatePreview() {
+        const preview = document.getElementById('theme-preview');
+        const primaryColor = document.getElementById('primary_color').value;
+        const secondaryColor = document.getElementById('secondary_color').value;
+        const backgroundColor = document.getElementById('background_color').value;
+        const textColor = document.getElementById('text_color').value;
+        
+        preview.style.setProperty('--primary-color', primaryColor);
+        preview.style.setProperty('--secondary-color', secondaryColor);
+        preview.style.setProperty('--bg-color', backgroundColor);
+        preview.style.setProperty('--text-color', textColor);
+    }
+    
+    // Initial preview update
+    updatePreview();
+});
+</script>
+{% endblock %}

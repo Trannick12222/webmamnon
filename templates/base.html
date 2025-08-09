@@ -47,17 +47,35 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
+        :root {
+            {% if current_theme %}
+            --primary-color: {{ current_theme.primary_color }};
+            --secondary-color: {{ current_theme.secondary_color }};
+            --accent-color: {{ current_theme.accent_color or current_theme.secondary_color }};
+            --background-color: {{ current_theme.background_color or '#ffffff' }};
+            --text-color: {{ current_theme.text_color or '#333333' }};
+            {% else %}
+            --primary-color: #ff6b35;
+            --secondary-color: #f7931e;
+            --accent-color: #ffd700;
+            --background-color: #ffffff;
+            --text-color: #333333;
+            {% endif %}
+        }
+        
         .font-patrick { font-family: 'Patrick Hand', cursive; }
         .font-quicksand { font-family: 'Quicksand', sans-serif; }
-        .bg-primary { background-color: #ff6b35; }
-        .bg-secondary { background-color: #f7931e; }
-        .text-primary { color: #ff6b35; }
-        .text-secondary { color: #f7931e; }
+        .bg-primary { background-color: var(--primary-color); }
+        .bg-secondary { background-color: var(--secondary-color); }
+        .text-primary { color: var(--primary-color); }
+        .text-secondary { color: var(--secondary-color); }
+        .bg-accent { background-color: var(--accent-color); }
+        .text-accent { color: var(--accent-color); }
         .bg-blue-light { background-color: #e3f2fd; }
         .text-blue-dark { color: #1565c0; }
         
         .hero-slider {
-            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             position: relative;
             overflow: hidden;
         }
@@ -82,7 +100,7 @@
         }
         
         .btn-primary {
-            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
             border: none;
             color: white;
             padding: 12px 30px;
@@ -93,7 +111,57 @@
         
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255,107,53,0.4);
+            box-shadow: 0 5px 15px var(--primary-color)66;
+        }
+        
+        /* Theme-aware backgrounds */
+        .bg-theme-light {
+            background: linear-gradient(to bottom right, var(--primary-color)10, var(--secondary-color)10);
+        }
+        
+        .bg-theme-lighter {
+            background: linear-gradient(to bottom right, var(--primary-color)08, var(--secondary-color)08, var(--accent-color)08);
+        }
+        
+        .bg-theme-gradient {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+        }
+        
+        .bg-theme-gradient-br {
+            background: linear-gradient(to bottom right, var(--primary-color), var(--secondary-color));
+        }
+        
+        .bg-theme-gradient-primary {
+            background: linear-gradient(to bottom right, var(--primary-color), var(--secondary-color));
+        }
+        
+        .bg-theme-gradient-horizontal {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+        }
+        
+        .bg-theme-decorative-light {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        .bg-theme-decorative-medium {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .bg-theme-primary-light {
+            background-color: var(--primary-color)08;
+        }
+        
+        .text-theme-primary {
+            color: var(--primary-color);
+        }
+        
+        .bg-theme-primary-20 {
+            background-color: var(--primary-color)20;
+        }
+        
+        /* CTA button styles */
+        .cta-secondary-btn:hover {
+            color: var(--primary-color) !important;
         }
         
         .navbar-sticky {
@@ -305,6 +373,27 @@
             </div>
         </nav>
     </header>
+
+    <!-- Theme Switcher -->
+    <div id="theme-switcher" class="fixed bottom-6 right-6 z-40">
+        <button id="theme-switcher-btn" class="bg-white shadow-lg rounded-full p-3 hover:shadow-xl transition-all duration-300 border border-gray-200">
+            <i class="fas fa-palette text-gray-600 text-lg"></i>
+        </button>
+        
+        <!-- Theme Options Panel -->
+        <div id="theme-options" class="absolute bottom-16 right-0 bg-white rounded-lg shadow-xl border border-gray-200 p-4 w-80 hidden">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-semibold text-gray-800">Chọn Theme</h3>
+                <button id="close-theme-panel" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div id="theme-list" class="space-y-3">
+                <!-- Theme options will be loaded here -->
+            </div>
+        </div>
+    </div>
 
     <!-- Main Content -->
     <main class="pt-24">
@@ -539,6 +628,145 @@
                 }
             });
         });
+
+        // Theme Switcher Functionality
+        const themeSwitcherBtn = document.getElementById('theme-switcher-btn');
+        const themeOptions = document.getElementById('theme-options');
+        const closeThemePanel = document.getElementById('close-theme-panel');
+        const themeList = document.getElementById('theme-list');
+
+        // Toggle theme panel
+        themeSwitcherBtn.addEventListener('click', function() {
+            themeOptions.classList.toggle('hidden');
+            if (!themeOptions.classList.contains('hidden')) {
+                loadThemes();
+            }
+        });
+
+        // Close theme panel
+        closeThemePanel.addEventListener('click', function() {
+            themeOptions.classList.add('hidden');
+        });
+
+        // Close panel when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!document.getElementById('theme-switcher').contains(e.target)) {
+                themeOptions.classList.add('hidden');
+            }
+        });
+
+        // Load themes from API
+        async function loadThemes() {
+            try {
+                const response = await fetch('/api/themes');
+                const data = await response.json();
+                
+                if (data.success) {
+                    renderThemes(data.themes);
+                } else {
+                    console.error('Failed to load themes:', data.message);
+                }
+            } catch (error) {
+                console.error('Error loading themes:', error);
+            }
+        }
+
+        // Render themes in the panel
+        function renderThemes(themes) {
+            themeList.innerHTML = '';
+            
+            themes.forEach(theme => {
+                const themeItem = document.createElement('div');
+                themeItem.className = `theme-item p-3 border rounded-lg cursor-pointer transition-all duration-200 hover:shadow-md ${theme.is_active ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'}`;
+                
+                themeItem.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="flex space-x-1">
+                                <div class="w-4 h-4 rounded-full border border-gray-300" style="background-color: ${theme.primary_color}"></div>
+                                <div class="w-4 h-4 rounded-full border border-gray-300" style="background-color: ${theme.secondary_color}"></div>
+                            </div>
+                            <div>
+                                <div class="font-medium text-sm text-gray-800">${theme.theme_name}</div>
+                                <div class="text-xs text-gray-500">${theme.primary_color} • ${theme.secondary_color}</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            ${theme.is_active ? '<span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">Đang dùng</span>' : ''}
+                            ${theme.is_default ? '<span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">Mặc định</span>' : ''}
+                        </div>
+                    </div>
+                `;
+                
+                // Add click event to switch theme
+                if (!theme.is_active) {
+                    themeItem.addEventListener('click', () => switchTheme(theme.id, theme.theme_name));
+                }
+                
+                themeList.appendChild(themeItem);
+            });
+        }
+
+        // Switch theme
+        async function switchTheme(themeId, themeName) {
+            try {
+                const response = await fetch('/api/switch-theme', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ theme_id: themeId })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Show success message
+                    showNotification(`Đã chuyển sang theme "${themeName}"`, 'success');
+                    
+                    // Reload page to apply new theme
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    showNotification('Có lỗi xảy ra khi chuyển theme', 'error');
+                }
+            } catch (error) {
+                console.error('Error switching theme:', error);
+                showNotification('Có lỗi xảy ra khi chuyển theme', 'error');
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-20 right-6 z-50 px-4 py-3 rounded-lg shadow-lg transition-all duration-300 transform translate-x-full ${
+                type === 'success' ? 'bg-green-500 text-white' : 
+                type === 'error' ? 'bg-red-500 text-white' : 
+                'bg-blue-500 text-white'
+            }`;
+            notification.innerHTML = `
+                <div class="flex items-center space-x-2">
+                    <i class="fas ${type === 'success' ? 'fa-check' : type === 'error' ? 'fa-exclamation-triangle' : 'fa-info-circle'}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
     </script>
     
     <!-- Google Maps JavaScript -->
