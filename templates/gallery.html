@@ -4,11 +4,62 @@
 
 {% block content %}
 <!-- Hero Section -->
-<section class="relative bg-purple-600 py-20">
-    <div class="absolute inset-0 bg-purple-800/30"></div>
-    <div class="relative container mx-auto px-4 text-center text-white">
-        <h1 class="text-4xl md:text-6xl font-bold mb-4">Thư Viện Ảnh</h1>
-        <p class="text-xl md:text-2xl opacity-90">Những khoảnh khắc đẹp của các bé tại trường</p>
+<section class="hero-slider relative min-h-[90vh] flex items-center justify-center overflow-hidden py-8">
+    <!-- Animated Background Pattern -->
+    <div class="absolute inset-0 bg-theme-gradient-br" style="z-index: 0;"></div>
+    <div class="absolute inset-0 opacity-30" style="z-index: 2;">
+        <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/10 via-transparent to-black/10"></div>
+    </div>
+    
+    <!-- Floating Decorative Elements -->
+    <div class="absolute top-20 left-20 w-16 h-16 bg-white/15 rounded-full animate-float"></div>
+    <div class="absolute top-32 right-32 w-12 h-12 bg-accent/20 rounded-full animate-float" style="animation-delay: 1s;"></div>
+    <div class="absolute bottom-40 left-16 w-20 h-20 bg-white/10 rounded-full animate-float" style="animation-delay: 2s;"></div>
+    <div class="absolute bottom-20 right-20 w-14 h-14 bg-accent/15 rounded-full animate-float" style="animation-delay: 0.5s;"></div>
+    <div class="absolute top-1/2 left-10 w-8 h-8 bg-white/20 rounded-full animate-float" style="animation-delay: 1.5s;"></div>
+    <div class="absolute top-1/3 right-10 w-10 h-10 bg-accent/25 rounded-full animate-float" style="animation-delay: 2.5s;"></div>
+    
+    <div class="container mx-auto px-4 relative" style="z-index: 10;">
+        <div class="text-center text-white max-w-5xl mx-auto">
+
+            
+            <!-- Title với hiệu ứng gradient text -->
+            <h1 class="text-6xl md:text-7xl lg:text-8xl font-bold font-patrick mb-8 animate-fade-in-up" style="animation-delay: 0.2s;">
+                <span class="bg-gradient-to-r from-white via-accent to-white bg-clip-text text-transparent drop-shadow-2xl">
+                    Thư Viện Ảnh
+                </span>
+            </h1>
+            
+            <!-- Description box với hiệu ứng glassmorphism -->
+            <div class="bg-white/15 backdrop-blur-md rounded-3xl p-8 md:p-10 border border-white/20 shadow-2xl max-w-4xl mx-auto animate-fade-in-up" style="animation-delay: 0.4s;">
+                <div class="relative">
+                    <p class="text-xl md:text-2xl lg:text-3xl text-white font-semibold leading-relaxed mb-4">
+                        Lưu giữ những khoảnh khắc đẹp nhất và kỷ niệm quý giá tại
+                    </p>
+                    <p class="text-2xl md:text-3xl lg:text-4xl font-bold text-accent drop-shadow-lg">
+                        Trường Mầm non Hoa Hướng Dương
+                    </p>
+                    <!-- Decorative line -->
+                    <div class="w-24 h-1 bg-gradient-to-r from-accent to-white mx-auto mt-6 rounded-full"></div>
+                </div>
+            </div>
+            
+            <!-- Stats với glassmorphism -->
+            <div class="flex flex-wrap justify-center gap-6 mt-10 animate-fade-in-up" style="animation-delay: 0.6s;">
+                <div class="bg-white/15 backdrop-blur-md rounded-2xl p-6 border border-white/20 text-center">
+                    <div class="text-3xl font-bold text-accent counter" data-target="{{ images|length if images else 0 }}">0</div>
+                    <div class="text-sm opacity-80">Hình ảnh</div>
+                </div>
+                <div class="bg-white/15 backdrop-blur-md rounded-2xl p-6 border border-white/20 text-center">
+                    <div class="text-3xl font-bold text-accent counter" data-target="{{ categories|length if categories else 0 }}">0</div>
+                    <div class="text-sm opacity-80">Danh mục</div>
+                </div>
+                <div class="bg-white/15 backdrop-blur-md rounded-2xl p-6 border border-white/20 text-center">
+                    <div class="text-3xl font-bold text-accent counter" data-target="365">0</div>
+                    <div class="text-sm opacity-80">Ngày ghi nhận</div>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
@@ -145,7 +196,7 @@
 </div>
 
 <!-- CTA Section -->
-<section class="py-16 bg-gradient-to-r from-purple-600 to-pink-600">
+<section class="py-16 bg-theme-gradient">
     <div class="container mx-auto px-4 text-center">
         <div class="max-w-3xl mx-auto text-white">
             <h2 class="text-3xl md:text-4xl font-bold mb-6">Chia Sẻ Khoảnh Khắc</h2>
@@ -153,7 +204,7 @@
                 Bạn có những hình ảnh đẹp về trường? Hãy chia sẻ với chúng tôi!
             </p>
             <a href="{{ url_for('contact') }}" 
-               class="inline-block bg-white text-purple-600 px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition-colors transform hover:scale-105">
+               class="inline-block bg-white text-primary px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition-colors transform hover:scale-105">
                 Liên Hệ Ngay
             </a>
         </div>
@@ -191,6 +242,40 @@
     backdrop-filter: blur(5px);
 }
 
+/* Gallery Hero Animations - About Style */
+.animate-fade-in-up {
+    animation: fadeInUp 1s ease-out both;
+}
+
+.animate-float {
+    animation: float 6s ease-in-out infinite;
+}
+
+.counter {
+    transition: all 0.3s ease;
+}
+
+/* Keyframes */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
 @media (max-width: 768px) {
     #lightboxModal .absolute {
         position: static;
@@ -200,6 +285,19 @@
         position: relative;
         background: rgba(0, 0, 0, 0.8);
     }
+    
+    .gallery-title {
+        font-size: 3rem;
+    }
+    
+    .frame {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .frame-inner {
+        font-size: 16px;
+    }
 }
 </style>
 {% endblock %}
@@ -207,6 +305,29 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Counter Animation
+    function animateCounters() {
+        const counters = document.querySelectorAll('.counter');
+        counters.forEach(counter => {
+            const target = parseInt(counter.getAttribute('data-target'));
+            const duration = 2000; // 2 seconds
+            const increment = target / (duration / 16); // 60fps
+            let current = 0;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                counter.textContent = Math.floor(current);
+            }, 16);
+        });
+    }
+    
+    // Initialize animations
+    setTimeout(animateCounters, 1000);
+    
     // Filter functionality
     const filterBtns = document.querySelectorAll('.filter-btn');
     const galleryItems = document.querySelectorAll('.gallery-item');
