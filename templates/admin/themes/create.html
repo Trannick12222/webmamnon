@@ -1,172 +1,326 @@
 {% extends "admin/base.html" %}
 
 {% block title %}Tạo Theme Mới{% endblock %}
+{% block page_title %}Tạo Theme Mới{% endblock %}
+{% block page_description %}Thiết kế giao diện và màu sắc cho website{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Tạo Theme Mới</h3>
-                    <div class="card-tools">
-                        <a href="{{ url_for('admin_themes') }}" class="btn btn-secondary btn-sm">
-                            <i class="fas fa-arrow-left"></i> Quay lại
-                        </a>
+<div class="max-w-7xl mx-auto space-y-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+            <a href="{{ url_for('admin_themes') }}" 
+               class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                <i class="fas fa-arrow-left text-gray-600"></i>
+            </a>
+            <div class="p-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl shadow-lg">
+                <i class="fas fa-plus text-white text-xl"></i>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900">Tạo Theme Mới</h2>
+                <p class="text-gray-600">Thiết kế giao diện và màu sắc cho website</p>
+            </div>
+        </div>
+        
+        <!-- Preset Colors -->
+        <div class="hidden lg:flex items-center space-x-2">
+            <span class="text-sm text-gray-600 mr-2">Màu có sẵn:</span>
+            <button onclick="applyPreset('#ff6b35', '#f7931e', '#ffd700')" 
+                    class="w-8 h-8 rounded-full shadow-md border-2 border-white hover:scale-110 transition-transform"
+                    style="background: linear-gradient(45deg, #ff6b35, #f7931e);" 
+                    title="Cam Hướng Dương"></button>
+            <button onclick="applyPreset('#3b82f6', '#1d4ed8', '#60a5fa')" 
+                    class="w-8 h-8 rounded-full shadow-md border-2 border-white hover:scale-110 transition-transform"
+                    style="background: linear-gradient(45deg, #3b82f6, #1d4ed8);" 
+                    title="Xanh Dương"></button>
+            <button onclick="applyPreset('#10b981', '#059669', '#34d399')" 
+                    class="w-8 h-8 rounded-full shadow-md border-2 border-white hover:scale-110 transition-transform"
+                    style="background: linear-gradient(45deg, #10b981, #059669);" 
+                    title="Xanh Lá"></button>
+            <button onclick="applyPreset('#8b5cf6', '#7c3aed', '#a78bfa')" 
+                    class="w-8 h-8 rounded-full shadow-md border-2 border-white hover:scale-110 transition-transform"
+                    style="background: linear-gradient(45deg, #8b5cf6, #7c3aed);" 
+                    title="Tím"></button>
+            <button onclick="applyPreset('#f59e0b', '#d97706', '#fbbf24')" 
+                    class="w-8 h-8 rounded-full shadow-md border-2 border-white hover:scale-110 transition-transform"
+                    style="background: linear-gradient(45deg, #f59e0b, #d97706);" 
+                    title="Vàng"></button>
+        </div>
+    </div>
+
+    <form method="POST" class="grid lg:grid-cols-2 gap-8">
+        <!-- Form Section -->
+        <div class="space-y-6">
+            <!-- Basic Info -->
+            <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                    <i class="fas fa-info-circle mr-2 text-blue-500"></i>
+                    Thông tin cơ bản
+                </h3>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label for="theme_name" class="block text-sm font-medium text-gray-700 mb-2">
+                            Tên Theme <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" 
+                               id="theme_name" 
+                               name="theme_name" 
+                               required
+                               placeholder="Ví dụ: Cam Hướng Dương, Xanh Biển..."
+                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
+                        <p class="text-xs text-gray-500 mt-1">Tên mô tả cho theme của bạn</p>
                     </div>
                 </div>
-                <form method="POST">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="theme_name">Tên Theme <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="theme_name" name="theme_name" required>
-                                    <small class="form-text text-muted">Ví dụ: Cam Hướng Dương, Xanh Biển, Tím Lavender</small>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="primary_color">Màu Chính <span class="text-danger">*</span></label>
-                                    <div class="input-group">
-                                        <input type="color" class="form-control" id="primary_color" name="primary_color" value="#ff6b35" required>
-                                        <div class="input-group-append">
-                                            <input type="text" class="form-control" id="primary_color_text" value="#ff6b35" readonly>
-                                        </div>
-                                    </div>
-                                    <small class="form-text text-muted">Màu chính sẽ được sử dụng cho logo, tiêu đề, nút bấm</small>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="secondary_color">Màu Phụ <span class="text-danger">*</span></label>
-                                    <div class="input-group">
-                                        <input type="color" class="form-control" id="secondary_color" name="secondary_color" value="#f7931e" required>
-                                        <div class="input-group-append">
-                                            <input type="text" class="form-control" id="secondary_color_text" value="#f7931e" readonly>
-                                        </div>
-                                    </div>
-                                    <small class="form-text text-muted">Màu phụ sẽ được sử dụng cho gradient, hover effects</small>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="accent_color">Màu Nhấn</label>
-                                    <div class="input-group">
-                                        <input type="color" class="form-control" id="accent_color" name="accent_color" value="#ffd700">
-                                        <div class="input-group-append">
-                                            <input type="text" class="form-control" id="accent_color_text" value="#ffd700">
-                                        </div>
-                                    </div>
-                                    <small class="form-text text-muted">Màu nhấn cho các chi tiết đặc biệt (tùy chọn)</small>
+            </div>
+
+            <!-- Color Settings -->
+            <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                    <i class="fas fa-palette mr-2 text-purple-500"></i>
+                    Cài đặt màu sắc
+                </h3>
+                
+                <div class="grid sm:grid-cols-2 gap-6">
+                    <!-- Primary Color -->
+                    <div class="space-y-3">
+                        <label class="block text-sm font-medium text-gray-700">
+                            Màu Chính <span class="text-red-500">*</span>
+                        </label>
+                        <div class="flex items-center space-x-3">
+                            <div class="relative">
+                                <input type="color" 
+                                       id="primary_color" 
+                                       name="primary_color" 
+                                       value="#ff6b35" 
+                                       required
+                                       class="w-16 h-16 rounded-xl border-2 border-gray-200 cursor-pointer hover:scale-105 transition-transform">
+                                <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-star text-white text-xs"></i>
                                 </div>
                             </div>
-                            
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="background_color">Màu Nền</label>
-                                    <div class="input-group">
-                                        <input type="color" class="form-control" id="background_color" name="background_color" value="#ffffff">
-                                        <div class="input-group-append">
-                                            <input type="text" class="form-control" id="background_color_text" value="#ffffff">
-                                        </div>
-                                    </div>
-                                    <small class="form-text text-muted">Màu nền chính của website</small>
+                            <div class="flex-1">
+                                <input type="text" 
+                                       id="primary_color_text" 
+                                       value="#ff6b35" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <p class="text-xs text-gray-500 mt-1">Logo, tiêu đề, nút chính</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Secondary Color -->
+                    <div class="space-y-3">
+                        <label class="block text-sm font-medium text-gray-700">
+                            Màu Phụ <span class="text-red-500">*</span>
+                        </label>
+                        <div class="flex items-center space-x-3">
+                            <div class="relative">
+                                <input type="color" 
+                                       id="secondary_color" 
+                                       name="secondary_color" 
+                                       value="#f7931e" 
+                                       required
+                                       class="w-16 h-16 rounded-xl border-2 border-gray-200 cursor-pointer hover:scale-105 transition-transform">
+                                <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-palette text-white text-xs"></i>
                                 </div>
-                                
-                                <div class="form-group">
-                                    <label for="text_color">Màu Chữ</label>
-                                    <div class="input-group">
-                                        <input type="color" class="form-control" id="text_color" name="text_color" value="#333333">
-                                        <div class="input-group-append">
-                                            <input type="text" class="form-control" id="text_color_text" value="#333333">
-                                        </div>
-                                    </div>
-                                    <small class="form-text text-muted">Màu chữ chính của website</small>
+                            </div>
+                            <div class="flex-1">
+                                <input type="text" 
+                                       id="secondary_color_text" 
+                                       value="#f7931e" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <p class="text-xs text-gray-500 mt-1">Gradient, hiệu ứng hover</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Accent Color -->
+                    <div class="space-y-3">
+                        <label class="block text-sm font-medium text-gray-700">
+                            Màu Nhấn
+                        </label>
+                        <div class="flex items-center space-x-3">
+                            <div class="relative">
+                                <input type="color" 
+                                       id="accent_color" 
+                                       name="accent_color" 
+                                       value="#ffd700"
+                                       class="w-16 h-16 rounded-xl border-2 border-gray-200 cursor-pointer hover:scale-105 transition-transform">
+                                <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-sparkles text-white text-xs"></i>
                                 </div>
-                                
-                                <!-- Preview Section -->
-                                <div class="form-group">
-                                    <label>Xem Trước Theme</label>
-                                    <div class="theme-preview" id="theme-preview">
-                                        <div class="preview-header">
-                                            <h5 class="preview-title">Trường Mầm non Hoa Hướng Dương</h5>
-                                        </div>
-                                        <div class="preview-content">
-                                            <div class="preview-button">Nút Chính</div>
-                                            <div class="preview-text">Đây là văn bản mẫu để xem trước theme</div>
-                                        </div>
-                                    </div>
+                            </div>
+                            <div class="flex-1">
+                                <input type="text" 
+                                       id="accent_color_text" 
+                                       value="#ffd700" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <p class="text-xs text-gray-500 mt-1">Chi tiết đặc biệt (tùy chọn)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Background Color -->
+                    <div class="space-y-3">
+                        <label class="block text-sm font-medium text-gray-700">
+                            Màu Nền
+                        </label>
+                        <div class="flex items-center space-x-3">
+                            <div class="relative">
+                                <input type="color" 
+                                       id="background_color" 
+                                       name="background_color" 
+                                       value="#ffffff"
+                                       class="w-16 h-16 rounded-xl border-2 border-gray-200 cursor-pointer hover:scale-105 transition-transform">
+                                <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-gray-500 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-fill text-white text-xs"></i>
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <input type="text" 
+                                       id="background_color_text" 
+                                       value="#ffffff" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <p class="text-xs text-gray-500 mt-1">Nền chính của website</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Text Color -->
+                <div class="mt-6 space-y-3">
+                    <label class="block text-sm font-medium text-gray-700">
+                        Màu Chữ
+                    </label>
+                    <div class="flex items-center space-x-3 max-w-sm">
+                        <div class="relative">
+                            <input type="color" 
+                                   id="text_color" 
+                                   name="text_color" 
+                                   value="#333333"
+                                   class="w-16 h-16 rounded-xl border-2 border-gray-200 cursor-pointer hover:scale-105 transition-transform">
+                            <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-gray-800 rounded-full flex items-center justify-center">
+                                <i class="fas fa-font text-white text-xs"></i>
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <input type="text" 
+                                   id="text_color_text" 
+                                   value="#333333" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <p class="text-xs text-gray-500 mt-1">Màu chữ chính</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-4">
+                <button type="submit" 
+                        class="flex-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-medium py-3 px-6 rounded-xl hover:from-blue-600 hover:to-purple-600 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center">
+                    <i class="fas fa-save mr-2"></i>
+                    Lưu Theme
+                </button>
+                <a href="{{ url_for('admin_themes') }}" 
+                   class="px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-colors duration-200 flex items-center justify-center">
+                    <i class="fas fa-times mr-2"></i>
+                    Hủy
+                </a>
+            </div>
+        </div>
+
+        <!-- Preview Section -->
+        <div class="space-y-6">
+            <!-- Live Preview -->
+            <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 sticky top-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                    <i class="fas fa-eye mr-2 text-green-500"></i>
+                    Xem trước trực tiếp
+                </h3>
+                
+                <div id="theme-preview" class="space-y-4 transition-all duration-300">
+                    <!-- Header Preview -->
+                    <div id="preview-header" class="rounded-xl p-6 text-white shadow-lg">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-seedling text-white text-xl"></i>
+                                </div>
+                                <div>
+                                    <h1 class="text-xl font-bold">Trường Mầm non Hoa Hướng Dương</h1>
+                                    <p class="text-sm opacity-90">Nơi ươm mầm tương lai</p>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="card-footer">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Lưu Theme
-                        </button>
-                        <a href="{{ url_for('admin_themes') }}" class="btn btn-secondary">
-                            <i class="fas fa-times"></i> Hủy
-                        </a>
+                    
+                    <!-- Content Preview -->
+                    <div id="preview-content" class="rounded-xl p-6 shadow-md">
+                        <h2 class="text-xl font-bold mb-3" id="preview-text">Chào mừng đến với trường chúng tôi</h2>
+                        <p class="text-gray-600 mb-4 text-sm">Chúng tôi cam kết mang đến môi trường giáo dục tốt nhất cho con em bạn.</p>
+                        
+                        <div class="space-y-3">
+                            <div id="preview-button" class="inline-block px-4 py-2 text-white font-medium rounded-lg shadow-md text-sm">
+                                Tìm hiểu thêm
+                            </div>
+                            <div id="preview-button-outline" class="inline-block px-4 py-2 border-2 font-medium rounded-lg text-sm ml-2">
+                                Liên hệ ngay
+                            </div>
+                        </div>
+                        
+                        <!-- Color Palette Display -->
+                        <div class="mt-6 pt-4 border-t border-gray-200">
+                            <h4 class="text-sm font-medium text-gray-700 mb-3">Bảng màu hiện tại</h4>
+                            <div class="flex space-x-2">
+                                <div id="color-swatch-primary" class="w-8 h-8 rounded-lg shadow-md border-2 border-white ring-1 ring-gray-200"></div>
+                                <div id="color-swatch-secondary" class="w-8 h-8 rounded-lg shadow-md border-2 border-white ring-1 ring-gray-200"></div>
+                                <div id="color-swatch-accent" class="w-8 h-8 rounded-lg shadow-md border-2 border-white ring-1 ring-gray-200"></div>
+                                <div id="color-swatch-background" class="w-8 h-8 rounded-lg shadow-md border-2 border-white ring-1 ring-gray-200"></div>
+                                <div id="color-swatch-text" class="w-8 h-8 rounded-lg shadow-md border-2 border-white ring-1 ring-gray-200"></div>
+                            </div>
+                        </div>
                     </div>
-                </form>
+                </div>
+            </div>
+            
+            <!-- Color Harmony Tips -->
+            <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 border border-blue-100">
+                <h3 class="text-lg font-semibold text-gray-900 mb-3 flex items-center">
+                    <i class="fas fa-lightbulb mr-2 text-yellow-500"></i>
+                    Gợi ý thiết kế
+                </h3>
+                <div class="space-y-2 text-sm text-gray-700">
+                    <div class="flex items-start space-x-2">
+                        <i class="fas fa-check text-green-500 mt-0.5"></i>
+                        <span>Sử dụng màu tương phản để tăng khả năng đọc</span>
+                    </div>
+                    <div class="flex items-start space-x-2">
+                        <i class="fas fa-check text-green-500 mt-0.5"></i>
+                        <span>Màu chính và phụ nên hài hòa với nhau</span>
+                    </div>
+                    <div class="flex items-start space-x-2">
+                        <i class="fas fa-check text-green-500 mt-0.5"></i>
+                        <span>Màu nhấn dùng để làm nổi bật các yếu tố quan trọng</span>
+                    </div>
+                    <div class="flex items-start space-x-2">
+                        <i class="fas fa-check text-green-500 mt-0.5"></i>
+                        <span>Kiểm tra theme trên nhiều thiết bị khác nhau</span>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
+    </form>
 </div>
+{% endblock %}
 
-<style>
-.theme-preview {
-    border: 2px solid #ddd;
-    border-radius: 8px;
-    padding: 20px;
-    background: var(--bg-color, #ffffff);
-    color: var(--text-color, #333333);
-    transition: all 0.3s ease;
-}
-
-.preview-header {
-    background: linear-gradient(45deg, var(--primary-color, #ff6b35), var(--secondary-color, #f7931e));
-    color: white;
-    padding: 15px;
-    border-radius: 6px;
-    margin-bottom: 15px;
-}
-
-.preview-title {
-    margin: 0;
-    font-weight: bold;
-}
-
-.preview-button {
-    background: linear-gradient(45deg, var(--primary-color, #ff6b35), var(--secondary-color, #f7931e));
-    color: white;
-    padding: 10px 20px;
-    border-radius: 25px;
-    display: inline-block;
-    margin-bottom: 10px;
-    font-weight: 600;
-}
-
-.preview-text {
-    color: var(--text-color, #333333);
-    line-height: 1.6;
-}
-
-.input-group .form-control[type="color"] {
-    width: 60px;
-    padding: 2px;
-    border-right: 0;
-}
-
-.input-group .form-control[readonly] {
-    background-color: #f8f9fa;
-    font-family: monospace;
-    font-size: 12px;
-}
-</style>
-
+{% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const colorInputs = ['primary_color', 'secondary_color', 'accent_color', 'background_color', 'text_color'];
     
+    // Initialize color input synchronization
     colorInputs.forEach(function(inputId) {
         const colorInput = document.getElementById(inputId);
         const textInput = document.getElementById(inputId + '_text');
@@ -186,21 +340,100 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
+    // Update preview function
     function updatePreview() {
-        const preview = document.getElementById('theme-preview');
         const primaryColor = document.getElementById('primary_color').value;
         const secondaryColor = document.getElementById('secondary_color').value;
+        const accentColor = document.getElementById('accent_color').value;
         const backgroundColor = document.getElementById('background_color').value;
         const textColor = document.getElementById('text_color').value;
         
-        preview.style.setProperty('--primary-color', primaryColor);
-        preview.style.setProperty('--secondary-color', secondaryColor);
-        preview.style.setProperty('--bg-color', backgroundColor);
-        preview.style.setProperty('--text-color', textColor);
+        // Update header
+        const header = document.getElementById('preview-header');
+        header.style.background = `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`;
+        
+        // Update content background
+        const content = document.getElementById('preview-content');
+        content.style.backgroundColor = backgroundColor;
+        
+        // Update text color
+        const text = document.getElementById('preview-text');
+        text.style.color = textColor;
+        
+        // Update buttons
+        const button = document.getElementById('preview-button');
+        button.style.background = `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`;
+        
+        const buttonOutline = document.getElementById('preview-button-outline');
+        buttonOutline.style.borderColor = primaryColor;
+        buttonOutline.style.color = primaryColor;
+        
+        // Update color swatches
+        document.getElementById('color-swatch-primary').style.backgroundColor = primaryColor;
+        document.getElementById('color-swatch-secondary').style.backgroundColor = secondaryColor;
+        document.getElementById('color-swatch-accent').style.backgroundColor = accentColor;
+        document.getElementById('color-swatch-background').style.backgroundColor = backgroundColor;
+        document.getElementById('color-swatch-text').style.backgroundColor = textColor;
     }
+    
+    // Preset color functions
+    window.applyPreset = function(primary, secondary, accent) {
+        document.getElementById('primary_color').value = primary;
+        document.getElementById('primary_color_text').value = primary;
+        document.getElementById('secondary_color').value = secondary;
+        document.getElementById('secondary_color_text').value = secondary;
+        document.getElementById('accent_color').value = accent;
+        document.getElementById('accent_color_text').value = accent;
+        
+        updatePreview();
+        
+        // Add animation effect
+        const preview = document.getElementById('theme-preview');
+        preview.style.transform = 'scale(0.98)';
+        setTimeout(() => {
+            preview.style.transform = 'scale(1)';
+        }, 150);
+    };
     
     // Initial preview update
     updatePreview();
+    
+    // Add form validation
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        const themeName = document.getElementById('theme_name').value.trim();
+        if (!themeName) {
+            e.preventDefault();
+            alert('Vui lòng nhập tên theme');
+            document.getElementById('theme_name').focus();
+            return;
+        }
+        
+        // Show loading state
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Đang lưu...';
+        submitBtn.disabled = true;
+        
+        // Re-enable if form submission fails
+        setTimeout(() => {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }, 5000);
+    });
+    
+    // Add smooth animations on page load
+    const elements = document.querySelectorAll('.bg-white');
+    elements.forEach((el, index) => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            el.style.transition = 'all 0.5s ease';
+            el.style.opacity = '1';
+            el.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
 });
 </script>
 {% endblock %}
