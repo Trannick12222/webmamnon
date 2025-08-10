@@ -456,53 +456,223 @@
     margin-right: 0.5rem;
 }
 
-/* Address Input Styling */
+/* Modern Address Section */
+.address-section {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-radius: 16px;
+    padding: 2rem;
+    margin: 1.5rem 0;
+    border: 1px solid #e2e8f0;
+    position: relative;
+    overflow: hidden;
+}
+
+.address-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #3b82f6, #10b981, #f59e0b, #ef4444);
+}
+
+.address-input-group {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
 .address-input {
     border: 2px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 1rem 1.5rem;
-    font-size: 1rem;
+    border-radius: 16px;
+    padding: 1.25rem 1.5rem;
+    font-size: 1.1rem;
     transition: all 0.3s ease;
-    background: #f8fafc;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    width: 100%;
 }
 
 .address-input:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1), 0 4px 12px rgba(0,0,0,0.1);
     background: white;
+    transform: translateY(-1px);
 }
 
+.address-input::placeholder {
+    color: #9ca3af;
+    font-style: italic;
+}
+
+/* Modern Address Preview */
 .address-preview {
-    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-    border: 1px solid #bae6fd;
-    border-radius: 12px;
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 16px;
     overflow: hidden;
     height: fit-content;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+}
+
+.address-preview:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
 }
 
 .preview-header {
-    background: #0369a1;
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
     color: white;
-    padding: 0.75rem 1rem;
-    font-size: 0.875rem;
+    padding: 1rem 1.25rem;
+    font-size: 0.9rem;
     font-weight: 600;
     display: flex;
     align-items: center;
+    position: relative;
+}
+
+.preview-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
 }
 
 .preview-header i {
-    margin-right: 0.5rem;
+    margin-right: 0.75rem;
+    font-size: 1rem;
 }
 
 .preview-content {
-    padding: 1rem;
+    padding: 1.25rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
 }
 
 .address-display {
-    color: #1e40af;
+    color: #1f2937;
     font-weight: 500;
+    line-height: 1.6;
+    min-height: 2rem;
+    font-size: 0.95rem;
+    padding: 0.5rem;
+    background: #f1f5f9;
+    border-radius: 8px;
+    border-left: 4px solid #3b82f6;
+}
+
+/* Marker Info Cards */
+.marker-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.marker-field {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    border: 2px solid #f1f5f9;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.marker-field:hover {
+    border-color: #e2e8f0;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.marker-field::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    border-radius: 16px 16px 0 0;
+    background: linear-gradient(90deg, #10b981, #3b82f6);
+}
+
+.marker-label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    font-weight: 600;
+    color: #374151;
+    font-size: 1rem;
+}
+
+.marker-label i {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.75rem;
+    font-size: 0.9rem;
+}
+
+.marker-label .fa-tag {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+}
+
+.marker-label .fa-info-circle {
+    background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+    color: white;
+}
+
+.marker-input {
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #f9fafb;
+    width: 100%;
+}
+
+.marker-input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    background: white;
+    transform: translateY(-1px);
+}
+
+.marker-input::placeholder {
+    color: #9ca3af;
+    font-style: italic;
+}
+
+/* Info Helper */
+.info-helper {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border: 1px solid #f59e0b;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-top: 1rem;
+    display: flex;
+    align-items: flex-start;
+}
+
+.info-helper i {
+    color: #d97706;
+    margin-right: 0.75rem;
+    margin-top: 0.125rem;
+    flex-shrink: 0;
+}
+
+.info-helper-text {
+    color: #92400e;
+    font-size: 0.875rem;
     line-height: 1.5;
-    min-height: 1.5rem;
+    font-weight: 500;
 }
 
 /* Form Control Styling */
@@ -518,6 +688,270 @@
     border-color: #667eea;
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     background: white;
+}
+
+/* Modern Settings Cards */
+.setting-card {
+    background: white;
+    border: 2px solid #f1f5f9;
+    border-radius: 16px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.setting-card:hover {
+    border-color: #e2e8f0;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.setting-header {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+}
+
+.setting-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.footer-icon {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: white;
+}
+
+.status-icon {
+    background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+    color: white;
+}
+
+.setting-info {
+    flex: 1;
+}
+
+.setting-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 0.25rem 0;
+}
+
+.setting-desc {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.setting-control {
+    margin-bottom: 1rem;
+}
+
+/* Modern Switch */
+.modern-switch {
+    position: relative;
+    display: inline-block;
+}
+
+.switch-input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.switch-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    margin: 0;
+}
+
+.switch-slider {
+    position: relative;
+    width: 60px;
+    height: 32px;
+    background: #cbd5e1;
+    border-radius: 16px;
+    transition: all 0.3s ease;
+    margin-right: 0.75rem;
+}
+
+.switch-slider::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 28px;
+    height: 28px;
+    background: white;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.switch-input:checked + .switch-label .switch-slider {
+    background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+}
+
+.switch-input:checked + .switch-label .switch-slider::before {
+    transform: translateX(28px);
+}
+
+.switch-text {
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.switch-on, .switch-off {
+    transition: all 0.3s ease;
+}
+
+.switch-input:checked + .switch-label .switch-off {
+    display: none;
+}
+
+.switch-input:not(:checked) + .switch-label .switch-on {
+    display: none;
+}
+
+.switch-input:checked + .switch-label .switch-on {
+    color: #10b981;
+}
+
+.switch-input:not(:checked) + .switch-label .switch-off {
+    color: #6b7280;
+}
+
+/* Setting Status */
+.setting-status {
+    padding: 0.75rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.status-indicator i {
+    margin-right: 0.5rem;
+    font-size: 1rem;
+}
+
+.status-indicator.active {
+    color: #059669;
+}
+
+.status-indicator.inactive {
+    color: #dc2626;
+}
+
+/* Preview Section */
+.preview-section {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-top: 2rem;
+    border: 1px solid #e2e8f0;
+}
+
+.preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.preview-title {
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    color: #374151;
+    font-size: 1.1rem;
+}
+
+.preview-title i {
+    margin-right: 0.5rem;
+    color: #6366f1;
+}
+
+.preview-badge .badge {
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    color: white;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+}
+
+.preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.preview-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.25rem;
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+}
+
+.preview-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.preview-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.preview-content {
+    flex: 1;
+}
+
+.preview-content h6 {
+    margin: 0 0 0.5rem 0;
+    font-weight: 600;
+    color: #374151;
+    font-size: 0.95rem;
+}
+
+.preview-status {
+    display: flex;
+    align-items: center;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.preview-status i {
+    margin-right: 0.5rem;
 }
 
 /* Responsive Design */
@@ -559,6 +993,57 @@
     
     .address-preview {
         margin-top: 1rem;
+    }
+    
+    .setting-card {
+        margin-bottom: 1rem;
+    }
+    
+    .setting-header {
+        flex-direction: column;
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+    
+    .setting-icon {
+        margin: 0 auto 0.75rem auto;
+    }
+    
+    .preview-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .preview-header {
+        flex-direction: column;
+        gap: 0.75rem;
+        text-align: center;
+    }
+    
+    .address-section {
+        padding: 1.5rem;
+    }
+    
+    .marker-info-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .marker-field {
+        padding: 1.25rem;
+    }
+    
+    .address-input {
+        font-size: 1rem;
+        padding: 1rem 1.25rem;
+    }
+    
+    .marker-input {
+        font-size: 0.95rem;
+        padding: 0.875rem 1rem;
+    }
+    
+    .info-helper {
+        margin-top: 1.5rem;
     }
 }
 </style>
@@ -659,80 +1144,225 @@
                     <!-- Step 1.5: Address Information -->
                     <div class="section-card">
                         <div class="section-title">
-                            <i class="fas fa-home"></i>
+                            <i class="fas fa-map-marker-alt"></i>
                             <div>
-                                <h3 class="mb-1">Thông tin địa chỉ</h3>
-                                <small class="text-muted">Cập nhật địa chỉ hiển thị trên website</small>
+                                <h3 class="mb-1">Bước 1.5: Thông tin địa chỉ</h3>
+                                <small class="text-muted">Cập nhật địa chỉ và thông tin hiển thị trên website</small>
                             </div>
                         </div>
                         
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div class="form-group">
-                                    <label for="address_display" class="form-label mb-3">
-                                        <i class="fas fa-map-marker-alt mr-2"></i>
-                                        Địa chỉ hiển thị
-                                    </label>
-                                    <input 
-                                        type="text" 
-                                        class="form-control address-input" 
-                                        id="address_display" 
-                                        name="address"
-                                        value="{{ location_settings.address if location_settings else '123 Đường Hoa Hướng Dương, Quận 1, TP.HCM' }}"
-                                        placeholder="Nhập địa chỉ đầy đủ của trường..."
-                                    >
-                                    <small class="form-text text-muted mt-2">
-                                        <i class="fas fa-info-circle mr-1"></i>
-                                        Địa chỉ này sẽ hiển thị trên website và trong thông tin liên hệ
-                                    </small>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="address-preview">
-                                    <div class="preview-header">
-                                        <i class="fas fa-eye"></i>
-                                        <span>Xem trước</span>
+                        <!-- Address Input Section -->
+                        <div class="address-section">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="address-input-group">
+                                        <label for="address_display" class="form-label mb-3">
+                                            <i class="fas fa-home mr-2"></i>
+                                            <strong>Địa chỉ hiển thị chính</strong>
+                                        </label>
+                                        <input 
+                                            type="text" 
+                                            class="address-input" 
+                                            id="address_display" 
+                                            name="address"
+                                            value="{{ location_settings.address if location_settings else '123 Đường Hoa Hướng Dương, Quận 1, TP.HCM' }}"
+                                            placeholder="Nhập địa chỉ đầy đủ của trường mầm non..."
+                                        >
                                     </div>
-                                    <div class="preview-content">
-                                        <div class="address-display" id="address-preview">
-                                            {{ location_settings.address if location_settings else '123 Đường Hoa Hướng Dương, Quận 1, TP.HCM' }}
+                                    
+                                    <div class="info-helper">
+                                        <i class="fas fa-lightbulb"></i>
+                                        <div class="info-helper-text">
+                                            <strong>Mẹo:</strong> Địa chỉ này sẽ hiển thị trên website, footer và trong thông tin liên hệ. 
+                                            Hãy nhập đầy đủ để khách hàng dễ dàng tìm thấy trường.
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4">
+                                    <div class="address-preview">
+                                        <div class="preview-header">
+                                            <i class="fas fa-eye"></i>
+                                            <span>Xem trước hiển thị</span>
+                                        </div>
+                                        <div class="preview-content">
+                                            <div class="address-display" id="address-preview">
+                                                {{ location_settings.address if location_settings else '123 Đường Hoa Hướng Dương, Quận 1, TP.HCM' }}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="row mt-4">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="marker_title_display" class="form-label">
-                                        <i class="fas fa-tag mr-2"></i>
-                                        Tiêu đề marker
-                                    </label>
-                                    <input 
-                                        type="text" 
-                                        class="form-control" 
-                                        id="marker_title_display" 
-                                        name="marker_title"
-                                        value="{{ location_settings.marker_title if location_settings else 'Trường Mầm non Hoa Hướng Dương' }}"
-                                        placeholder="Tiêu đề hiển thị trên bản đồ..."
-                                    >
+                        <!-- Marker Information -->
+                        <div class="marker-info-grid">
+                            <div class="marker-field">
+                                <label for="marker_title_display" class="marker-label">
+                                    <i class="fas fa-tag"></i>
+                                    <span>Tiêu đề trên bản đồ</span>
+                                </label>
+                                <input 
+                                    type="text" 
+                                    class="marker-input" 
+                                    id="marker_title_display" 
+                                    name="marker_title"
+                                    value="{{ location_settings.marker_title if location_settings else 'Trường Mầm non Hoa Hướng Dương' }}"
+                                    placeholder="Tên trường hiển thị trên marker..."
+                                >
+                            </div>
+                            
+                            <div class="marker-field">
+                                <label for="marker_info_display" class="marker-label">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span>Mô tả chi tiết</span>
+                                </label>
+                                <input 
+                                    type="text" 
+                                    class="marker-input" 
+                                    id="marker_info_display" 
+                                    name="marker_info"
+                                    value="{{ location_settings.marker_info if location_settings else 'Trường Mầm non Hoa Hướng Dương - Nuôi dưỡng tâm hồn, phát triển tài năng' }}"
+                                    placeholder="Slogan hoặc mô tả ngắn về trường..."
+                                >
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 3: Display Settings -->
+                    <div class="section-card">
+                        <div class="section-title">
+                            <i class="fas fa-sliders-h"></i>
+                            <div>
+                                <h3 class="mb-1">Bước 3: Cài đặt hiển thị</h3>
+                                <small class="text-muted">Cấu hình cách hiển thị bản đồ trên website của bạn</small>
+                            </div>
+                        </div>
+                        
+                        <!-- Settings Cards -->
+                        <div class="row">
+                            <!-- Footer Display Setting -->
+                            <div class="col-md-6 mb-4">
+                                <div class="setting-card h-100">
+                                    <div class="setting-header">
+                                        <div class="setting-icon footer-icon">
+                                            <i class="fas fa-map-marked-alt"></i>
+                                        </div>
+                                        <div class="setting-info">
+                                            <h5 class="setting-title">Hiển thị trong Footer</h5>
+                                            <p class="setting-desc">Bản đồ xuất hiện ở cuối trang website</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="setting-control">
+                                        <div class="modern-switch">
+                                            <input type="checkbox" 
+                                                   class="switch-input" 
+                                                   id="show_in_footer_toggle" 
+                                                   name="show_in_footer" 
+                                                   value="true"
+                                                   {% if not location_settings or location_settings.show_in_footer %}checked{% endif %}>
+                                            <label class="switch-label" for="show_in_footer_toggle">
+                                                <span class="switch-slider"></span>
+                                                <span class="switch-text">
+                                                    <span class="switch-on">BẬT</span>
+                                                    <span class="switch-off">TẮT</span>
+                                                </span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="setting-status" id="footer-status-card">
+                                        <div class="status-indicator active">
+                                            <i class="fas fa-check-circle"></i>
+                                            <span>Bản đồ sẽ hiển thị trong footer</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="marker_info_display" class="form-label">
-                                        <i class="fas fa-info-circle mr-2"></i>
-                                        Thông tin marker
-                                    </label>
-                                    <input 
-                                        type="text" 
-                                        class="form-control" 
-                                        id="marker_info_display" 
-                                        name="marker_info"
-                                        value="{{ location_settings.marker_info if location_settings else 'Trường Mầm non Hoa Hướng Dương - Nuôi dưỡng tâm hồn, phát triển tài năng' }}"
-                                        placeholder="Mô tả chi tiết..."
-                                    >
+                            
+                            <!-- Active Status Setting -->
+                            <div class="col-md-6 mb-4">
+                                <div class="setting-card h-100">
+                                    <div class="setting-header">
+                                        <div class="setting-icon status-icon">
+                                            <i class="fas fa-power-off"></i>
+                                        </div>
+                                        <div class="setting-info">
+                                            <h5 class="setting-title">Trạng thái hoạt động</h5>
+                                            <p class="setting-desc">Bật/tắt toàn bộ tính năng vị trí</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="setting-control">
+                                        <div class="modern-switch">
+                                            <input type="checkbox" 
+                                                   class="switch-input" 
+                                                   id="is_active_toggle" 
+                                                   name="is_active" 
+                                                   value="true"
+                                                   {% if not location_settings or location_settings.is_active %}checked{% endif %}>
+                                            <label class="switch-label" for="is_active_toggle">
+                                                <span class="switch-slider"></span>
+                                                <span class="switch-text">
+                                                    <span class="switch-on">BẬT</span>
+                                                    <span class="switch-off">TẮT</span>
+                                                </span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="setting-status" id="active-status-card">
+                                        <div class="status-indicator active">
+                                            <i class="fas fa-check-circle"></i>
+                                            <span>Tính năng đang hoạt động</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Live Preview -->
+                        <div class="preview-section">
+                            <div class="preview-header">
+                                <div class="preview-title">
+                                    <i class="fas fa-eye"></i>
+                                    <span>Xem trước kết quả</span>
+                                </div>
+                                <div class="preview-badge">
+                                    <span class="badge badge-info">Live Preview</span>
+                                </div>
+                            </div>
+                            
+                            <div class="preview-grid">
+                                <div class="preview-item">
+                                    <div class="preview-card" id="footer-preview">
+                                        <div class="preview-icon">
+                                            <i class="fas fa-desktop"></i>
+                                        </div>
+                                        <div class="preview-content">
+                                            <h6>Website Footer</h6>
+                                            <div class="preview-status" id="footer-preview-status">
+                                                <i class="fas fa-check-circle text-success"></i>
+                                                <span>Bản đồ hiển thị</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="preview-item">
+                                    <div class="preview-card" id="system-preview">
+                                        <div class="preview-icon">
+                                            <i class="fas fa-cogs"></i>
+                                        </div>
+                                        <div class="preview-content">
+                                            <h6>Hệ thống</h6>
+                                            <div class="preview-status" id="system-preview-status">
+                                                <i class="fas fa-check-circle text-success"></i>
+                                                <span>Đang hoạt động</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -746,8 +1376,7 @@
                     <input type="hidden" id="map_zoom_level" name="map_zoom_level" value="{{ location_settings.map_zoom_level if location_settings else '15' }}">
                     <input type="hidden" id="map_style" name="map_style" value="{{ location_settings.map_style if location_settings else 'roadmap' }}">
                     <input type="hidden" id="map_height" name="map_height" value="{{ location_settings.map_height if location_settings else '400px' }}">
-                    <input type="hidden" id="show_in_footer" name="show_in_footer" value="{{ 'true' if not location_settings or location_settings.show_in_footer else 'false' }}">
-                    <input type="hidden" id="is_active" name="is_active" value="{{ 'true' if not location_settings or location_settings.is_active else 'false' }}">
+
                 </div>
                 
                     <!-- Step 2: Map Preview -->
@@ -1360,6 +1989,61 @@ document.getElementById('marker_info_display').addEventListener('input', functio
     if (hiddenField) {
         hiddenField.value = this.value;
     }
+});
+
+// Update preview when toggles change
+function updateSettingsPreview() {
+    const showInFooter = document.getElementById('show_in_footer_toggle').checked;
+    const isActive = document.getElementById('is_active_toggle').checked;
+    
+    // Update footer setting status
+    const footerStatusCard = document.getElementById('footer-status-card');
+    const footerIndicator = footerStatusCard.querySelector('.status-indicator');
+    
+    if (showInFooter) {
+        footerIndicator.className = 'status-indicator active';
+        footerIndicator.innerHTML = '<i class="fas fa-check-circle"></i><span>Bản đồ sẽ hiển thị trong footer</span>';
+    } else {
+        footerIndicator.className = 'status-indicator inactive';
+        footerIndicator.innerHTML = '<i class="fas fa-times-circle"></i><span>Bản đồ sẽ ẩn khỏi footer</span>';
+    }
+    
+    // Update active setting status
+    const activeStatusCard = document.getElementById('active-status-card');
+    const activeIndicator = activeStatusCard.querySelector('.status-indicator');
+    
+    if (isActive) {
+        activeIndicator.className = 'status-indicator active';
+        activeIndicator.innerHTML = '<i class="fas fa-check-circle"></i><span>Tính năng đang hoạt động</span>';
+    } else {
+        activeIndicator.className = 'status-indicator inactive';
+        activeIndicator.innerHTML = '<i class="fas fa-times-circle"></i><span>Tính năng đã tạm dừng</span>';
+    }
+    
+    // Update live preview section
+    const footerPreviewStatus = document.getElementById('footer-preview-status');
+    const systemPreviewStatus = document.getElementById('system-preview-status');
+    
+    if (showInFooter) {
+        footerPreviewStatus.innerHTML = '<i class="fas fa-check-circle text-success"></i><span>Bản đồ hiển thị</span>';
+    } else {
+        footerPreviewStatus.innerHTML = '<i class="fas fa-times-circle text-danger"></i><span>Bản đồ ẩn</span>';
+    }
+    
+    if (isActive) {
+        systemPreviewStatus.innerHTML = '<i class="fas fa-check-circle text-success"></i><span>Đang hoạt động</span>';
+    } else {
+        systemPreviewStatus.innerHTML = '<i class="fas fa-times-circle text-warning"></i><span>Tạm dừng</span>';
+    }
+}
+
+// Add event listeners for toggles
+document.getElementById('show_in_footer_toggle').addEventListener('change', updateSettingsPreview);
+document.getElementById('is_active_toggle').addEventListener('change', updateSettingsPreview);
+
+// Initialize preview on page load
+document.addEventListener('DOMContentLoaded', function() {
+    updateSettingsPreview();
 });
 </script>
 
