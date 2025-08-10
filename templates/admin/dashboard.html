@@ -6,7 +6,7 @@
 
 {% block content %}
 <!-- Stats Cards -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 mb-8">
     <div class="admin-card p-6">
         <div class="flex items-center justify-between">
             <div>
@@ -83,6 +83,22 @@
             </div>
             <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
                 <i class="fas fa-envelope text-orange-600 text-xl"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="admin-card p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-600">Lượt truy cập</p>
+                <p class="text-3xl font-bold text-gray-900">{{ stats.total_visits }}</p>
+                <p class="text-sm text-teal-600 mt-1">
+                    <i class="fas fa-arrow-up mr-1"></i>
+                    +{{ stats.visits_today }} hôm nay
+                </p>
+            </div>
+            <div class="w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center">
+                <i class="fas fa-chart-line text-teal-600 text-xl"></i>
             </div>
         </div>
     </div>
@@ -181,12 +197,32 @@
                 </div>
                 <span class="font-semibold text-gray-900">{{ additional_stats.contacts_this_week }} tin nhắn</span>
             </div>
+            
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div class="flex items-center">
+                    <div class="w-3 h-3 bg-teal-500 rounded-full mr-3"></div>
+                    <span class="text-gray-700">Lượt truy cập tuần này</span>
+                </div>
+                <span class="font-semibold text-gray-900">{{ additional_stats.visits_this_week }} lượt</span>
+            </div>
+            
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div class="flex items-center">
+                    <div class="w-3 h-3 bg-cyan-500 rounded-full mr-3"></div>
+                    <span class="text-gray-700">Khách duy nhất hôm nay</span>
+                </div>
+                <span class="font-semibold text-gray-900">{{ additional_stats.unique_visitors_today }} người</span>
+            </div>
         </div>
         
         <div class="mt-4 pt-4 border-t border-gray-200">
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between mb-2">
                 <span class="text-sm text-gray-600">Tổng liên hệ:</span>
                 <span class="text-sm font-medium text-gray-800">{{ additional_stats.total_contacts }} tin nhắn</span>
+            </div>
+            <div class="flex items-center justify-between">
+                <span class="text-sm text-gray-600">Tổng lượt truy cập:</span>
+                <span class="text-sm font-medium text-gray-800">{{ stats.total_visits }} lượt</span>
             </div>
         </div>
     </div>

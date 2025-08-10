@@ -327,6 +327,16 @@ class ThemeSettings(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+class PageVisit(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    ip_address = db.Column(db.String(45))  # Hỗ trợ IPv6
+    user_agent = db.Column(db.Text)  # Thông tin trình duyệt
+    page_url = db.Column(db.String(500))  # URL trang được truy cập
+    referrer = db.Column(db.String(500))  # Trang giới thiệu
+    visit_date = db.Column(db.Date, default=datetime.utcnow)  # Ngày truy cập
+    visit_time = db.Column(db.DateTime, default=datetime.utcnow)  # Thời gian truy cập
+    is_unique = db.Column(db.Boolean, default=True)  # Lượt truy cập duy nhất trong ngày
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -594,9 +604,54 @@ def save_cropped_image(base64_data, folder='uploads'):
         print(f"Error saving cropped image: {e}")
         return None
 
+def track_page_visit():
+    """Track page visit for analytics"""
+    try:
+        # Chỉ track các trang public, không track admin và static files
+        if (request.endpoint and 
+            not request.endpoint.startswith('admin') and 
+            not request.endpoint.startswith('static') and
+            not request.path.startswith('/static')):
+            
+            ip_address = request.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr)
+            if ip_address and ',' in ip_address:
+                ip_address = ip_address.split(',')[0].strip()
+            
+            user_agent = request.headers.get('User-Agent', '')
+            page_url = request.url
+            referrer = request.headers.get('Referer', '')
+            today = datetime.utcnow().date()
+            
+            # Kiểm tra xem IP này đã truy cập trong ngày hôm nay chưa
+            existing_visit = PageVisit.query.filter_by(
+                ip_address=ip_address,
+                visit_date=today
+            ).first()
+            
+            is_unique = existing_visit is None
+            
+            # Lưu lượt truy cập
+            visit = PageVisit(
+                ip_address=ip_address,
+                user_agent=user_agent,
+                page_url=page_url,
+                referrer=referrer,
+                visit_date=today,
+                visit_time=datetime.utcnow(),
+                is_unique=is_unique
+            )
+            
+            db.session.add(visit)
+            db.session.commit()
+            
+    except Exception as e:
+        print(f"Error tracking page visit: {e}")
+        # Không làm gián đoạn request nếu có lỗi tracking
 
-
-
+@app.before_request
+def before_request():
+    """Track page visits before processing request"""
+    track_page_visit()
 
 @app.route('/')
 def index():
@@ -782,7 +837,9 @@ def admin_dashboard():
         'contacts': Contact.query.filter_by(is_read=False).count(),
         'news': News.query.count(),
         'events': Event.query.count(),
-        'slider': Slider.query.count()
+        'slider': Slider.query.count(),
+        'total_visits': 0,  # Sẽ được cập nhật sau
+        'visits_today': 0   # Sẽ được cập nhật sau
     }
     
     # Thống kê theo thời gian
@@ -799,6 +856,14 @@ def admin_dashboard():
     
     # Liên hệ mới trong tuần
     contacts_this_week = Contact.query.filter(Contact.created_at >= week_ago).count()
+    
+    # Thống kê lượt truy cập
+    today = datetime.now().date()
+    total_visits = PageVisit.query.count()
+    unique_visitors_today = PageVisit.query.filter_by(visit_date=today, is_unique=True).count()
+    visits_today = PageVisit.query.filter_by(visit_date=today).count()
+    visits_this_week = PageVisit.query.filter(PageVisit.visit_date >= week_ago.date()).count()
+    visits_this_month = PageVisit.query.filter(PageVisit.visit_date >= month_ago.date()).count()
     
     # Hoạt động gần đây (5 hoạt động mới nhất)
     recent_activities = []
@@ -843,13 +908,20 @@ def admin_dashboard():
     # Liên hệ chưa đọc
     unread_contacts = Contact.query.filter_by(is_read=False).count()
     
+    # Cập nhật stats với dữ liệu lượt truy cập
+    stats['total_visits'] = total_visits
+    stats['visits_today'] = visits_today
+    
     # Thống kê bổ sung
     additional_stats = {
         'news_this_week': news_this_week,
         'news_this_month': news_this_month,
         'gallery_this_week': gallery_this_week,
         'contacts_this_week': contacts_this_week,
-        'total_contacts': Contact.query.count()
+        'total_contacts': Contact.query.count(),
+        'unique_visitors_today': unique_visitors_today,
+        'visits_this_week': visits_this_week,
+        'visits_this_month': visits_this_month
     }
     
     return render_template('admin/dashboard.html', 
