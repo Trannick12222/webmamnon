@@ -803,7 +803,10 @@ def contact():
     # Get FAQ data
     faqs = FAQ.query.filter_by(is_active=True).order_by(FAQ.order_index.asc(), FAQ.created_at.asc()).all()
     
-    return render_template('contact.html', contact_settings=contact_settings, faqs=faqs)
+    # Get location settings for map rendering
+    location_settings = LocationSettings.query.first()
+    
+    return render_template('contact.html', contact_settings=contact_settings, faqs=faqs, location_settings=location_settings)
 
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
