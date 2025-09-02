@@ -104,7 +104,13 @@
                             </div>
                             <div>
                                 <h3 class="text-lg font-semibold text-gray-800 mb-2">Địa chỉ</h3>
-                                <p class="text-gray-600">123 Đường Hoa Hướng Dương, Quận 1, TP.HCM</p>
+                                <p class="text-gray-600">
+                                    {% if global_system_settings and global_system_settings.school_address %}
+                                        {{ global_system_settings.school_address }}
+                                    {% else %}
+                                        123 Đường Hoa Hướng Dương, Quận 1, TP.HCM
+                                    {% endif %}
+                                </p>
                                 <p class="text-gray-600">Việt Nam</p>
                             </div>
                         </div>
@@ -115,7 +121,16 @@
                             </div>
                             <div>
                                 <h3 class="text-lg font-semibold text-gray-800 mb-2">Điện thoại</h3>
-                                <p class="text-gray-600">Hotline: <a href="tel:02838234567" class="text-primary hover:text-secondary">028-3823-4567</a></p>
+                                <p class="text-gray-600">Hotline: 
+                                    <a href="tel:{{ (global_system_settings.school_phone if global_system_settings and global_system_settings.school_phone else '02838234567')|replace('-', '') }}" 
+                                       class="text-primary hover:text-secondary">
+                                        {% if global_system_settings and global_system_settings.school_phone %}
+                                            {{ global_system_settings.school_phone }}
+                                        {% else %}
+                                            028-3823-4567
+                                        {% endif %}
+                                    </a>
+                                </p>
                                 <p class="text-gray-600">Di động: <a href="tel:0901234567" class="text-primary hover:text-secondary">090-123-4567</a></p>
                             </div>
                         </div>
@@ -127,8 +142,13 @@
                             <div>
                                 <h3 class="text-lg font-semibold text-gray-800 mb-2">Email</h3>
                                 <p class="text-gray-600">
-                                    <a href="mailto:info@hoahuongduong.edu.vn" class="text-primary hover:text-secondary">
-                                        info@hoahuongduong.edu.vn
+                                    <a href="mailto:{% if global_system_settings and global_system_settings.school_email %}{{ global_system_settings.school_email }}{% else %}info@hoahuongduong.edu.vn{% endif %}" 
+                                       class="text-primary hover:text-secondary">
+                                        {% if global_system_settings and global_system_settings.school_email %}
+                                            {{ global_system_settings.school_email }}
+                                        {% else %}
+                                            info@hoahuongduong.edu.vn
+                                        {% endif %}
                                     </a>
                                 </p>
                                 <p class="text-gray-600">

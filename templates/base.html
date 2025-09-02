@@ -278,24 +278,26 @@
             <div class="container mx-auto px-4">
                 <div class="flex justify-between items-center text-sm text-blue-dark">
                     <div class="flex items-center space-x-4">
-                        {% set phone_found = false %}
-                        {% set email_found = false %}
-                        {% for setting in global_contact_settings %}
-                            {% if setting.setting_type == 'phone' and not phone_found %}
-                                <span><i class="fas fa-phone mr-2"></i>{{ setting.setting_value }}</span>
-                                {% set phone_found = true %}
-                            {% elif setting.setting_type == 'email' and not email_found %}
-                                <span><i class="fas fa-envelope mr-2"></i>{{ setting.setting_value }}</span>
-                                {% set email_found = true %}
-                            {% endif %}
-                        {% endfor %}
+                        <!-- Check if phone exists in ContactSettings -->
+                        {% set phone_contacts = global_contact_settings|selectattr('setting_type', 'equalto', 'phone')|list %}
+                        {% set email_contacts = global_contact_settings|selectattr('setting_type', 'equalto', 'email')|list %}
                         
-                        <!-- Fallback if no phone/email configured -->
-                        {% if not phone_found %}
-                        <span><i class="fas fa-phone mr-2"></i>028-3823-4567</span>
+                        <!-- Display phone - prioritize ContactSettings, fallback to SystemSettings -->
+                        {% if phone_contacts %}
+                            <span><i class="fas fa-phone mr-2"></i>{{ phone_contacts[0].setting_value }}</span>
+                        {% elif global_system_settings and global_system_settings.school_phone %}
+                            <span><i class="fas fa-phone mr-2"></i>{{ global_system_settings.school_phone }}</span>
+                        {% else %}
+                            <span><i class="fas fa-phone mr-2"></i>028-3823-4567</span>
                         {% endif %}
-                        {% if not email_found %}
-                        <span><i class="fas fa-envelope mr-2"></i>info@hoahuongduong.edu.vn</span>
+                        
+                        <!-- Display email - prioritize ContactSettings, fallback to SystemSettings -->
+                        {% if email_contacts %}
+                            <span><i class="fas fa-envelope mr-2"></i>{{ email_contacts[0].setting_value }}</span>
+                        {% elif global_system_settings and global_system_settings.school_email %}
+                            <span><i class="fas fa-envelope mr-2"></i>{{ global_system_settings.school_email }}</span>
+                        {% else %}
+                            <span><i class="fas fa-envelope mr-2"></i>info@hoahuongduong.edu.vn</span>
                         {% endif %}
                     </div>
                     <div class="flex items-center space-x-3">
@@ -446,26 +448,54 @@
                         <div class="flex items-start">
                             <i class="fas fa-map-marker-alt text-primary mr-3 mt-1"></i>
                             <span class="text-gray-300 text-sm">
-                                {% if global_location_settings and global_location_settings.address %}
+                                {% if global_system_settings and global_system_settings.school_address %}
+                                    {{ global_system_settings.school_address }}
+                                {% elif global_location_settings and global_location_settings.address %}
                                     {{ global_location_settings.address }}
                                 {% else %}
                                     123 Đường Hoa Hướng Dương, Quận 1, TP.HCM
                                 {% endif %}
                             </span>
                         </div>
-                        {% for setting in global_contact_settings %}
-                            {% if setting.setting_type == 'phone' %}
+                        <!-- Check footer contact settings -->
+                        {% set footer_phone_contacts = global_contact_settings|selectattr('setting_type', 'equalto', 'phone')|list %}
+                        {% set footer_email_contacts = global_contact_settings|selectattr('setting_type', 'equalto', 'email')|list %}
+                        
+                        <!-- Display phone - prioritize ContactSettings, fallback to SystemSettings -->
+                        {% if footer_phone_contacts %}
                             <div class="flex items-center">
                                 <i class="fas fa-phone text-primary mr-3"></i>
-                                <span class="text-gray-300 text-sm">{{ setting.setting_value }}</span>
+                                <span class="text-gray-300 text-sm">{{ footer_phone_contacts[0].setting_value }}</span>
                             </div>
-                            {% elif setting.setting_type == 'email' %}
+                        {% elif global_system_settings and global_system_settings.school_phone %}
+                            <div class="flex items-center">
+                                <i class="fas fa-phone text-primary mr-3"></i>
+                                <span class="text-gray-300 text-sm">{{ global_system_settings.school_phone }}</span>
+                            </div>
+                        {% else %}
+                            <div class="flex items-center">
+                                <i class="fas fa-phone text-primary mr-3"></i>
+                                <span class="text-gray-300 text-sm">028-3823-4567</span>
+                            </div>
+                        {% endif %}
+                        
+                        <!-- Display email - prioritize ContactSettings, fallback to SystemSettings -->
+                        {% if footer_email_contacts %}
                             <div class="flex items-center">
                                 <i class="fas fa-envelope text-primary mr-3"></i>
-                                <span class="text-gray-300 text-sm">{{ setting.setting_value }}</span>
+                                <span class="text-gray-300 text-sm">{{ footer_email_contacts[0].setting_value }}</span>
                             </div>
-                            {% endif %}
-                        {% endfor %}
+                        {% elif global_system_settings and global_system_settings.school_email %}
+                            <div class="flex items-center">
+                                <i class="fas fa-envelope text-primary mr-3"></i>
+                                <span class="text-gray-300 text-sm">{{ global_system_settings.school_email }}</span>
+                            </div>
+                        {% else %}
+                            <div class="flex items-center">
+                                <i class="fas fa-envelope text-primary mr-3"></i>
+                                <span class="text-gray-300 text-sm">info@hoahuongduong.edu.vn</span>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
                 

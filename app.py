@@ -327,6 +327,93 @@ class ThemeSettings(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+class SystemSettings(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    school_name = db.Column(db.String(200), default='Trường Mầm non Hoa Hướng Dương')
+    school_address = db.Column(db.Text, default='123 Đường Hoa Hướng Dương, Quận 1, TP.HCM')
+    school_phone = db.Column(db.String(20), default='028-3823-4567')
+    school_email = db.Column(db.String(100), default='info@hoahuongduong.edu.vn')
+    maintenance_mode = db.Column(db.Boolean, default=False)
+    allow_registration = db.Column(db.Boolean, default=True)
+    website_version = db.Column(db.String(20), default='v1.0.0')
+    last_updated = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+class HomePageSettings(db.Model):
+    __tablename__ = 'homepage_settings'
+    id = db.Column(db.Integer, primary_key=True)
+    
+    # Hero Section - Original fields for backward compatibility
+    hero_title = db.Column(db.Text, default='Chào mừng đến với<br><span class="text-yellow-300">ngôi trường của chúng tôi</span>')
+    hero_subtitle = db.Column(db.Text, default='Nơi nuôi dưỡng tâm hồn và phát triển tài năng của trẻ em từ 18 tháng đến 5 tuổi')
+    hero_cta_text_1 = db.Column(db.String(100), default='Xem chương trình học')
+    hero_cta_text_2 = db.Column(db.String(100), default='Liên hệ tư vấn')
+    
+    # Hero Section - New simple fields
+    hero_title_line1 = db.Column(db.String(200), default='Chào mừng đến với')
+    hero_title_line2 = db.Column(db.String(200), default='ngôi trường của chúng tôi')
+    
+    # Video Section - Original fields for backward compatibility
+    video_section_badge = db.Column(db.String(100), default='🎥 Video giới thiệu')
+    video_section_title = db.Column(db.String(200), default='Khám phá thế giới <span class="text-primary">Hoa Hướng Dương</span>')
+    video_section_description = db.Column(db.Text, default='Cùng tham quan và tìm hiểu về môi trường học tập tuyệt vời dành cho các bé')
+    video_cta_text = db.Column(db.String(100), default='Đặt lịch tham quan')
+    video_contact_text = db.Column(db.String(100), default='hoặc gọi 📞 0123 456 789')
+    
+    # Video Section - New simple fields
+    video_section_title_normal = db.Column(db.String(200), default='Khám phá thế giới')
+    video_section_title_highlight = db.Column(db.String(200), default='Hoa Hướng Dương')
+    
+    # Programs Section - Original fields for backward compatibility
+    programs_section_title = db.Column(db.String(200), default='<span class="text-primary font-patrick">Chương trình học</span>')
+    programs_section_description = db.Column(db.Text, default='Các chương trình giáo dục được thiết kế phù hợp với từng độ tuổi, giúp trẻ phát triển toàn diện về thể chất, trí tuệ và cảm xúc')
+    programs_cta_text = db.Column(db.String(100), default='Xem tất cả chương trình')
+    
+    # Programs Section - New simple fields
+    programs_section_title_text = db.Column(db.String(200), default='Chương trình học')
+    
+    # Features Section
+    features_section_badge = db.Column(db.String(100), default='✨ Điểm khác biệt của chúng tôi')
+    features_section_title = db.Column(db.String(200), default='Tại sao chọn Hoa Hướng Dương?')
+    features_section_description = db.Column(db.Text, default='Chúng tôi mang đến những giá trị giáo dục tốt nhất cho sự phát triển toàn diện của trẻ')
+    features_cta_text = db.Column(db.String(100), default='Đăng ký tham quan ngay')
+    features_contact_text = db.Column(db.String(100), default='hoặc gọi 📞 1900-xxxx')
+    
+    # News Section - Original fields for backward compatibility
+    news_section_title = db.Column(db.String(200), default='<span class="text-primary font-patrick">Tin tức mới nhất</span>')
+    news_section_description = db.Column(db.Text, default='Cập nhật những thông tin mới nhất từ trường Hoa Hướng Dương')
+    news_cta_text = db.Column(db.String(100), default='Xem tất cả tin tức')
+    
+    # News Section - New simple fields
+    news_section_title_text = db.Column(db.String(200), default='Tin tức mới nhất')
+    
+    # Gallery Section - Original fields for backward compatibility
+    gallery_section_title = db.Column(db.String(200), default='<span class="text-primary font-patrick">Khoảnh khắc đáng nhớ</span>')
+    gallery_section_description = db.Column(db.Text, default='Những hình ảnh sinh động về cuộc sống học tập và vui chơi của các em')
+    gallery_cta_text = db.Column(db.String(100), default='Xem thêm hình ảnh')
+    
+    # Gallery Section - New simple fields
+    gallery_section_title_text = db.Column(db.String(200), default='Khoảnh khắc đáng nhớ')
+    
+    # Events Section - Original fields for backward compatibility
+    events_section_title = db.Column(db.String(200), default='<span class="text-primary font-patrick">Sự kiện sắp tới</span>')
+    events_section_description = db.Column(db.Text, default='Đừng bỏ lỡ những sự kiện thú vị dành cho các em học sinh')
+    events_cta_text = db.Column(db.String(100), default='Xem tất cả sự kiện')
+    
+    # Events Section - New simple fields
+    events_section_title_text = db.Column(db.String(200), default='Sự kiện sắp tới')
+    
+    # Final CTA Section
+    cta_title = db.Column(db.String(200), default='Sẵn sàng cho con bước vào hành trình học tập?')
+    cta_description = db.Column(db.Text, default='Hãy liên hệ với chúng tôi để được tư vấn chi tiết về chương trình học phù hợp với độ tuổi của con bạn')
+    cta_button_1 = db.Column(db.String(100), default='Liên hệ ngay')
+    cta_button_2 = db.Column(db.String(100), default='Tìm hiểu chương trình')
+    
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
 class PageVisit(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ip_address = db.Column(db.String(45))  # Hỗ trợ IPv6
@@ -494,16 +581,24 @@ def inject_unread_contacts():
         location_settings = LocationSettings.query.filter_by(is_active=True).first()
         # Inject current theme for global use
         current_theme = get_current_theme()
+        # Inject system settings for global use (school info)
+        system_settings = SystemSettings.query.first()
+        # Inject homepage settings for global use (homepage content)
+        homepage_settings = HomePageSettings.query.first()
     except:
         unread_contacts = 0
         contact_settings = []
         location_settings = None
         current_theme = None
+        system_settings = None
+        homepage_settings = None
     return dict(
         unread_contacts=unread_contacts, 
         global_contact_settings=contact_settings, 
         global_location_settings=location_settings, 
         current_theme=current_theme,
+        global_system_settings=system_settings,
+        global_homepage_settings=homepage_settings,
         get_seo_settings=get_seo_settings
     )
 
@@ -669,6 +764,9 @@ def index():
     about_section = AboutSection.query.first()
     about_stats = AboutStats.query.filter_by(is_active=True).order_by(AboutStats.order_index.asc()).all()
     
+    # Get system settings for school information
+    system_settings = SystemSettings.query.first()
+    
     return render_template('index.html', 
                          featured_programs=featured_programs,
                          latest_news=latest_news,
@@ -678,7 +776,8 @@ def index():
                          intro_videos=intro_videos,
                          contact_settings=contact_settings,
                          about_section=about_section,
-                         about_stats=about_stats)
+                         about_stats=about_stats,
+                         system_settings=system_settings)
 
 @app.route('/health')
 def health_check():
@@ -1300,10 +1399,159 @@ def admin_posts():
     posts = Post.query.order_by(Post.created_at.desc()).all()
     return render_template('admin/posts/list.html', posts=posts)
 
-@app.route('/admin/settings')
+@app.route('/admin/settings', methods=['GET', 'POST'])
 @login_required
 def admin_settings():
-    return render_template('admin/settings.html')
+    if request.method == 'POST':
+        # Lấy hoặc tạo mới system settings
+        settings = SystemSettings.query.first()
+        if not settings:
+            settings = SystemSettings()
+            db.session.add(settings)
+        
+        # Cập nhật thông tin trường
+        settings.school_name = request.form.get('school_name', settings.school_name)
+        settings.school_address = request.form.get('school_address', settings.school_address)
+        settings.school_phone = request.form.get('school_phone', settings.school_phone)
+        settings.school_email = request.form.get('school_email', settings.school_email)
+        
+        # Cập nhật cài đặt website
+        settings.maintenance_mode = bool(request.form.get('maintenance_mode'))
+        settings.allow_registration = bool(request.form.get('allow_registration'))
+        
+        settings.updated_at = datetime.utcnow()
+        
+        try:
+            db.session.commit()
+            flash('Cài đặt đã được lưu thành công!', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash('Có lỗi xảy ra khi lưu cài đặt!', 'error')
+        
+        return redirect(url_for('admin_settings'))
+    
+    # GET request - hiển thị form
+    settings = SystemSettings.query.first()
+    if not settings:
+        settings = SystemSettings()
+        db.session.add(settings)
+        db.session.commit()
+    
+    return render_template('admin/settings.html', settings=settings)
+
+@app.route('/admin/homepage', methods=['GET', 'POST'])
+@login_required
+def admin_homepage():
+    if request.method == 'POST':
+        # Lấy hoặc tạo mới homepage settings
+        homepage = HomePageSettings.query.first()
+        if not homepage:
+            homepage = HomePageSettings()
+            db.session.add(homepage)
+        
+        # Cập nhật Hero Section - both old and new fields
+        homepage.hero_subtitle = request.form.get('hero_subtitle', homepage.hero_subtitle)
+        homepage.hero_cta_text_1 = request.form.get('hero_cta_text_1', homepage.hero_cta_text_1)
+        homepage.hero_cta_text_2 = request.form.get('hero_cta_text_2', homepage.hero_cta_text_2)
+        
+        # New simple hero fields
+        homepage.hero_title_line1 = request.form.get('hero_title_line1', homepage.hero_title_line1)
+        homepage.hero_title_line2 = request.form.get('hero_title_line2', homepage.hero_title_line2)
+        
+        # Auto-generate hero_title from simple fields
+        if homepage.hero_title_line1 and homepage.hero_title_line2:
+            homepage.hero_title = f'{homepage.hero_title_line1}<br><span class="text-yellow-300">{homepage.hero_title_line2}</span>'
+        
+        # Cập nhật Video Section
+        homepage.video_section_badge = request.form.get('video_section_badge', homepage.video_section_badge)
+        homepage.video_section_description = request.form.get('video_section_description', homepage.video_section_description)
+        homepage.video_cta_text = request.form.get('video_cta_text', homepage.video_cta_text)
+        homepage.video_contact_text = request.form.get('video_contact_text', homepage.video_contact_text)
+        
+        # New simple video fields
+        homepage.video_section_title_normal = request.form.get('video_section_title_normal', homepage.video_section_title_normal)
+        homepage.video_section_title_highlight = request.form.get('video_section_title_highlight', homepage.video_section_title_highlight)
+        
+        # Auto-generate video_section_title from simple fields
+        if homepage.video_section_title_normal and homepage.video_section_title_highlight:
+            homepage.video_section_title = f'{homepage.video_section_title_normal} <span class="text-primary">{homepage.video_section_title_highlight}</span>'
+        
+        # Cập nhật Programs Section
+        homepage.programs_section_description = request.form.get('programs_section_description', homepage.programs_section_description)
+        homepage.programs_cta_text = request.form.get('programs_cta_text', homepage.programs_cta_text)
+        
+        # New simple programs fields
+        homepage.programs_section_title_text = request.form.get('programs_section_title_text', homepage.programs_section_title_text)
+        
+        # Auto-generate programs_section_title from simple fields
+        if homepage.programs_section_title_text:
+            homepage.programs_section_title = f'<span class="text-primary font-patrick">{homepage.programs_section_title_text}</span>'
+        
+        # Cập nhật Features Section
+        homepage.features_section_badge = request.form.get('features_section_badge', homepage.features_section_badge)
+        homepage.features_section_title = request.form.get('features_section_title', homepage.features_section_title)
+        homepage.features_section_description = request.form.get('features_section_description', homepage.features_section_description)
+        homepage.features_cta_text = request.form.get('features_cta_text', homepage.features_cta_text)
+        homepage.features_contact_text = request.form.get('features_contact_text', homepage.features_contact_text)
+        
+        # Cập nhật News Section
+        homepage.news_section_description = request.form.get('news_section_description', homepage.news_section_description)
+        homepage.news_cta_text = request.form.get('news_cta_text', homepage.news_cta_text)
+        
+        # New simple news fields
+        homepage.news_section_title_text = request.form.get('news_section_title_text', homepage.news_section_title_text)
+        
+        # Auto-generate news_section_title from simple fields
+        if homepage.news_section_title_text:
+            homepage.news_section_title = f'<span class="text-primary font-patrick">{homepage.news_section_title_text}</span>'
+        
+        # Cập nhật Gallery Section
+        homepage.gallery_section_description = request.form.get('gallery_section_description', homepage.gallery_section_description)
+        homepage.gallery_cta_text = request.form.get('gallery_cta_text', homepage.gallery_cta_text)
+        
+        # New simple gallery fields
+        homepage.gallery_section_title_text = request.form.get('gallery_section_title_text', homepage.gallery_section_title_text)
+        
+        # Auto-generate gallery_section_title from simple fields
+        if homepage.gallery_section_title_text:
+            homepage.gallery_section_title = f'<span class="text-primary font-patrick">{homepage.gallery_section_title_text}</span>'
+        
+        # Cập nhật Events Section
+        homepage.events_section_description = request.form.get('events_section_description', homepage.events_section_description)
+        homepage.events_cta_text = request.form.get('events_cta_text', homepage.events_cta_text)
+        
+        # New simple events fields
+        homepage.events_section_title_text = request.form.get('events_section_title_text', homepage.events_section_title_text)
+        
+        # Auto-generate events_section_title from simple fields
+        if homepage.events_section_title_text:
+            homepage.events_section_title = f'<span class="text-primary font-patrick">{homepage.events_section_title_text}</span>'
+        
+        # Cập nhật Final CTA Section
+        homepage.cta_title = request.form.get('cta_title', homepage.cta_title)
+        homepage.cta_description = request.form.get('cta_description', homepage.cta_description)
+        homepage.cta_button_1 = request.form.get('cta_button_1', homepage.cta_button_1)
+        homepage.cta_button_2 = request.form.get('cta_button_2', homepage.cta_button_2)
+        
+        homepage.updated_at = datetime.utcnow()
+        
+        try:
+            db.session.commit()
+            flash('Nội dung trang chủ đã được cập nhật thành công!', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash('Có lỗi xảy ra khi cập nhật nội dung trang chủ!', 'error')
+        
+        return redirect(url_for('admin_homepage'))
+    
+    # GET request - hiển thị form
+    homepage = HomePageSettings.query.first()
+    if not homepage:
+        homepage = HomePageSettings()
+        db.session.add(homepage)
+        db.session.commit()
+    
+    return render_template('admin/homepage.html', homepage=homepage)
 
 @app.route('/admin/slider')
 @login_required

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Trang chủ - Trường Mầm non Hoa Hướng Dương{% endblock %}
+{% block title %}Trang chủ - {% if global_system_settings and global_system_settings.school_name %}{{ global_system_settings.school_name }}{% else %}Trường Mầm non Hoa Hướng Dương{% endif %}{% endblock %}
 
 {% block content %}
 <!-- Hero Section -->
@@ -13,24 +13,49 @@
                     <img src="{{ url_for('static', filename='images/mnhhd.jpg') }}" alt="Logo Hoa Hướng Dương" class="w-16 h-16 md:w-20 md:h-20 rounded-xl shadow-lg mr-4 object-cover border-2 border-white/20">
                     <div>
                         <div class="text-sm md:text-base text-yellow-300 font-semibold mb-1">TRƯỜNG MẦM NON</div>
-                        <div class="text-2xl md:text-3xl font-bold font-patrick text-white">Hoa Hướng Dương</div>
+                        <div class="text-2xl md:text-3xl font-bold font-patrick text-white">
+                            {% if global_system_settings and global_system_settings.school_name %}
+                                {{ global_system_settings.school_name.replace('Trường Mầm non ', '') }}
+                            {% else %}
+                                Hoa Hướng Dương
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
                 <h1 class="text-4xl md:text-5xl font-bold font-patrick mb-6 leading-tight">
-                    Chào mừng đến với<br>
-                    <span class="text-yellow-300">ngôi trường của chúng tôi</span>
+                    {% if global_homepage_settings and global_homepage_settings.hero_title_line1 and global_homepage_settings.hero_title_line2 %}
+                        {{ global_homepage_settings.hero_title_line1 }}<br>
+                        <span class="text-yellow-300">{{ global_homepage_settings.hero_title_line2 }}</span>
+                    {% elif global_homepage_settings and global_homepage_settings.hero_title %}
+                        {{ global_homepage_settings.hero_title|safe }}
+                    {% else %}
+                        Chào mừng đến với<br>
+                        <span class="text-yellow-300">ngôi trường của chúng tôi</span>
+                    {% endif %}
                 </h1>
                 <p class="text-xl md:text-2xl mb-8 text-white/90 leading-relaxed">
-                    Nơi nuôi dưỡng tâm hồn và phát triển tài năng của trẻ em từ 18 tháng đến 5 tuổi
+                    {% if global_homepage_settings and global_homepage_settings.hero_subtitle %}
+                        {{ global_homepage_settings.hero_subtitle }}
+                    {% else %}
+                        Nơi nuôi dưỡng tâm hồn và phát triển tài năng của trẻ em từ 18 tháng đến 5 tuổi
+                    {% endif %}
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4">
                     <a href="/chuong-trinh" class="btn-primary inline-block text-center">
                         <i class="fas fa-graduation-cap mr-2"></i>
-                        Xem chương trình học
+                        {% if global_homepage_settings and global_homepage_settings.hero_cta_text_1 %}
+                            {{ global_homepage_settings.hero_cta_text_1 }}
+                        {% else %}
+                            Xem chương trình học
+                        {% endif %}
                     </a>
                     <a href="/lien-he" class="bg-white text-primary px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition inline-block text-center">
                         <i class="fas fa-phone mr-2"></i>
-                        Liên hệ tư vấn
+                        {% if global_homepage_settings and global_homepage_settings.hero_cta_text_2 %}
+                            {{ global_homepage_settings.hero_cta_text_2 }}
+                        {% else %}
+                            Liên hệ tư vấn
+                        {% endif %}
                     </a>
                 </div>
             </div>
@@ -195,14 +220,28 @@
         <div class="text-center mb-16">
             <div class="inline-block mb-4">
                 <span class="bg-white/30 backdrop-blur-sm px-6 py-2 rounded-full text-primary font-semibold text-lg">
-                    🎥 Video giới thiệu
+                    {% if global_homepage_settings and global_homepage_settings.video_section_badge %}
+                        {{ global_homepage_settings.video_section_badge }}
+                    {% else %}
+                        🎥 Video giới thiệu
+                    {% endif %}
                 </span>
             </div>
             <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6 font-patrick">
-                Khám phá thế giới <span class="text-primary">Hoa Hướng Dương</span>
+                {% if global_homepage_settings and global_homepage_settings.video_section_title_normal and global_homepage_settings.video_section_title_highlight %}
+                    {{ global_homepage_settings.video_section_title_normal }} <span class="text-primary">{{ global_homepage_settings.video_section_title_highlight }}</span>
+                {% elif global_homepage_settings and global_homepage_settings.video_section_title %}
+                    {{ global_homepage_settings.video_section_title|safe }}
+                {% else %}
+                    Khám phá thế giới <span class="text-primary">Hoa Hướng Dương</span>
+                {% endif %}
             </h2>
             <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                Cùng tham quan và tìm hiểu về môi trường học tập tuyệt vời dành cho các bé
+                {% if global_homepage_settings and global_homepage_settings.video_section_description %}
+                    {{ global_homepage_settings.video_section_description }}
+                {% else %}
+                    Cùng tham quan và tìm hiểu về môi trường học tập tuyệt vời dành cho các bé
+                {% endif %}
             </p>
         </div>
         
@@ -281,10 +320,18 @@
             <div class="inline-flex items-center bg-white/20 backdrop-blur-sm rounded-2xl p-2">
                 <a href="/lien-he" class="bg-primary text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-secondary transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
                     <i class="fas fa-calendar-alt mr-2"></i>
-                    Đặt lịch tham quan
+                    {% if global_homepage_settings and global_homepage_settings.video_cta_text %}
+                        {{ global_homepage_settings.video_cta_text }}
+                    {% else %}
+                        Đặt lịch tham quan
+                    {% endif %}
                 </a>
                 <span class="text-gray-700 px-6 py-4">
-                    hoặc gọi <strong class="text-primary">📞 0123 456 789</strong>
+                    {% if global_homepage_settings and global_homepage_settings.video_contact_text %}
+                        {{ global_homepage_settings.video_contact_text }}
+                    {% else %}
+                        hoặc gọi <strong class="text-primary">📞 0123 456 789</strong>
+                    {% endif %}
                 </span>
             </div>
         </div>
@@ -297,11 +344,21 @@
     <div class="container mx-auto px-4">
         <div class="text-center mb-16">
             <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
-                <span class="text-primary font-patrick">Chương trình học</span>
+                {% if global_homepage_settings and global_homepage_settings.programs_section_title_text %}
+                    <span class="text-primary font-patrick">{{ global_homepage_settings.programs_section_title_text }}</span>
+                {% elif global_homepage_settings and global_homepage_settings.programs_section_title %}
+                    {{ global_homepage_settings.programs_section_title|safe }}
+                {% else %}
+                    <span class="text-primary font-patrick">Chương trình học</span>
+                {% endif %}
             </h2>
             <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                Các chương trình giáo dục được thiết kế phù hợp với từng độ tuổi, 
-                giúp trẻ phát triển toàn diện về thể chất, trí tuệ và cảm xúc
+                {% if global_homepage_settings and global_homepage_settings.programs_section_description %}
+                    {{ global_homepage_settings.programs_section_description }}
+                {% else %}
+                    Các chương trình giáo dục được thiết kế phù hợp với từng độ tuổi, 
+                    giúp trẻ phát triển toàn diện về thể chất, trí tuệ và cảm xúc
+                {% endif %}
             </p>
         </div>
         
@@ -352,7 +409,11 @@
         
         <div class="text-center mt-12">
             <a href="/chuong-trinh" class="btn-primary">
-                Xem tất cả chương trình
+                {% if global_homepage_settings and global_homepage_settings.programs_cta_text %}
+                    {{ global_homepage_settings.programs_cta_text }}
+                {% else %}
+                    Xem tất cả chương trình
+                {% endif %}
             </a>
         </div>
     </div>
@@ -371,14 +432,26 @@
         <div class="text-center mb-16">
             <div class="inline-block mb-4">
                 <span class="bg-white/20 backdrop-blur-sm px-6 py-2 rounded-full text-white font-semibold text-lg">
-                    ✨ Điểm khác biệt của chúng tôi
+                    {% if global_homepage_settings and global_homepage_settings.features_section_badge %}
+                        {{ global_homepage_settings.features_section_badge }}
+                    {% else %}
+                        ✨ Điểm khác biệt của chúng tôi
+                    {% endif %}
                 </span>
             </div>
             <h2 class="text-4xl md:text-5xl font-bold text-white mb-6 font-patrick">
-                Tại sao chọn Hoa Hướng Dương?
+                {% if global_homepage_settings and global_homepage_settings.features_section_title %}
+                    {{ global_homepage_settings.features_section_title }}
+                {% else %}
+                    Tại sao chọn Hoa Hướng Dương?
+                {% endif %}
             </h2>
             <p class="text-xl text-white/90 max-w-3xl mx-auto leading-relaxed">
-                Chúng tôi mang đến những giá trị giáo dục tốt nhất cho sự phát triển toàn diện của trẻ
+                {% if global_homepage_settings and global_homepage_settings.features_section_description %}
+                    {{ global_homepage_settings.features_section_description }}
+                {% else %}
+                    Chúng tôi mang đến những giá trị giáo dục tốt nhất cho sự phát triển toàn diện của trẻ
+                {% endif %}
             </p>
         </div>
         
@@ -489,10 +562,18 @@
             <div class="inline-flex items-center bg-white/20 backdrop-blur-sm rounded-2xl p-2">
                 <a href="/lien-he" class="bg-white text-orange-500 px-8 py-4 rounded-xl font-bold text-lg hover:bg-yellow-50 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
                     <i class="fas fa-heart mr-2"></i>
-                    Đăng ký tham quan ngay
+                    {% if global_homepage_settings and global_homepage_settings.features_cta_text %}
+                        {{ global_homepage_settings.features_cta_text }}
+                    {% else %}
+                        Đăng ký tham quan ngay
+                    {% endif %}
                 </a>
                 <span class="text-white/90 px-6 py-4">
-                    hoặc gọi <strong class="text-yellow-300">📞 1900-xxxx</strong>
+                    {% if global_homepage_settings and global_homepage_settings.features_contact_text %}
+                        {{ global_homepage_settings.features_contact_text }}
+                    {% else %}
+                        hoặc gọi <strong class="text-yellow-300">📞 1900-xxxx</strong>
+                    {% endif %}
                 </span>
             </div>
         </div>
@@ -505,10 +586,20 @@
     <div class="container mx-auto px-4">
         <div class="text-center mb-16">
             <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
-                <span class="text-primary font-patrick">Tin tức mới nhất</span>
+                {% if global_homepage_settings and global_homepage_settings.news_section_title_text %}
+                    <span class="text-primary font-patrick">{{ global_homepage_settings.news_section_title_text }}</span>
+                {% elif global_homepage_settings and global_homepage_settings.news_section_title %}
+                    {{ global_homepage_settings.news_section_title|safe }}
+                {% else %}
+                    <span class="text-primary font-patrick">Tin tức mới nhất</span>
+                {% endif %}
             </h2>
             <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                Cập nhật những thông tin mới nhất từ trường Hoa Hướng Dương
+                {% if global_homepage_settings and global_homepage_settings.news_section_description %}
+                    {{ global_homepage_settings.news_section_description }}
+                {% else %}
+                    Cập nhật những thông tin mới nhất từ trường Hoa Hướng Dương
+                {% endif %}
             </p>
         </div>
         
@@ -551,7 +642,11 @@
         
         <div class="text-center mt-12">
             <a href="/tin-tuc" class="btn-primary">
-                Xem tất cả tin tức
+                {% if global_homepage_settings and global_homepage_settings.news_cta_text %}
+                    {{ global_homepage_settings.news_cta_text }}
+                {% else %}
+                    Xem tất cả tin tức
+                {% endif %}
             </a>
         </div>
     </div>
@@ -564,10 +659,20 @@
     <div class="container mx-auto px-4">
         <div class="text-center mb-16">
             <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
-                <span class="text-primary font-patrick">Khoảnh khắc đáng nhớ</span>
+                {% if global_homepage_settings and global_homepage_settings.gallery_section_title_text %}
+                    <span class="text-primary font-patrick">{{ global_homepage_settings.gallery_section_title_text }}</span>
+                {% elif global_homepage_settings and global_homepage_settings.gallery_section_title %}
+                    {{ global_homepage_settings.gallery_section_title|safe }}
+                {% else %}
+                    <span class="text-primary font-patrick">Khoảnh khắc đáng nhớ</span>
+                {% endif %}
             </h2>
             <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                Những hình ảnh sinh động về cuộc sống học tập và vui chơi của các em
+                {% if global_homepage_settings and global_homepage_settings.gallery_section_description %}
+                    {{ global_homepage_settings.gallery_section_description }}
+                {% else %}
+                    Những hình ảnh sinh động về cuộc sống học tập và vui chơi của các em
+                {% endif %}
             </p>
         </div>
         
@@ -593,7 +698,11 @@
         
         <div class="text-center mt-12">
             <a href="/thu-vien-anh" class="btn-primary">
-                Xem thêm hình ảnh
+                {% if global_homepage_settings and global_homepage_settings.gallery_cta_text %}
+                    {{ global_homepage_settings.gallery_cta_text }}
+                {% else %}
+                    Xem thêm hình ảnh
+                {% endif %}
             </a>
         </div>
     </div>
@@ -606,10 +715,20 @@
     <div class="container mx-auto px-4">
         <div class="text-center mb-16">
             <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
-                <span class="text-primary font-patrick">Sự kiện sắp tới</span>
+                {% if global_homepage_settings and global_homepage_settings.events_section_title_text %}
+                    <span class="text-primary font-patrick">{{ global_homepage_settings.events_section_title_text }}</span>
+                {% elif global_homepage_settings and global_homepage_settings.events_section_title %}
+                    {{ global_homepage_settings.events_section_title|safe }}
+                {% else %}
+                    <span class="text-primary font-patrick">Sự kiện sắp tới</span>
+                {% endif %}
             </h2>
             <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                Đừng bỏ lỡ những sự kiện thú vị dành cho các em học sinh
+                {% if global_homepage_settings and global_homepage_settings.events_section_description %}
+                    {{ global_homepage_settings.events_section_description }}
+                {% else %}
+                    Đừng bỏ lỡ những sự kiện thú vị dành cho các em học sinh
+                {% endif %}
             </p>
         </div>
         
@@ -649,7 +768,11 @@
         
         <div class="text-center mt-12">
             <a href="/su-kien" class="btn-primary">
-                Xem tất cả sự kiện
+                {% if global_homepage_settings and global_homepage_settings.events_cta_text %}
+                    {{ global_homepage_settings.events_cta_text }}
+                {% else %}
+                    Xem tất cả sự kiện
+                {% endif %}
             </a>
         </div>
     </div>
@@ -661,20 +784,36 @@
     <div class="container mx-auto px-4 relative z-10">
         <div class="text-center text-white">
             <h2 class="text-4xl md:text-5xl font-bold mb-6 font-patrick">
-                Sẵn sàng cho con bước vào hành trình học tập?
+                {% if global_homepage_settings and global_homepage_settings.cta_title %}
+                    {{ global_homepage_settings.cta_title }}
+                {% else %}
+                    Sẵn sàng cho con bước vào hành trình học tập?
+                {% endif %}
             </h2>
             <p class="text-xl mb-8 text-white/90 max-w-3xl mx-auto">
-                Hãy liên hệ với chúng tôi để được tư vấn chi tiết về chương trình học 
-                phù hợp với độ tuổi của con bạn
+                {% if global_homepage_settings and global_homepage_settings.cta_description %}
+                    {{ global_homepage_settings.cta_description }}
+                {% else %}
+                    Hãy liên hệ với chúng tôi để được tư vấn chi tiết về chương trình học 
+                    phù hợp với độ tuổi của con bạn
+                {% endif %}
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
                 <a href="/lien-he" class="bg-white text-theme-primary px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition">
                     <i class="fas fa-phone mr-2"></i>
-                    Liên hệ ngay
+                    {% if global_homepage_settings and global_homepage_settings.cta_button_1 %}
+                        {{ global_homepage_settings.cta_button_1 }}
+                    {% else %}
+                        Liên hệ ngay
+                    {% endif %}
                 </a>
                 <a href="/chuong-trinh" class="border-2 border-white text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-white transition cta-secondary-btn">
                     <i class="fas fa-book mr-2"></i>
-                    Tìm hiểu chương trình
+                    {% if global_homepage_settings and global_homepage_settings.cta_button_2 %}
+                        {{ global_homepage_settings.cta_button_2 }}
+                    {% else %}
+                        Tìm hiểu chương trình
+                    {% endif %}
                 </a>
             </div>
         </div>

@@ -1,0 +1,376 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Quản lý trang chủ - Admin{% endblock %}
+{% block page_title %}Quản lý nội dung trang chủ{% endblock %}
+{% block page_description %}Cấu hình và chỉnh sửa nội dung hiển thị trên trang chủ{% endblock %}
+
+{% block content %}
+<form method="POST" action="{{ url_for('admin_homepage') }}">
+    <!-- Hero Section -->
+    <div class="admin-card p-6 mb-6">
+        <div class="flex items-center mb-6">
+            <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center mr-4">
+                <i class="fas fa-home text-white text-xl"></i>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold text-gray-800">🏠 Hero Section</h2>
+                <p class="text-gray-600">Phần đầu trang chủ - banner chính</p>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Tiêu đề chính (dòng 1)</label>
+                <input type="text" name="hero_title_line1" 
+                       value="{{ homepage.hero_title_line1 if homepage and homepage.hero_title_line1 else 'Chào mừng đến với' }}"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500" 
+                       placeholder="Chào mừng đến với">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Tiêu đề chính (dòng 2 - highlight)</label>
+                <input type="text" name="hero_title_line2" 
+                       value="{{ homepage.hero_title_line2 if homepage and homepage.hero_title_line2 else 'ngôi trường của chúng tôi' }}"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500" 
+                       placeholder="ngôi trường của chúng tôi">
+                <p class="text-xs text-gray-500 mt-1">Dòng này sẽ được highlight màu vàng</p>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Mô tả phụ</label>
+                <textarea name="hero_subtitle" rows="3" 
+                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                          placeholder="Nơi nuôi dưỡng tâm hồn...">{{ homepage.hero_subtitle if homepage else 'Nơi nuôi dưỡng tâm hồn và phát triển tài năng của trẻ em từ 18 tháng đến 5 tuổi' }}</textarea>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Nút CTA 1</label>
+                <input type="text" name="hero_cta_text_1" 
+                       value="{{ homepage.hero_cta_text_1 if homepage else 'Xem chương trình học' }}"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Nút CTA 2</label>
+                <input type="text" name="hero_cta_text_2" 
+                       value="{{ homepage.hero_cta_text_2 if homepage else 'Liên hệ tư vấn' }}"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
+            </div>
+        </div>
+    </div>
+
+    <!-- Video Section -->
+    <div class="admin-card p-6 mb-6">
+        <div class="flex items-center mb-6">
+            <div class="w-12 h-12 bg-gradient-to-r from-red-500 to-pink-500 rounded-xl flex items-center justify-center mr-4">
+                <i class="fas fa-video text-white text-xl"></i>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold text-gray-800">🎥 Video Section</h2>
+                <p class="text-gray-600">Phần giới thiệu video</p>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Badge</label>
+                <input type="text" name="video_section_badge" 
+                       value="{{ homepage.video_section_badge if homepage else '🎥 Video giới thiệu' }}"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Tiêu đề (phần thường)</label>
+                <input type="text" name="video_section_title_normal" 
+                       value="{{ homepage.video_section_title_normal if homepage and homepage.video_section_title_normal else 'Khám phá thế giới' }}"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500"
+                       placeholder="Khám phá thế giới">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Tiêu đề (phần highlight)</label>
+                <input type="text" name="video_section_title_highlight" 
+                       value="{{ homepage.video_section_title_highlight if homepage and homepage.video_section_title_highlight else 'Hoa Hướng Dương' }}"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500"
+                       placeholder="Hoa Hướng Dương">
+                <p class="text-xs text-gray-500 mt-1">Phần này sẽ được highlight màu primary</p>
+            </div>
+            
+            <div class="lg:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Mô tả</label>
+                <textarea name="video_section_description" rows="2" 
+                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500">{{ homepage.video_section_description if homepage else 'Cùng tham quan và tìm hiểu về môi trường học tập tuyệt vời dành cho các bé' }}</textarea>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Nút CTA</label>
+                <input type="text" name="video_cta_text" 
+                       value="{{ homepage.video_cta_text if homepage else 'Đặt lịch tham quan' }}"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Text liên hệ</label>
+                <input type="text" name="video_contact_text" 
+                       value="{{ homepage.video_contact_text if homepage else 'hoặc gọi 📞 0123 456 789' }}"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500">
+            </div>
+        </div>
+    </div>
+
+    <!-- Programs Section -->
+    <div class="admin-card p-6 mb-6">
+        <div class="flex items-center mb-6">
+            <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-teal-500 rounded-xl flex items-center justify-center mr-4">
+                <i class="fas fa-graduation-cap text-white text-xl"></i>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold text-gray-800">📚 Programs Section</h2>
+                <p class="text-gray-600">Phần chương trình học</p>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Tiêu đề chương trình</label>
+                <input type="text" name="programs_section_title_text" 
+                       value="{{ homepage.programs_section_title_text if homepage and homepage.programs_section_title_text else 'Chương trình học' }}"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500"
+                       placeholder="Chương trình học">
+                <p class="text-xs text-gray-500 mt-1">Sẽ được hiển thị với font Patrick và màu primary</p>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Nút CTA</label>
+                <input type="text" name="programs_cta_text" 
+                       value="{{ homepage.programs_cta_text if homepage else 'Xem tất cả chương trình' }}"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500">
+            </div>
+            
+            <div class="lg:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Mô tả</label>
+                <textarea name="programs_section_description" rows="2" 
+                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500">{{ homepage.programs_section_description if homepage else 'Các chương trình giáo dục được thiết kế phù hợp với từng độ tuổi, giúp trẻ phát triển toàn diện về thể chất, trí tuệ và cảm xúc' }}</textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="admin-card p-6 mb-6">
+        <div class="flex items-center mb-6">
+            <div class="w-12 h-12 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-xl flex items-center justify-center mr-4">
+                <i class="fas fa-star text-white text-xl"></i>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold text-gray-800">⭐ Features Section</h2>
+                <p class="text-gray-600">Phần điểm khác biệt</p>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Badge</label>
+                <input type="text" name="features_section_badge" 
+                       value="{{ homepage.features_section_badge if homepage else '✨ Điểm khác biệt của chúng tôi' }}"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Tiêu đề</label>
+                <input type="text" name="features_section_title" 
+                       value="{{ homepage.features_section_title if homepage else 'Tại sao chọn Hoa Hướng Dương?' }}"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500">
+            </div>
+            
+            <div class="lg:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Mô tả</label>
+                <textarea name="features_section_description" rows="2" 
+                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500">{{ homepage.features_section_description if homepage else 'Chúng tôi mang đến những giá trị giáo dục tốt nhất cho sự phát triển toàn diện của trẻ' }}</textarea>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Nút CTA</label>
+                <input type="text" name="features_cta_text" 
+                       value="{{ homepage.features_cta_text if homepage else 'Đăng ký tham quan ngay' }}"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Text liên hệ</label>
+                <input type="text" name="features_contact_text" 
+                       value="{{ homepage.features_contact_text if homepage else 'hoặc gọi 📞 1900-xxxx' }}"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500">
+            </div>
+        </div>
+    </div>
+
+    <!-- News, Gallery, Events Sections -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <!-- News Section -->
+        <div class="admin-card p-6">
+            <div class="flex items-center mb-4">
+                <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center mr-3">
+                    <i class="fas fa-newspaper text-white"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800">📰 Tin tức</h3>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tiêu đề</label>
+                    <input type="text" name="news_section_title_text" 
+                           value="{{ homepage.news_section_title_text if homepage and homepage.news_section_title_text else 'Tin tức mới nhất' }}"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 text-sm"
+                           placeholder="Tin tức mới nhất">
+                    <p class="text-xs text-gray-500 mt-1">Font Patrick + màu primary</p>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Mô tả</label>
+                    <textarea name="news_section_description" rows="3" 
+                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 text-sm">{{ homepage.news_section_description if homepage else 'Cập nhật những thông tin mới nhất từ trường Hoa Hướng Dương' }}</textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nút CTA</label>
+                    <input type="text" name="news_cta_text" 
+                           value="{{ homepage.news_cta_text if homepage else 'Xem tất cả tin tức' }}"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 text-sm">
+                </div>
+            </div>
+        </div>
+
+        <!-- Gallery Section -->
+        <div class="admin-card p-6">
+            <div class="flex items-center mb-4">
+                <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center mr-3">
+                    <i class="fas fa-images text-white"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800">🖼️ Thư viện</h3>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tiêu đề</label>
+                    <input type="text" name="gallery_section_title_text" 
+                           value="{{ homepage.gallery_section_title_text if homepage and homepage.gallery_section_title_text else 'Khoảnh khắc đáng nhớ' }}"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 text-sm"
+                           placeholder="Khoảnh khắc đáng nhớ">
+                    <p class="text-xs text-gray-500 mt-1">Font Patrick + màu primary</p>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Mô tả</label>
+                    <textarea name="gallery_section_description" rows="3" 
+                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 text-sm">{{ homepage.gallery_section_description if homepage else 'Những hình ảnh sinh động về cuộc sống học tập và vui chơi của các em' }}</textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nút CTA</label>
+                    <input type="text" name="gallery_cta_text" 
+                           value="{{ homepage.gallery_cta_text if homepage else 'Xem thêm hình ảnh' }}"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 text-sm">
+                </div>
+            </div>
+        </div>
+
+        <!-- Events Section -->
+        <div class="admin-card p-6">
+            <div class="flex items-center mb-4">
+                <div class="w-10 h-10 bg-pink-500 rounded-lg flex items-center justify-center mr-3">
+                    <i class="fas fa-calendar-alt text-white"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800">📅 Sự kiện</h3>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tiêu đề</label>
+                    <input type="text" name="events_section_title_text" 
+                           value="{{ homepage.events_section_title_text if homepage and homepage.events_section_title_text else 'Sự kiện sắp tới' }}"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-pink-500 text-sm"
+                           placeholder="Sự kiện sắp tới">
+                    <p class="text-xs text-gray-500 mt-1">Font Patrick + màu primary</p>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Mô tả</label>
+                    <textarea name="events_section_description" rows="3" 
+                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-pink-500 text-sm">{{ homepage.events_section_description if homepage else 'Đừng bỏ lỡ những sự kiện thú vị dành cho các em học sinh' }}</textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nút CTA</label>
+                    <input type="text" name="events_cta_text" 
+                           value="{{ homepage.events_cta_text if homepage else 'Xem tất cả sự kiện' }}"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-pink-500 text-sm">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Final CTA Section -->
+    <div class="admin-card p-6 mb-6">
+        <div class="flex items-center mb-6">
+            <div class="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center mr-4">
+                <i class="fas fa-bullhorn text-white text-xl"></i>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold text-gray-800">📞 Final CTA Section</h2>
+                <p class="text-gray-600">Phần call-to-action cuối trang</p>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Tiêu đề</label>
+                <input type="text" name="cta_title" 
+                       value="{{ homepage.cta_title if homepage else 'Sẵn sàng cho con bước vào hành trình học tập?' }}"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500">
+            </div>
+            
+            <div class="lg:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Mô tả</label>
+                <textarea name="cta_description" rows="3" 
+                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500">{{ homepage.cta_description if homepage else 'Hãy liên hệ với chúng tôi để được tư vấn chi tiết về chương trình học phù hợp với độ tuổi của con bạn' }}</textarea>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Nút CTA 1</label>
+                <input type="text" name="cta_button_1" 
+                       value="{{ homepage.cta_button_1 if homepage else 'Liên hệ ngay' }}"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Nút CTA 2</label>
+                <input type="text" name="cta_button_2" 
+                       value="{{ homepage.cta_button_2 if homepage else 'Tìm hiểu chương trình' }}"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500">
+            </div>
+        </div>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="flex justify-end">
+        <button type="submit" class="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-8 py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-purple-600 transition-all duration-300 shadow-lg hover:shadow-xl">
+            <i class="fas fa-save mr-2"></i>
+            Lưu tất cả thay đổi
+        </button>
+    </div>
+</form>
+
+<style>
+.admin-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+}
+
+.admin-card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+</style>
+{% endblock %}
