@@ -47,8 +47,8 @@
                     <i class="fas fa-arrow-down mr-2 group-hover:animate-bounce"></i>
                     Xem thư viện
                 </a>
-                <a href="/lien-he" class="group border-2 border-white text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-white hover:text-gray-800 transition-all duration-300 transform hover:scale-105">
-                    <i class="fas fa-phone mr-2"></i>
+                <a href="/chia-se-hinh-anh" class="group border-2 border-white text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-white hover:text-gray-800 transition-all duration-300 transform hover:scale-105">
+                    <i class="fas fa-camera mr-2"></i>
                     Chia sẻ ảnh
                 </a>
             </div>
@@ -82,8 +82,13 @@
         {% if images %}
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="gallery-grid">
                 {% for image in images %}
-                <div class="gallery-item group relative overflow-hidden rounded-2xl shadow-lg bg-white hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2" 
-                     data-category="{{ image.category or 'uncategorized' }}">
+                <div class="gallery-item group relative overflow-hidden rounded-2xl shadow-lg bg-white hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer" 
+                     data-category="{{ image.category or 'uncategorized' }}"
+                     {% if image.image_path.startswith('http') %}
+                     onclick="openLightbox('{{ image.image_path }}', '{{ image.title or 'Gallery Image' }}', '{{ image.description or '' }}')"
+                     {% else %}
+                     onclick="openLightbox('/static/{{ image.image_path }}', '{{ image.title or 'Gallery Image' }}', '{{ image.description or '' }}')"
+                     {% endif %}>
                     
                     <!-- Image -->
                     <div class="aspect-square overflow-hidden">
@@ -101,8 +106,8 @@
                     </div>
                     
                     <!-- Overlay -->
-                    <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                        <div class="text-white text-center p-4">
+                    <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
+                        <div class="text-white text-center p-4 pointer-events-none">
                             <i class="fas fa-search-plus text-3xl mb-3"></i>
                             {% if image.title %}
                             <h3 class="font-bold text-lg mb-2">{{ image.title }}</h3>
@@ -192,14 +197,40 @@
 <section class="py-16 bg-theme-gradient">
     <div class="container mx-auto px-4 text-center">
         <div class="max-w-3xl mx-auto text-white">
-            <h2 class="text-3xl md:text-4xl font-bold mb-6">Chia Sẻ Khoảnh Khắc</h2>
+            <h2 class="text-3xl md:text-4xl font-bold mb-6">Chia Sẻ Khoảnh Khắc Đẹp</h2>
             <p class="text-xl mb-8 opacity-90">
-                Bạn có những hình ảnh đẹp về trường? Hãy chia sẻ với chúng tôi!
+                Bạn có những hình ảnh đẹp về hoạt động của bé tại trường? Hãy chia sẻ với chúng tôi để tạo nên bộ sưu tập kỷ niệm chung!
             </p>
-            <a href="{{ url_for('contact') }}" 
-               class="inline-block bg-white text-primary px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition-colors transform hover:scale-105">
-                Liên Hệ Ngay
-            </a>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{{ url_for('share_image') }}" 
+                   class="inline-block bg-white text-primary px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition-colors transform hover:scale-105 shadow-lg">
+                    <i class="fas fa-camera mr-2"></i>
+                    Gửi Hình Ảnh
+                </a>
+                <a href="{{ url_for('contact') }}" 
+                   class="inline-block border-2 border-white text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-white hover:text-primary transition-colors transform hover:scale-105">
+                    <i class="fas fa-phone mr-2"></i>
+                    Liên Hệ Khác
+                </a>
+            </div>
+            
+            <!-- Stats -->
+            <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
+                    <div class="text-3xl font-bold mb-2">{{ images|length }}+</div>
+                    <div class="text-white/80">Hình ảnh trong thư viện</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
+                    <div class="text-3xl font-bold mb-2">
+                        <i class="fas fa-heart text-pink-300"></i>
+                    </div>
+                    <div class="text-white/80">Được chia sẻ với yêu thương</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
+                    <div class="text-3xl font-bold mb-2">24h</div>
+                    <div class="text-white/80">Thời gian xét duyệt</div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
@@ -233,6 +264,25 @@
 
 #lightboxModal {
     backdrop-filter: blur(5px);
+    z-index: 9999;
+}
+
+#lightboxModal.hidden {
+    display: none !important;
+}
+
+#lightboxModal:not(.hidden) {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+}
+
+#lightboxImage {
+    max-width: 90vw;
+    max-height: 80vh;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 }
 
 /* Floating Animations */
@@ -349,6 +399,55 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize lightbox functionality
+    console.log('Gallery loaded, initializing lightbox...');
+    
+    // Test lightbox elements
+    const lightboxModal = document.getElementById('lightboxModal');
+    const lightboxImage = document.getElementById('lightboxImage');
+    const lightboxTitle = document.getElementById('lightboxTitle');
+    const lightboxDescription = document.getElementById('lightboxDescription');
+    
+    if (!lightboxModal || !lightboxImage) {
+        console.error('Lightbox elements missing!');
+    } else {
+        console.log('Lightbox elements found successfully');
+    }
+    
+    // Add click handlers for gallery items (primary method)
+    document.querySelectorAll('.gallery-item[onclick]').forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const img = this.querySelector('img');
+            if (!img) return;
+            
+            const src = img.src;
+            const title = img.alt || 'Hình ảnh';
+            const description = this.querySelector('.line-clamp-2')?.textContent || '';
+            
+            console.log('Gallery item clicked:', src, title);
+            openLightbox(src, title, description);
+        });
+    });
+    
+    // Add click handlers for images as backup
+    document.querySelectorAll('.gallery-item img').forEach(img => {
+        img.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const src = this.src;
+            const title = this.alt || 'Hình ảnh';
+            const parent = this.closest('.gallery-item');
+            const description = parent ? (parent.querySelector('.line-clamp-2')?.textContent || '') : '';
+            
+            console.log('Image directly clicked:', src);
+            openLightbox(src, title, description);
+        });
+    });
+    
     // Counter Animation
     function animateCounters() {
         const counters = document.querySelectorAll('.counter');
@@ -371,6 +470,33 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize animations
     setTimeout(animateCounters, 1000);
+    
+    // Add debug buttons
+    if (window.location.search.includes('debug=1')) {
+        // Test lightbox button
+        const testBtn = document.createElement('button');
+        testBtn.textContent = 'Test Lightbox';
+        testBtn.className = 'fixed bottom-4 right-4 bg-red-500 text-white px-4 py-2 rounded z-50 mr-2';
+        testBtn.onclick = () => {
+            console.log('Testing lightbox manually...');
+            openLightbox('https://images.unsplash.com/photo-1544717297-fa95b6ee9643?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', 'Test Image', 'This is a test description');
+        };
+        document.body.appendChild(testBtn);
+        
+        // Debug info button
+        const debugBtn = document.createElement('button');
+        debugBtn.textContent = 'Debug Info';
+        debugBtn.className = 'fixed bottom-4 right-32 bg-blue-500 text-white px-4 py-2 rounded z-50';
+        debugBtn.onclick = () => {
+            const items = document.querySelectorAll('.gallery-item');
+            const imgs = document.querySelectorAll('.gallery-item img');
+            console.log('Gallery items found:', items.length);
+            console.log('Images found:', imgs.length);
+            console.log('Items with onclick:', document.querySelectorAll('.gallery-item[onclick]').length);
+            console.log('Images with onclick:', document.querySelectorAll('.gallery-item img[onclick]').length);
+        };
+        document.body.appendChild(debugBtn);
+    }
     
     // Filter functionality
     const filterBtns = document.querySelectorAll('.filter-btn');
@@ -406,19 +532,48 @@ function updateVisibleImages() {
 }
 
 function openLightbox(src, title, description) {
-    updateVisibleImages();
-    currentImageIndex = visibleImages.findIndex(img => img.src.includes(src.split('/').pop()));
+    console.log('Opening lightbox with:', src, title, description); // Debug log
     
-    document.getElementById('lightboxImage').src = src;
-    document.getElementById('lightboxTitle').textContent = title;
-    document.getElementById('lightboxDescription').textContent = description;
-    document.getElementById('lightboxModal').classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
+    try {
+        updateVisibleImages();
+        currentImageIndex = visibleImages.findIndex(img => img.src.includes(src.split('/').pop()));
+        
+        const lightboxImage = document.getElementById('lightboxImage');
+        const lightboxTitle = document.getElementById('lightboxTitle');
+        const lightboxDescription = document.getElementById('lightboxDescription');
+        const lightboxModal = document.getElementById('lightboxModal');
+        
+        if (!lightboxImage || !lightboxModal) {
+            console.error('Lightbox elements not found');
+            return;
+        }
+        
+        lightboxImage.src = src;
+        lightboxTitle.textContent = title || 'Hình ảnh';
+        lightboxDescription.textContent = description || '';
+        
+        lightboxModal.classList.remove('hidden');
+        lightboxModal.style.display = 'flex'; // Ensure it's visible
+        document.body.style.overflow = 'hidden';
+        
+        console.log('Lightbox opened successfully');
+    } catch (error) {
+        console.error('Error opening lightbox:', error);
+    }
 }
 
 function closeLightbox() {
-    document.getElementById('lightboxModal').classList.add('hidden');
-    document.body.style.overflow = 'auto';
+    try {
+        const lightboxModal = document.getElementById('lightboxModal');
+        if (lightboxModal) {
+            lightboxModal.classList.add('hidden');
+            lightboxModal.style.display = 'none';
+        }
+        document.body.style.overflow = 'auto';
+        console.log('Lightbox closed');
+    } catch (error) {
+        console.error('Error closing lightbox:', error);
+    }
 }
 
 function prevImage() {

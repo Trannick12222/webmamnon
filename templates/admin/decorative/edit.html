@@ -1,0 +1,248 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Chỉnh sửa Hiệu ứng {{ section_name|title }} - Admin{% endblock %}
+{% block page_title %}Hiệu ứng Trang trí - {{ section_name|title }} Section{% endblock %}
+{% block page_description %}Cấu hình chi tiết các hiệu ứng trang trí nền{% endblock %}
+
+{% block content %}
+<form method="POST" action="{{ url_for('admin_decorative_edit', section_name=section_name) }}">
+    
+    <!-- Navigation -->
+    <div class="mb-6">
+        <a href="{{ url_for('admin_decorative') }}" class="text-blue-600 hover:text-blue-800">
+            <i class="fas fa-arrow-left mr-2"></i>Quay lại danh sách
+        </a>
+    </div>
+    
+    <!-- General Settings -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">⚙️ Cài đặt Chung</h2>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Tên hiển thị</label>
+                <input type="text" name="section_title" 
+                       value="{{ decorative.section_title }}"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Độ mờ</label>
+                <select name="opacity" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
+                    <option value="opacity-100" {{ 'selected' if decorative.opacity == 'opacity-100' }}>100%</option>
+                    <option value="opacity-80" {{ 'selected' if decorative.opacity == 'opacity-80' }}>80%</option>
+                    <option value="opacity-60" {{ 'selected' if decorative.opacity == 'opacity-60' }}>60%</option>
+                    <option value="opacity-50" {{ 'selected' if decorative.opacity == 'opacity-50' }}>50%</option>
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Hiệu ứng mờ</label>
+                <select name="blur_effect" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
+                    <option value="" {{ 'selected' if not decorative.blur_effect }}>Không có</option>
+                    <option value="backdrop-blur-sm" {{ 'selected' if decorative.blur_effect == 'backdrop-blur-sm' }}>Mờ nhẹ</option>
+                    <option value="backdrop-blur-md" {{ 'selected' if decorative.blur_effect == 'backdrop-blur-md' }}>Mờ vừa</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Element 1 -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6 border-l-4 border-red-500">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-bold text-gray-800">🔴 Element 1</h2>
+            <label class="inline-flex items-center">
+                <input type="checkbox" name="element1_enabled" value="1" 
+                       {{ 'checked' if decorative.element1_enabled }} 
+                       class="rounded border-gray-300 text-red-600">
+                <span class="ml-2 text-sm font-medium text-gray-700">Kích hoạt</span>
+            </label>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Kích thước</label>
+                <select name="element1_size" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                    <option value="w-40 h-40" {{ 'selected' if decorative.element1_size == 'w-40 h-40' }}>Nhỏ</option>
+                    <option value="w-60 h-60" {{ 'selected' if decorative.element1_size == 'w-60 h-60' }}>Vừa</option>
+                    <option value="w-80 h-80" {{ 'selected' if decorative.element1_size == 'w-80 h-80' }}>Lớn</option>
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Vị trí</label>
+                <select name="element1_position" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                    <option value="-top-20 -left-20" {{ 'selected' if decorative.element1_position == '-top-20 -left-20' }}>Trên-Trái</option>
+                    <option value="-top-20 -right-20" {{ 'selected' if decorative.element1_position == '-top-20 -right-20' }}>Trên-Phải</option>
+                    <option value="-bottom-20 -left-20" {{ 'selected' if decorative.element1_position == '-bottom-20 -left-20' }}>Dưới-Trái</option>
+                    <option value="-bottom-20 -right-20" {{ 'selected' if decorative.element1_position == '-bottom-20 -right-20' }}>Dưới-Phải</option>
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Màu sắc</label>
+                <select name="element1_color" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                    <option value="bg-theme-decorative-light" {{ 'selected' if decorative.element1_color == 'bg-theme-decorative-light' }}>Theme Light</option>
+                    <option value="bg-theme-decorative-medium" {{ 'selected' if decorative.element1_color == 'bg-theme-decorative-medium' }}>Theme Medium</option>
+                    <option value="bg-white/20" {{ 'selected' if decorative.element1_color == 'bg-white/20' }}>Trắng 20%</option>
+                    <option value="bg-blue-500/20" {{ 'selected' if decorative.element1_color == 'bg-blue-500/20' }}>Xanh 20%</option>
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Animation</label>
+                <select name="element1_animation" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                    <option value="animate-pulse" {{ 'selected' if decorative.element1_animation == 'animate-pulse' }}>Pulse</option>
+                    <option value="animate-spin" {{ 'selected' if decorative.element1_animation == 'animate-spin' }}>Spin</option>
+                    <option value="" {{ 'selected' if not decorative.element1_animation }}>Không có</option>
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Delay</label>
+                <select name="element1_delay" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                    <option value="0s" {{ 'selected' if decorative.element1_delay == '0s' }}>0s</option>
+                    <option value="1s" {{ 'selected' if decorative.element1_delay == '1s' }}>1s</option>
+                    <option value="2s" {{ 'selected' if decorative.element1_delay == '2s' }}>2s</option>
+                    <option value="3s" {{ 'selected' if decorative.element1_delay == '3s' }}>3s</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Element 2 -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6 border-l-4 border-green-500">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-bold text-gray-800">🟢 Element 2</h2>
+            <label class="inline-flex items-center">
+                <input type="checkbox" name="element2_enabled" value="1" 
+                       {{ 'checked' if decorative.element2_enabled }} 
+                       class="rounded border-gray-300 text-green-600">
+                <span class="ml-2 text-sm font-medium text-gray-700">Kích hoạt</span>
+            </label>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Kích thước</label>
+                <select name="element2_size" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                    <option value="w-40 h-40" {{ 'selected' if decorative.element2_size == 'w-40 h-40' }}>Nhỏ</option>
+                    <option value="w-60 h-60" {{ 'selected' if decorative.element2_size == 'w-60 h-60' }}>Vừa</option>
+                    <option value="w-80 h-80" {{ 'selected' if decorative.element2_size == 'w-80 h-80' }}>Lớn</option>
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Vị trí</label>
+                <select name="element2_position" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                    <option value="-top-20 -left-20" {{ 'selected' if decorative.element2_position == '-top-20 -left-20' }}>Trên-Trái</option>
+                    <option value="top-40 -right-20" {{ 'selected' if decorative.element2_position == 'top-40 -right-20' }}>Giữa-Phải</option>
+                    <option value="-bottom-20 -left-20" {{ 'selected' if decorative.element2_position == '-bottom-20 -left-20' }}>Dưới-Trái</option>
+                    <option value="-bottom-20 -right-20" {{ 'selected' if decorative.element2_position == '-bottom-20 -right-20' }}>Dưới-Phải</option>
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Màu sắc</label>
+                <select name="element2_color" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                    <option value="bg-theme-decorative-light" {{ 'selected' if decorative.element2_color == 'bg-theme-decorative-light' }}>Theme Light</option>
+                    <option value="bg-theme-decorative-medium" {{ 'selected' if decorative.element2_color == 'bg-theme-decorative-medium' }}>Theme Medium</option>
+                    <option value="bg-white/20" {{ 'selected' if decorative.element2_color == 'bg-white/20' }}>Trắng 20%</option>
+                    <option value="bg-blue-500/20" {{ 'selected' if decorative.element2_color == 'bg-blue-500/20' }}>Xanh 20%</option>
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Animation</label>
+                <select name="element2_animation" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                    <option value="animate-pulse" {{ 'selected' if decorative.element2_animation == 'animate-pulse' }}>Pulse</option>
+                    <option value="animate-spin" {{ 'selected' if decorative.element2_animation == 'animate-spin' }}>Spin</option>
+                    <option value="" {{ 'selected' if not decorative.element2_animation }}>Không có</option>
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Delay</label>
+                <select name="element2_delay" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                    <option value="0s" {{ 'selected' if decorative.element2_delay == '0s' }}>0s</option>
+                    <option value="1s" {{ 'selected' if decorative.element2_delay == '1s' }}>1s</option>
+                    <option value="2s" {{ 'selected' if decorative.element2_delay == '2s' }}>2s</option>
+                    <option value="3s" {{ 'selected' if decorative.element2_delay == '3s' }}>3s</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Element 3 -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6 border-l-4 border-purple-500">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-bold text-gray-800">🟣 Element 3</h2>
+            <label class="inline-flex items-center">
+                <input type="checkbox" name="element3_enabled" value="1" 
+                       {{ 'checked' if decorative.element3_enabled }} 
+                       class="rounded border-gray-300 text-purple-600">
+                <span class="ml-2 text-sm font-medium text-gray-700">Kích hoạt</span>
+            </label>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Kích thước</label>
+                <select name="element3_size" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                    <option value="w-40 h-40" {{ 'selected' if decorative.element3_size == 'w-40 h-40' }}>Nhỏ</option>
+                    <option value="w-60 h-60" {{ 'selected' if decorative.element3_size == 'w-60 h-60' }}>Vừa</option>
+                    <option value="w-80 h-80" {{ 'selected' if decorative.element3_size == 'w-80 h-80' }}>Lớn</option>
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Vị trí</label>
+                <select name="element3_position" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                    <option value="-top-20 -left-20" {{ 'selected' if decorative.element3_position == '-top-20 -left-20' }}>Trên-Trái</option>
+                    <option value="-top-20 -right-20" {{ 'selected' if decorative.element3_position == '-top-20 -right-20' }}>Trên-Phải</option>
+                    <option value="-bottom-10 left-1/3" {{ 'selected' if decorative.element3_position == '-bottom-10 left-1/3' }}>Dưới-Giữa</option>
+                    <option value="-bottom-20 -right-20" {{ 'selected' if decorative.element3_position == '-bottom-20 -right-20' }}>Dưới-Phải</option>
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Màu sắc</label>
+                <select name="element3_color" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                    <option value="bg-theme-decorative-light" {{ 'selected' if decorative.element3_color == 'bg-theme-decorative-light' }}>Theme Light</option>
+                    <option value="bg-theme-decorative-medium" {{ 'selected' if decorative.element3_color == 'bg-theme-decorative-medium' }}>Theme Medium</option>
+                    <option value="bg-white/20" {{ 'selected' if decorative.element3_color == 'bg-white/20' }}>Trắng 20%</option>
+                    <option value="bg-blue-500/20" {{ 'selected' if decorative.element3_color == 'bg-blue-500/20' }}>Xanh 20%</option>
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Animation</label>
+                <select name="element3_animation" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                    <option value="animate-pulse" {{ 'selected' if decorative.element3_animation == 'animate-pulse' }}>Pulse</option>
+                    <option value="animate-spin" {{ 'selected' if decorative.element3_animation == 'animate-spin' }}>Spin</option>
+                    <option value="" {{ 'selected' if not decorative.element3_animation }}>Không có</option>
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Delay</label>
+                <select name="element3_delay" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                    <option value="0s" {{ 'selected' if decorative.element3_delay == '0s' }}>0s</option>
+                    <option value="1s" {{ 'selected' if decorative.element3_delay == '1s' }}>1s</option>
+                    <option value="2s" {{ 'selected' if decorative.element3_delay == '2s' }}>2s</option>
+                    <option value="4s" {{ 'selected' if decorative.element3_delay == '4s' }}>4s</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Submit Button -->
+    <div class="flex justify-center">
+        <button type="submit" 
+                class="bg-gradient-to-r from-green-500 to-blue-500 text-white px-8 py-3 rounded-lg font-semibold hover:from-green-600 hover:to-blue-600 transition-all duration-300 shadow-lg">
+            <i class="fas fa-save mr-2"></i>Lưu cài đặt
+        </button>
+    </div>
+</form>
+{% endblock %}
+

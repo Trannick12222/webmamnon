@@ -127,24 +127,23 @@
                     
                     <!-- Features -->
                     <div class="space-y-3 mb-6">
+                        <!-- Duration -->
                         <div class="flex items-center text-gray-600 group-hover:text-gray-700 transition-colors">
                             <div class="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center mr-3">
                                 <i class="fas fa-clock text-white text-sm"></i>
                             </div>
                             <span class="font-medium">{{ program.duration }}</span>
                         </div>
+                        
+                        <!-- Dynamic Program Info -->
+                        {% for info in program_info %}
                         <div class="flex items-center text-gray-600 group-hover:text-gray-700 transition-colors">
-                            <div class="w-8 h-8 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full flex items-center justify-center mr-3">
-                                <i class="fas fa-users text-white text-sm"></i>
+                            <div class="w-8 h-8 bg-gradient-to-r {{ info.icon_bg_gradient }} rounded-full flex items-center justify-center mr-3">
+                                <i class="{{ info.icon_class }} text-white text-sm"></i>
                             </div>
-                            <span class="font-medium">Lớp học nhỏ (8-12 trẻ)</span>
+                            <span class="font-medium">{{ info.title }}</span>
                         </div>
-                        <div class="flex items-center text-gray-600 group-hover:text-gray-700 transition-colors">
-                            <div class="w-8 h-8 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mr-3">
-                                <i class="fas fa-certificate text-white text-sm"></i>
-                            </div>
-                            <span class="font-medium">Giáo viên có chứng chỉ</span>
-                        </div>
+                        {% endfor %}
                     </div>
                     
                     <!-- Action Button -->
@@ -163,15 +162,11 @@
                             <i class="fas fa-sparkles text-yellow-500 mr-2"></i>Điểm nổi bật
                         </h4>
                         <div class="flex flex-wrap gap-2">
-                            <span class="bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium border border-green-200">
-                                <i class="fas fa-check-circle mr-1"></i>Phát triển toàn diện
+                            {% for feature in program_features %}
+                            <span class="bg-gradient-to-r {{ feature.background_gradient }} {{ feature.text_color }} px-3 py-1 rounded-full text-xs font-medium border {{ feature.border_color }}">
+                                <i class="{{ feature.icon_class }} mr-1"></i>{{ feature.title }}
                             </span>
-                            <span class="bg-gradient-to-r from-purple-100 to-pink-100 text-purple-800 px-3 py-1 rounded-full text-xs font-medium border border-purple-200">
-                                <i class="fas fa-gamepad mr-1"></i>Học qua chơi
-                            </span>
-                            <span class="bg-gradient-to-r from-orange-100 to-yellow-100 text-orange-800 px-3 py-1 rounded-full text-xs font-medium border border-orange-200">
-                                <i class="fas fa-shield-alt mr-1"></i>Môi trường an toàn
-                            </span>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
@@ -208,61 +203,84 @@
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div class="bg-white rounded-2xl p-6 shadow-lg text-center">
-                <div class="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-baby text-pink-600 text-2xl"></i>
+            {% if age_groups %}
+                {% for age_group in age_groups %}
+                <div class="bg-white rounded-2xl p-6 shadow-lg text-center">
+                    <div class="w-16 h-16 {{ age_group.icon_bg_color }} rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="{{ age_group.icon_class }} {{ age_group.icon_text_color }} text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">{{ age_group.age_range }}</h3>
+                    <h4 class="text-primary font-semibold mb-3">{{ age_group.name }}</h4>
+                    {% if age_group.skills %}
+                    <ul class="text-sm text-gray-600 space-y-1 text-left">
+                        {% set skills_list = age_group.skills.split('\n') %}
+                        {% for skill in skills_list %}
+                            {% if skill.strip() %}
+                            <li>{{ skill.strip() }}</li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
                 </div>
-                <h3 class="text-lg font-bold text-gray-800 mb-2">18-24 tháng</h3>
-                <h4 class="text-primary font-semibold mb-3">Lớp Mầm</h4>
-                <ul class="text-sm text-gray-600 space-y-1">
-                    <li>• Phát triển vận động cơ bản</li>
-                    <li>• Học tự lập trong ăn uống</li>
-                    <li>• Giao tiếp đơn giản</li>
-                    <li>• Khám phá thế giới xung quanh</li>
-                </ul>
-            </div>
-            
-            <div class="bg-white rounded-2xl p-6 shadow-lg text-center">
-                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-seedling text-green-600 text-2xl"></i>
+                {% endfor %}
+            {% else %}
+                <!-- Default age groups if no data in database -->
+                <div class="bg-white rounded-2xl p-6 shadow-lg text-center">
+                    <div class="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-baby text-pink-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">18-24 tháng</h3>
+                    <h4 class="text-primary font-semibold mb-3">Lớp Mầm</h4>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li>• Phát triển vận động cơ bản</li>
+                        <li>• Học tự lập trong ăn uống</li>
+                        <li>• Giao tiếp đơn giản</li>
+                        <li>• Khám phá thế giới xung quanh</li>
+                    </ul>
                 </div>
-                <h3 class="text-lg font-bold text-gray-800 mb-2">2-3 tuổi</h3>
-                <h4 class="text-primary font-semibold mb-3">Lớp Chồi</h4>
-                <ul class="text-sm text-gray-600 space-y-1">
-                    <li>• Phân biệt màu sắc, hình khối</li>
-                    <li>• Học quy tắc xã hội cơ bản</li>
-                    <li>• Phát triển từ vựng</li>
-                    <li>• Hoạt động nghệ thuật đơn giản</li>
-                </ul>
-            </div>
-            
-            <div class="bg-white rounded-2xl p-6 shadow-lg text-center">
-                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-leaf text-blue-600 text-2xl"></i>
+                
+                <div class="bg-white rounded-2xl p-6 shadow-lg text-center">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-seedling text-green-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">2-3 tuổi</h3>
+                    <h4 class="text-primary font-semibold mb-3">Lớp Chồi</h4>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li>• Phân biệt màu sắc, hình khối</li>
+                        <li>• Học quy tắc xã hội cơ bản</li>
+                        <li>• Phát triển từ vựng</li>
+                        <li>• Hoạt động nghệ thuật đơn giản</li>
+                    </ul>
                 </div>
-                <h3 class="text-lg font-bold text-gray-800 mb-2">3-4 tuổi</h3>
-                <h4 class="text-primary font-semibold mb-3">Lớp Lá</h4>
-                <ul class="text-sm text-gray-600 space-y-1">
-                    <li>• Học đếm số cơ bản</li>
-                    <li>• Kể chuyện và nghe hiểu</li>
-                    <li>• Hoạt động nhóm</li>
-                    <li>• Rèn luyện tính kỷ luật</li>
-                </ul>
-            </div>
-            
-            <div class="bg-white rounded-2xl p-6 shadow-lg text-center">
-                <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-graduation-cap text-yellow-600 text-2xl"></i>
+                
+                <div class="bg-white rounded-2xl p-6 shadow-lg text-center">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-leaf text-blue-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">3-4 tuổi</h3>
+                    <h4 class="text-primary font-semibold mb-3">Lớp Lá</h4>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li>• Học đếm số cơ bản</li>
+                        <li>• Kể chuyện và nghe hiểu</li>
+                        <li>• Hoạt động nhóm</li>
+                        <li>• Rèn luyện tính kỷ luật</li>
+                    </ul>
                 </div>
-                <h3 class="text-lg font-bold text-gray-800 mb-2">4-5 tuổi</h3>
-                <h4 class="text-primary font-semibold mb-3">Lớp Lúa</h4>
-                <ul class="text-sm text-gray-600 space-y-1">
-                    <li>• Chuẩn bị vào lớp 1</li>
-                    <li>• Học chữ cái, số đếm</li>
-                    <li>• Kỹ năng tự phục vụ</li>
-                    <li>• Phát triển tư duy logic</li>
-                </ul>
-            </div>
+                
+                <div class="bg-white rounded-2xl p-6 shadow-lg text-center">
+                    <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-graduation-cap text-yellow-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">4-5 tuổi</h3>
+                    <h4 class="text-primary font-semibold mb-3">Lớp Lúa</h4>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li>• Chuẩn bị vào lớp 1</li>
+                        <li>• Học chữ cái, số đếm</li>
+                        <li>• Kỹ năng tự phục vụ</li>
+                        <li>• Phát triển tư duy logic</li>
+                    </ul>
+                </div>
+            {% endif %}
         </div>
     </div>
 </section>

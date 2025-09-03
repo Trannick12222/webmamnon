@@ -1,0 +1,103 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Quản lý Nhóm độ tuổi - Admin{% endblock %}
+
+{% block page_title %}Nhóm độ tuổi{% endblock %}
+{% block page_description %}Quản lý thông tin các nhóm độ tuổi trên trang chương trình{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header Actions -->
+    <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+            <div class="bg-white rounded-lg px-4 py-2 shadow-sm border">
+                <span class="text-sm text-gray-600">Tổng cộng: </span>
+                <span class="font-semibold text-primary">{{ age_groups|length }} nhóm độ tuổi</span>
+            </div>
+        </div>
+        
+        <a href="{{ url_for('admin_age_groups_create') }}" 
+           class="btn-primary px-6 py-2 rounded-lg font-medium">
+            <i class="fas fa-plus mr-2"></i>
+            Thêm nhóm độ tuổi mới
+        </a>
+    </div>
+
+    <!-- Age Groups List -->
+    {% if age_groups %}
+    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+        {% for age_group in age_groups %}
+        <div class="admin-card p-6 hover:shadow-lg transition">
+            <!-- Preview Card -->
+            <div class="bg-white rounded-2xl p-6 shadow-lg text-center mb-4">
+                <div class="w-16 h-16 {{ age_group.icon_bg_color }} rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="{{ age_group.icon_class }} {{ age_group.icon_text_color }} text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800 mb-2">{{ age_group.age_range }}</h3>
+                <h4 class="text-primary font-semibold mb-3">{{ age_group.name }}</h4>
+                
+                {% if age_group.description %}
+                <p class="text-sm text-gray-600 mb-4">{{ age_group.description[:100] }}{% if age_group.description|length > 100 %}...{% endif %}</p>
+                {% endif %}
+                
+                {% if age_group.skills %}
+                <ul class="text-sm text-gray-600 space-y-1 text-left">
+                    {% set skills_list = age_group.skills.split('\n') %}
+                    {% for skill in skills_list[:3] %}
+                        {% if skill.strip() %}
+                        <li>{{ skill.strip() }}</li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if skills_list|length > 3 %}
+                    <li class="text-gray-400">... và {{ skills_list|length - 3 }} mục khác</li>
+                    {% endif %}
+                </ul>
+                {% endif %}
+            </div>
+            
+            <!-- Admin Info -->
+            <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
+                <div class="flex items-center space-x-4">
+                    <span class="px-2 py-1 text-xs rounded-full {{ 'bg-green-100 text-green-800' if age_group.is_active else 'bg-red-100 text-red-800' }}">
+                        {{ 'Hiển thị' if age_group.is_active else 'Ẩn' }}
+                    </span>
+                    <span>Thứ tự: {{ age_group.order_index }}</span>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex space-x-2">
+                <a href="{{ url_for('admin_age_groups_edit', id=age_group.id) }}" 
+                   class="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-center text-sm font-medium transition">
+                    <i class="fas fa-edit mr-1"></i>
+                    Chỉnh sửa
+                </a>
+                <form method="POST" action="{{ url_for('admin_age_groups_delete', id=age_group.id) }}" 
+                      class="flex-1" onsubmit="return confirm('Bạn có chắc muốn xóa nhóm độ tuổi này?')">
+                    <button type="submit" 
+                            class="w-full bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+                        <i class="fas fa-trash mr-1"></i>
+                        Xóa
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <!-- Empty State -->
+    <div class="admin-card text-center py-12">
+        <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="fas fa-baby text-3xl text-gray-400"></i>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-800 mb-4">Chưa có nhóm độ tuổi nào</h3>
+        <p class="text-gray-600 mb-6">Tạo nhóm độ tuổi đầu tiên để hiển thị hướng dẫn cho phụ huynh.</p>
+        <a href="{{ url_for('admin_age_groups_create') }}" class="btn-primary px-6 py-3 rounded-lg font-medium">
+            <i class="fas fa-plus mr-2"></i>
+            Thêm nhóm độ tuổi đầu tiên
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+

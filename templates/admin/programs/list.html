@@ -2,9 +2,39 @@
 
 {% block title %}Quản lý chương trình - Admin{% endblock %}
 {% block page_title %}Chương trình học{% endblock %}
-{% block page_description %}Quản lý các chương trình giáo dục{% endblock %}
+{% block page_description %}Quản lý toàn diện các chương trình giáo dục và thông tin liên quan{% endblock %}
 
 {% block content %}
+<!-- Tabs Navigation -->
+<div class="mb-6">
+    <div class="border-b border-gray-200">
+        <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+            <button class="tab-button border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm active" 
+                    data-tab="programs">
+                <i class="fas fa-graduation-cap mr-2"></i>
+                Chương trình
+            </button>
+            <button class="tab-button border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm" 
+                    data-tab="age-groups">
+                <i class="fas fa-baby mr-2"></i>
+                Nhóm độ tuổi
+            </button>
+            <button class="tab-button border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm" 
+                    data-tab="features">
+                <i class="fas fa-star mr-2"></i>
+                Điểm nổi bật
+            </button>
+            <button class="tab-button border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm" 
+                    data-tab="program-info">
+                <i class="fas fa-info-circle mr-2"></i>
+                Thông tin chương trình
+            </button>
+        </nav>
+    </div>
+</div>
+
+<!-- Tab Content: Programs -->
+<div id="programs-tab" class="tab-content active">
 <div class="admin-card p-6">
     <div class="flex items-center justify-between mb-6">
         <h2 class="text-xl font-semibold text-gray-800">Danh sách chương trình</h2>
@@ -55,11 +85,320 @@
     </div>
     {% endif %}
 </div>
+</div>
+
+<!-- Tab Content: Age Groups -->
+<div id="age-groups-tab" class="tab-content hidden">
+    <div class="admin-card p-6">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-semibold text-gray-800">Nhóm độ tuổi</h2>
+            <button class="btn-primary px-4 py-2 rounded-lg" onclick="showAgeGroupForm()">
+                <i class="fas fa-plus mr-2"></i>Thêm nhóm độ tuổi
+            </button>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6" id="age-groups-list">
+            <!-- Age groups will be loaded here via AJAX -->
+        </div>
+    </div>
+</div>
+
+<!-- Tab Content: Program Features -->
+<div id="features-tab" class="tab-content hidden">
+    <div class="admin-card p-6">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-semibold text-gray-800">Điểm nổi bật</h2>
+            <button class="btn-primary px-4 py-2 rounded-lg" onclick="showFeatureForm()">
+                <i class="fas fa-plus mr-2"></i>Thêm điểm nổi bật
+            </button>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6" id="features-list">
+            <!-- Features will be loaded here via AJAX -->
+        </div>
+    </div>
+</div>
+
+<!-- Tab Content: Program Info -->
+<div id="program-info-tab" class="tab-content hidden">
+    <div class="admin-card p-6">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-semibold text-gray-800">Thông tin chương trình</h2>
+            <button class="btn-primary px-4 py-2 rounded-lg" onclick="showProgramInfoForm()">
+                <i class="fas fa-plus mr-2"></i>Thêm thông tin
+            </button>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6" id="program-info-list">
+            <!-- Program info will be loaded here via AJAX -->
+        </div>
+    </div>
+</div>
+
+<!-- Modals will be inserted here -->
+<div id="modal-container"></div>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.tab-button.active {
+    border-color: #f97316;
+    color: #f97316;
+}
+
+.tab-content {
+    display: block;
+}
+
+.tab-content.hidden {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+</style>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    // Xác nhận xóa
+    // Tab functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const tabName = this.dataset.tab;
+                
+                // Remove active class from all buttons and contents
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
+                    content.classList.add('hidden');
+                });
+                
+                // Add active class to clicked button and corresponding content
+                this.classList.add('active');
+                const activeTab = document.getElementById(tabName + '-tab');
+                if (activeTab) {
+                    activeTab.classList.remove('hidden');
+                    activeTab.classList.add('active');
+                }
+                
+                // Load content for the active tab
+                loadTabContent(tabName);
+            });
+        });
+        
+        // Load initial content
+        loadTabContent('programs');
+    });
+
+    // Load content for specific tab
+    function loadTabContent(tabName) {
+        if (tabName === 'age-groups') {
+            loadAgeGroups();
+        } else if (tabName === 'features') {
+            loadFeatures();
+        } else if (tabName === 'program-info') {
+            loadProgramInfo();
+        }
+    }
+
+    // Load Age Groups
+    function loadAgeGroups() {
+        fetch('/admin/age-groups/api')
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('age-groups-list');
+                container.innerHTML = '';
+                
+                if (data.age_groups && data.age_groups.length > 0) {
+                    data.age_groups.forEach(item => {
+                        container.innerHTML += createAgeGroupCard(item);
+                    });
+                } else {
+                    container.innerHTML = '<div class="col-span-full text-center py-12"><p class="text-gray-500">Chưa có nhóm độ tuổi nào</p></div>';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading age groups:', error);
+            });
+    }
+
+    // Load Features
+    function loadFeatures() {
+        fetch('/admin/program-features/api')
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('features-list');
+                container.innerHTML = '';
+                
+                if (data.features && data.features.length > 0) {
+                    data.features.forEach(item => {
+                        container.innerHTML += createFeatureCard(item);
+                    });
+                } else {
+                    container.innerHTML = '<div class="col-span-full text-center py-12"><p class="text-gray-500">Chưa có điểm nổi bật nào</p></div>';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading features:', error);
+            });
+    }
+
+    // Load Program Info
+    function loadProgramInfo() {
+        fetch('/admin/program-info/api')
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('program-info-list');
+                container.innerHTML = '';
+                
+                if (data.program_info && data.program_info.length > 0) {
+                    data.program_info.forEach(item => {
+                        container.innerHTML += createProgramInfoCard(item);
+                    });
+                } else {
+                    container.innerHTML = '<div class="col-span-full text-center py-12"><p class="text-gray-500">Chưa có thông tin nào</p></div>';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading program info:', error);
+            });
+    }
+
+    // Create Age Group Card HTML
+    function createAgeGroupCard(item) {
+        return `
+            <div class="admin-card p-6 hover:shadow-lg transition">
+                <div class="bg-white rounded-2xl p-6 shadow-lg text-center mb-4">
+                    <div class="w-16 h-16 ${item.icon_bg_color} rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="${item.icon_class} ${item.icon_text_color} text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">${item.age_range}</h3>
+                    <h4 class="text-primary font-semibold mb-3">${item.name}</h4>
+                </div>
+                <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
+                    <span class="px-2 py-1 text-xs rounded-full ${item.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                        ${item.is_active ? 'Hiển thị' : 'Ẩn'}
+                    </span>
+                    <span>Thứ tự: ${item.order_index}</span>
+                </div>
+                <div class="flex space-x-2">
+                    <button onclick="editAgeGroup(${item.id})" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-center text-sm font-medium transition">
+                        <i class="fas fa-edit mr-1"></i>Sửa
+                    </button>
+                    <button onclick="deleteAgeGroup(${item.id})" class="flex-1 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+                        <i class="fas fa-trash mr-1"></i>Xóa
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    // Create Feature Card HTML
+    function createFeatureCard(item) {
+        return `
+            <div class="admin-card p-6 hover:shadow-lg transition">
+                <div class="bg-gradient-to-r ${item.background_gradient} ${item.text_color} px-3 py-1 rounded-full text-xs font-medium border ${item.border_color} mb-4 text-center">
+                    <i class="${item.icon_class} mr-1"></i>${item.title}
+                </div>
+                <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
+                    <span class="px-2 py-1 text-xs rounded-full ${item.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                        ${item.is_active ? 'Hiển thị' : 'Ẩn'}
+                    </span>
+                    <span>Thứ tự: ${item.order_index}</span>
+                </div>
+                <div class="flex space-x-2">
+                    <button onclick="editFeature(${item.id})" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-center text-sm font-medium transition">
+                        <i class="fas fa-edit mr-1"></i>Sửa
+                    </button>
+                    <button onclick="deleteFeature(${item.id})" class="flex-1 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+                        <i class="fas fa-trash mr-1"></i>Xóa
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    // Create Program Info Card HTML
+    function createProgramInfoCard(item) {
+        return `
+            <div class="admin-card p-6 hover:shadow-lg transition">
+                <div class="flex items-center text-gray-600 group-hover:text-gray-700 transition-colors mb-4">
+                    <div class="w-8 h-8 bg-gradient-to-r ${item.icon_bg_gradient} rounded-full flex items-center justify-center mr-3">
+                        <i class="${item.icon_class} text-white text-sm"></i>
+                    </div>
+                    <span class="font-medium">${item.title}</span>
+                </div>
+                <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
+                    <span class="px-2 py-1 text-xs rounded-full ${item.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                        ${item.is_active ? 'Hiển thị' : 'Ẩn'}
+                    </span>
+                    <span>Thứ tự: ${item.order_index}</span>
+                </div>
+                <div class="flex space-x-2">
+                    <button onclick="editProgramInfo(${item.id})" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-center text-sm font-medium transition">
+                        <i class="fas fa-edit mr-1"></i>Sửa
+                    </button>
+                    <button onclick="deleteProgramInfo(${item.id})" class="flex-1 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+                        <i class="fas fa-trash mr-1"></i>Xóa
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    // Placeholder functions for CRUD operations
+    function showAgeGroupForm() {
+        window.open('/admin/age-groups/create', '_blank');
+    }
+
+    function editAgeGroup(id) {
+        window.open('/admin/age-groups/edit/' + id, '_blank');
+    }
+
+    function deleteAgeGroup(id) {
+        if (confirm('Bạn có chắc muốn xóa nhóm độ tuổi này?')) {
+            fetch('/admin/age-groups/delete/' + id, { method: 'POST' })
+                .then(() => loadAgeGroups());
+        }
+    }
+
+    function showFeatureForm() {
+        window.open('/admin/program-features/create', '_blank');
+    }
+
+    function editFeature(id) {
+        window.open('/admin/program-features/edit/' + id, '_blank');
+    }
+
+    function deleteFeature(id) {
+        if (confirm('Bạn có chắc muốn xóa điểm nổi bật này?')) {
+            fetch('/admin/program-features/delete/' + id, { method: 'POST' })
+                .then(() => loadFeatures());
+        }
+    }
+
+    function showProgramInfoForm() {
+        window.open('/admin/program-info/create', '_blank');
+    }
+
+    function editProgramInfo(id) {
+        window.open('/admin/program-info/edit/' + id, '_blank');
+    }
+
+    function deleteProgramInfo(id) {
+        if (confirm('Bạn có chắc muốn xóa thông tin này?')) {
+            fetch('/admin/program-info/delete/' + id, { method: 'POST' })
+                .then(() => loadProgramInfo());
+        }
+    }
+
+    // Xác nhận xóa chương trình
     document.addEventListener('click', function(e) {
         if (e.target.closest('.delete-btn')) {
             e.preventDefault();

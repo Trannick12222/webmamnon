@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Lightbox</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-8 text-center">Test Lightbox Gallery</h1>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-lg overflow-hidden shadow-lg cursor-pointer" onclick="openLightbox('https://images.unsplash.com/photo-1544717297-fa95b6ee9643?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', 'Test Image 1', 'This is a test description for image 1')">
+                <img src="https://images.unsplash.com/photo-1544717297-fa95b6ee9643?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Test 1" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <h3 class="font-bold">Test Image 1</h3>
+                    <p class="text-sm text-gray-600">Click to test lightbox</p>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg overflow-hidden shadow-lg cursor-pointer" onclick="openLightbox('https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', 'Test Image 2', 'This is a test description for image 2')">
+                <img src="https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Test 2" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <h3 class="font-bold">Test Image 2</h3>
+                    <p class="text-sm text-gray-600">Click to test lightbox</p>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg overflow-hidden shadow-lg cursor-pointer" onclick="openLightbox('https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', 'Test Image 3', 'This is a test description for image 3')">
+                <img src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Test 3" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <h3 class="font-bold">Test Image 3</h3>
+                    <p class="text-sm text-gray-600">Click to test lightbox</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center">
+            <button onclick="openLightbox('https://images.unsplash.com/photo-1544717297-fa95b6ee9643?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', 'Manual Test', 'Manual lightbox test')" 
+                    class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition">
+                <i class="fas fa-search-plus mr-2"></i>
+                Test Lightbox Manually
+            </button>
+            
+            <a href="/thu-vien-anh" class="ml-4 bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition inline-block">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Back to Gallery
+            </a>
+        </div>
+    </div>
+
+    <!-- Lightbox Modal -->
+    <div id="lightboxModal" class="fixed inset-0 bg-black/90 z-50 hidden flex items-center justify-center p-4">
+        <div class="relative max-w-4xl max-h-full">
+            <!-- Close Button -->
+            <button onclick="closeLightbox()" 
+                    class="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors">
+                <i class="fas fa-times text-2xl"></i>
+            </button>
+            
+            <!-- Image -->
+            <img id="lightboxImage" src="" alt="" class="max-w-full max-h-[80vh] object-contain rounded-lg">
+            
+            <!-- Info -->
+            <div id="lightboxInfo" class="absolute bottom-0 left-0 right-0 bg-black/70 text-white p-4 rounded-b-lg">
+                <h3 id="lightboxTitle" class="text-xl font-bold mb-2"></h3>
+                <p id="lightboxDescription" class="text-sm opacity-90"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openLightbox(src, title, description) {
+            console.log('Opening lightbox with:', src, title, description);
+            
+            try {
+                const lightboxImage = document.getElementById('lightboxImage');
+                const lightboxTitle = document.getElementById('lightboxTitle');
+                const lightboxDescription = document.getElementById('lightboxDescription');
+                const lightboxModal = document.getElementById('lightboxModal');
+                
+                if (!lightboxImage || !lightboxModal) {
+                    console.error('Lightbox elements not found');
+                    alert('Lightbox elements not found!');
+                    return;
+                }
+                
+                lightboxImage.src = src;
+                lightboxTitle.textContent = title || 'Hình ảnh';
+                lightboxDescription.textContent = description || '';
+                
+                lightboxModal.classList.remove('hidden');
+                lightboxModal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+                
+                console.log('Lightbox opened successfully');
+            } catch (error) {
+                console.error('Error opening lightbox:', error);
+                alert('Error opening lightbox: ' + error.message);
+            }
+        }
+
+        function closeLightbox() {
+            try {
+                const lightboxModal = document.getElementById('lightboxModal');
+                if (lightboxModal) {
+                    lightboxModal.classList.add('hidden');
+                    lightboxModal.style.display = 'none';
+                }
+                document.body.style.overflow = 'auto';
+                console.log('Lightbox closed');
+            } catch (error) {
+                console.error('Error closing lightbox:', error);
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (!document.getElementById('lightboxModal').classList.contains('hidden')) {
+                if (e.key === 'Escape') {
+                    closeLightbox();
+                }
+            }
+        });
+
+        // Close lightbox when clicking outside image
+        document.getElementById('lightboxModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeLightbox();
+            }
+        });
+
+        // Test on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Test page loaded');
+            
+            // Test lightbox elements
+            const lightboxModal = document.getElementById('lightboxModal');
+            const lightboxImage = document.getElementById('lightboxImage');
+            
+            if (!lightboxModal || !lightboxImage) {
+                console.error('Lightbox elements missing!');
+                alert('Lightbox elements are missing!');
+            } else {
+                console.log('Lightbox elements found successfully');
+            }
+        });
+    </script>
+</body>
+</html>
+

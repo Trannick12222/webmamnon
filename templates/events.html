@@ -67,7 +67,8 @@
         
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {% for event in upcoming %}
-            <article class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+            <article class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 cursor-pointer" 
+                     onclick="window.location.href='{{ url_for('event_detail', event_id=event.id) }}'">
                 {% if event.featured_image %}
                 <div class="aspect-video overflow-hidden">
                     <img src="/static/{{ event.featured_image }}" 
@@ -126,7 +127,8 @@
         
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {% for event in past %}
-            <article class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+            <article class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 cursor-pointer" 
+                     onclick="window.location.href='{{ url_for('event_detail', event_id=event.id) }}'">
                 {% if event.featured_image %}
                 <div class="aspect-video overflow-hidden">
                     <img src="/static/{{ event.featured_image }}" 

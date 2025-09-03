@@ -1,0 +1,153 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Quản lý Features - Admin{% endblock %}
+{% block page_title %}Quản lý Features{% endblock %}
+{% block page_description %}Cấu hình nội dung phần "Tại sao chọn chúng tôi"{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-800">📋 Danh sách Features</h1>
+        <p class="text-gray-600">Quản lý nội dung phần "Tại sao chọn chúng tôi"</p>
+    </div>
+    <a href="{{ url_for('admin_features_create') }}" 
+       class="bg-gradient-to-r from-green-500 to-blue-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-green-600 hover:to-blue-600 transition-all duration-300 shadow-lg">
+        <i class="fas fa-plus mr-2"></i>Thêm Feature Mới
+    </a>
+</div>
+
+<!-- Features List -->
+<div class="space-y-4">
+    {% for feature in features %}
+    <div class="bg-white rounded-lg shadow-md p-6 border-l-4 {% if feature.is_active %}border-green-500{% else %}border-gray-400{% endif %}">
+        <div class="flex items-start justify-between">
+            <div class="flex items-start space-x-4 flex-1">
+                <!-- Icon Preview -->
+                <div class="w-16 h-16 {{ feature.background_color }} rounded-lg flex items-center justify-center border">
+                    <i class="{{ feature.icon }} {{ feature.icon_color }} text-2xl"></i>
+                </div>
+                
+                <!-- Content -->
+                <div class="flex-1">
+                    <div class="flex items-center space-x-3 mb-2">
+                        <h3 class="text-lg font-bold text-gray-800">{{ feature.title }}</h3>
+                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                            #{{ feature.order_index }}
+                        </span>
+                        {% if feature.is_active %}
+                            <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                                Kích hoạt
+                            </span>
+                        {% else %}
+                            <span class="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                                Tạm ẩn
+                            </span>
+                        {% endif %}
+                    </div>
+                    <p class="text-gray-600 mb-3">{{ feature.description }}</p>
+                    <div class="flex items-center space-x-4 text-sm text-gray-500">
+                        <span><i class="fas fa-icons mr-1"></i>{{ feature.icon }}</span>
+                        <span><i class="fas fa-palette mr-1"></i>{{ feature.icon_color }}</span>
+                        <span><i class="fas fa-calendar mr-1"></i>{{ feature.updated_at.strftime('%d/%m/%Y %H:%M') if feature.updated_at else 'N/A' }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="flex space-x-2 ml-4">
+                <a href="{{ url_for('admin_features_edit', feature_id=feature.id) }}" 
+                   class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <form method="POST" action="{{ url_for('admin_features_delete', feature_id=feature.id) }}" 
+                      onsubmit="return confirm('Bạn có chắc chắn muốn xóa feature này?')" class="inline">
+                    <button type="submit" 
+                            class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    
+    {% if not features %}
+    <div class="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-12 text-center">
+        <i class="fas fa-star text-4xl text-gray-400 mb-4"></i>
+        <h3 class="text-lg font-medium text-gray-600 mb-2">Chưa có feature nào</h3>
+        <p class="text-gray-500 mb-4">Tạo feature đầu tiên để hiển thị trong phần "Tại sao chọn chúng tôi"</p>
+        <a href="{{ url_for('admin_features_create') }}" 
+           class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors">
+            <i class="fas fa-plus mr-2"></i>Tạo Feature Đầu Tiên
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Stats -->
+<div class="mt-8 grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div class="flex items-center">
+            <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center mr-3">
+                <i class="fas fa-list text-white text-sm"></i>
+            </div>
+            <div>
+                <div class="text-2xl font-bold text-blue-600">{{ features|length }}</div>
+                <div class="text-sm text-blue-600">Tổng Features</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+        <div class="flex items-center">
+            <div class="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center mr-3">
+                <i class="fas fa-check text-white text-sm"></i>
+            </div>
+            <div>
+                <div class="text-2xl font-bold text-green-600">{{ features|selectattr('is_active')|list|length }}</div>
+                <div class="text-sm text-green-600">Đang Hiển thị</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+        <div class="flex items-center">
+            <div class="w-8 h-8 bg-yellow-500 rounded-lg flex items-center justify-center mr-3">
+                <i class="fas fa-eye-slash text-white text-sm"></i>
+            </div>
+            <div>
+                <div class="text-2xl font-bold text-yellow-600">{{ features|rejectattr('is_active')|list|length }}</div>
+                <div class="text-sm text-yellow-600">Đang Ẩn</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
+        <div class="flex items-center">
+            <div class="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center mr-3">
+                <i class="fas fa-clock text-white text-sm"></i>
+            </div>
+            <div>
+                                 <div class="text-2xl font-bold text-purple-600">
+                     {% if features %}
+                         {% set valid_dates = features|selectattr('updated_at')|map(attribute='updated_at')|list %}
+                         {% if valid_dates %}
+                             {% set latest_date = valid_dates|max %}
+                             {% if latest_date %}
+                                 {{ latest_date.strftime('%d/%m') }}
+                             {% else %}
+                                 N/A
+                             {% endif %}
+                         {% else %}
+                             N/A
+                         {% endif %}
+                     {% else %}
+                         N/A
+                     {% endif %}
+                 </div>
+                <div class="text-sm text-purple-600">Cập nhật gần nhất</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

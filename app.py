@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
+from markupsafe import Markup
 from PIL import Image
 import os
 import uuid
@@ -414,6 +415,66 @@ class HomePageSettings(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+class DecorativeSettings(db.Model):
+    __tablename__ = 'decorative_settings'
+    id = db.Column(db.Integer, primary_key=True)
+    
+    # Section identification
+    section_name = db.Column(db.String(100), nullable=False)  # 'features', 'video', etc.
+    section_title = db.Column(db.String(200), default='Background Decorations')
+    
+    # Element 1 settings
+    element1_enabled = db.Column(db.Boolean, default=True)
+    element1_size = db.Column(db.String(20), default='w-80 h-80')  # Tailwind classes
+    element1_position = db.Column(db.String(50), default='-top-20 -left-20')  # Tailwind position
+    element1_color = db.Column(db.String(50), default='bg-theme-decorative-light')  # Tailwind color
+    element1_animation = db.Column(db.String(50), default='animate-pulse')
+    element1_delay = db.Column(db.String(20), default='0s')
+    
+    # Element 2 settings
+    element2_enabled = db.Column(db.Boolean, default=True)
+    element2_size = db.Column(db.String(20), default='w-60 h-60')
+    element2_position = db.Column(db.String(50), default='top-40 -right-20')
+    element2_color = db.Column(db.String(50), default='bg-theme-decorative-medium')
+    element2_animation = db.Column(db.String(50), default='animate-pulse')
+    element2_delay = db.Column(db.String(20), default='2s')
+    
+    # Element 3 settings
+    element3_enabled = db.Column(db.Boolean, default=True)
+    element3_size = db.Column(db.String(20), default='w-40 h-40')
+    element3_position = db.Column(db.String(50), default='-bottom-10 left-1/3')
+    element3_color = db.Column(db.String(50), default='bg-theme-decorative-light')
+    element3_animation = db.Column(db.String(50), default='animate-pulse')
+    element3_delay = db.Column(db.String(20), default='4s')
+    
+    # Additional settings
+    opacity = db.Column(db.String(20), default='opacity-100')
+    blur_effect = db.Column(db.String(30), default='')  # backdrop-blur-sm, etc.
+    
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+class FeatureItem(db.Model):
+    __tablename__ = 'feature_items'
+    id = db.Column(db.Integer, primary_key=True)
+    
+    # Content fields
+    icon = db.Column(db.String(100), nullable=False, default='fas fa-shield-alt')  # FontAwesome icon class
+    title = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    
+    # Display settings
+    order_index = db.Column(db.Integer, default=0)
+    is_active = db.Column(db.Boolean, default=True)
+    
+    # Style settings
+    icon_color = db.Column(db.String(50), default='text-primary')  # Tailwind color class
+    background_color = db.Column(db.String(50), default='bg-white')  # Tailwind background
+    
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
 class PageVisit(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ip_address = db.Column(db.String(45))  # Hỗ trợ IPv6
@@ -423,6 +484,25 @@ class PageVisit(db.Model):
     visit_date = db.Column(db.Date, default=datetime.utcnow)  # Ngày truy cập
     visit_time = db.Column(db.DateTime, default=datetime.utcnow)  # Thời gian truy cập
     is_unique = db.Column(db.Boolean, default=True)  # Lượt truy cập duy nhất trong ngày
+
+class UserSubmittedImage(db.Model):
+    __tablename__ = 'user_submitted_images'
+    id = db.Column(db.Integer, primary_key=True)
+    sender_name = db.Column(db.String(100), nullable=False)
+    sender_email = db.Column(db.String(120), nullable=False)
+    sender_phone = db.Column(db.String(20))
+    title = db.Column(db.String(200))
+    description = db.Column(db.Text)
+    image_path = db.Column(db.String(500), nullable=False)
+    original_filename = db.Column(db.String(200))
+    status = db.Column(db.String(20), default='pending')  # pending, approved, rejected
+    admin_note = db.Column(db.Text)
+    reviewed_by = db.Column(db.String(100))
+    reviewed_at = db.Column(db.DateTime)
+    file_size = db.Column(db.Integer)
+    mime_type = db.Column(db.String(50))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -585,6 +665,10 @@ def inject_unread_contacts():
         system_settings = SystemSettings.query.first()
         # Inject homepage settings for global use (homepage content)
         homepage_settings = HomePageSettings.query.first()
+        # Inject decorative settings for global use (background decorations)
+        decorative_settings = DecorativeSettings.query.filter_by(is_active=True).all()
+        # Inject feature items for global use (features section)
+        feature_items = FeatureItem.query.filter_by(is_active=True).order_by(FeatureItem.order_index.asc()).all()
     except:
         unread_contacts = 0
         contact_settings = []
@@ -592,6 +676,8 @@ def inject_unread_contacts():
         current_theme = None
         system_settings = None
         homepage_settings = None
+        decorative_settings = []
+        feature_items = []
     return dict(
         unread_contacts=unread_contacts, 
         global_contact_settings=contact_settings, 
@@ -599,6 +685,8 @@ def inject_unread_contacts():
         current_theme=current_theme,
         global_system_settings=system_settings,
         global_homepage_settings=homepage_settings,
+        global_decorative_settings=decorative_settings,
+        global_feature_items=feature_items,
         get_seo_settings=get_seo_settings
     )
 
@@ -875,11 +963,90 @@ def gallery():
     categories = db.session.query(Gallery.category).distinct().all()
     return render_template('gallery.html', images=images, categories=categories)
 
+@app.route('/chia-se-hinh-anh', methods=['GET', 'POST'])
+def share_image():
+    if request.method == 'POST':
+        try:
+            # Validate required fields
+            if not all([request.form.get('sender_name'), 
+                       request.form.get('sender_email'),
+                       'image' in request.files]):
+                flash('Vui lòng điền đầy đủ thông tin và chọn hình ảnh!', 'error')
+                return render_template('share_image.html')
+            
+            file = request.files['image']
+            if file.filename == '':
+                flash('Vui lòng chọn hình ảnh!', 'error')
+                return render_template('share_image.html')
+            
+            # Validate file type
+            allowed_extensions = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+            if not ('.' in file.filename and 
+                   file.filename.rsplit('.', 1)[1].lower() in allowed_extensions):
+                flash('Chỉ chấp nhận file ảnh (PNG, JPG, JPEG, GIF, WEBP)!', 'error')
+                return render_template('share_image.html')
+            
+            # Create upload directory if not exists
+            upload_dir = 'static/uploads/user_submissions'
+            os.makedirs(upload_dir, exist_ok=True)
+            
+            # Generate unique filename
+            filename = secure_filename(file.filename)
+            unique_filename = f"{uuid.uuid4()}_{filename}"
+            filepath = os.path.join(upload_dir, unique_filename)
+            
+            # Save file
+            file.save(filepath)
+            
+            # Get file info
+            file_size = os.path.getsize(filepath)
+            mime_type = file.content_type
+            
+            # Create database record
+            user_image = UserSubmittedImage(
+                sender_name=request.form['sender_name'],
+                sender_email=request.form['sender_email'],
+                sender_phone=request.form.get('sender_phone', ''),
+                title=request.form.get('title', ''),
+                description=request.form.get('description', ''),
+                image_path=f'uploads/user_submissions/{unique_filename}',
+                original_filename=filename,
+                file_size=file_size,
+                mime_type=mime_type
+            )
+            
+            db.session.add(user_image)
+            db.session.commit()
+            
+            flash('Cảm ơn bạn đã chia sẻ hình ảnh! Chúng tôi sẽ xem xét và duyệt sớm nhất.', 'success')
+            return redirect(url_for('share_image'))
+            
+        except Exception as e:
+            flash('Có lỗi xảy ra khi upload hình ảnh. Vui lòng thử lại!', 'error')
+            return render_template('share_image.html')
+    
+    return render_template('share_image.html')
+
 @app.route('/su-kien')
 def events():
     upcoming = Event.query.filter_by(is_active=True).filter(Event.event_date > datetime.utcnow()).all()
     past = Event.query.filter_by(is_active=True).filter(Event.event_date <= datetime.utcnow()).all()
     return render_template('events.html', upcoming=upcoming, past=past)
+
+@app.route('/su-kien/<int:event_id>')
+def event_detail(event_id):
+    event = Event.query.get_or_404(event_id)
+    
+    # Get related events (exclude current event)
+    related_events = Event.query.filter_by(is_active=True).filter(Event.id != event_id).limit(3).all()
+    
+    # Get current time for status comparison
+    current_time = datetime.utcnow()
+    
+    return render_template('event_detail.html', 
+                         event=event, 
+                         related_events=related_events,
+                         current_time=current_time)
 
 @app.route('/lien-he', methods=['GET', 'POST'])
 def contact():
@@ -1287,6 +1454,79 @@ def admin_gallery_delete(id):
     flash('Hình ảnh đã được xóa!', 'success')
     return redirect(url_for('admin_gallery'))
 
+# User Submitted Images Routes
+@app.route('/admin/user-images')
+@login_required
+def admin_user_images():
+    status_filter = request.args.get('status', 'all')
+    
+    if status_filter == 'all':
+        images = UserSubmittedImage.query.order_by(UserSubmittedImage.created_at.desc()).all()
+    else:
+        images = UserSubmittedImage.query.filter_by(status=status_filter).order_by(UserSubmittedImage.created_at.desc()).all()
+    
+    # Statistics
+    stats = {
+        'total': UserSubmittedImage.query.count(),
+        'pending': UserSubmittedImage.query.filter_by(status='pending').count(),
+        'approved': UserSubmittedImage.query.filter_by(status='approved').count(),
+        'rejected': UserSubmittedImage.query.filter_by(status='rejected').count()
+    }
+    
+    return render_template('admin/user_images/list.html', 
+                         images=images, 
+                         stats=stats, 
+                         current_filter=status_filter)
+
+@app.route('/admin/user-images/approve/<int:id>', methods=['POST'])
+@login_required
+def admin_user_images_approve(id):
+    image = UserSubmittedImage.query.get_or_404(id)
+    image.status = 'approved'
+    image.reviewed_by = current_user.username
+    image.reviewed_at = datetime.utcnow()
+    
+    # Add to main gallery
+    gallery_item = Gallery(
+        title=image.title or f'Ảnh từ {image.sender_name}',
+        description=image.description or '',
+        image_path=image.image_path,
+        category='user_submitted'
+    )
+    db.session.add(gallery_item)
+    db.session.commit()
+    
+    flash('Hình ảnh đã được duyệt và thêm vào thư viện!', 'success')
+    return redirect(url_for('admin_user_images'))
+
+@app.route('/admin/user-images/reject/<int:id>', methods=['POST'])
+@login_required
+def admin_user_images_reject(id):
+    image = UserSubmittedImage.query.get_or_404(id)
+    image.status = 'rejected'
+    image.reviewed_by = current_user.username
+    image.reviewed_at = datetime.utcnow()
+    image.admin_note = request.form.get('admin_note', '')
+    
+    db.session.commit()
+    flash('Hình ảnh đã bị từ chối!', 'info')
+    return redirect(url_for('admin_user_images'))
+
+@app.route('/admin/user-images/delete/<int:id>', methods=['POST'])
+@login_required
+def admin_user_images_delete(id):
+    image = UserSubmittedImage.query.get_or_404(id)
+    
+    # Delete file
+    if image.image_path and os.path.exists(os.path.join('static', image.image_path)):
+        os.remove(os.path.join('static', image.image_path))
+    
+    db.session.delete(image)
+    db.session.commit()
+    
+    flash('Hình ảnh đã được xóa!', 'success')
+    return redirect(url_for('admin_user_images'))
+
 @app.route('/admin/events')
 @login_required
 def admin_events():
@@ -1552,6 +1792,146 @@ def admin_homepage():
         db.session.commit()
     
     return render_template('admin/homepage.html', homepage=homepage)
+
+@app.route('/admin/decorative')
+@login_required
+def admin_decorative():
+    # Lấy tất cả decorative settings
+    decorative_settings = DecorativeSettings.query.all()
+    return render_template('admin/decorative/list.html', decorative_settings=decorative_settings)
+
+@app.route('/admin/decorative/<section_name>', methods=['GET', 'POST'])
+@login_required
+def admin_decorative_edit(section_name):
+    if request.method == 'POST':
+        # Lấy hoặc tạo mới decorative settings cho section
+        decorative = DecorativeSettings.query.filter_by(section_name=section_name).first()
+        if not decorative:
+            decorative = DecorativeSettings(section_name=section_name)
+            db.session.add(decorative)
+        
+        # Cập nhật general settings
+        decorative.section_title = request.form.get('section_title', decorative.section_title)
+        decorative.opacity = request.form.get('opacity', decorative.opacity)
+        decorative.blur_effect = request.form.get('blur_effect', decorative.blur_effect)
+        
+        # Cập nhật Element 1
+        decorative.element1_enabled = bool(request.form.get('element1_enabled'))
+        decorative.element1_size = request.form.get('element1_size', decorative.element1_size)
+        decorative.element1_position = request.form.get('element1_position', decorative.element1_position)
+        decorative.element1_color = request.form.get('element1_color', decorative.element1_color)
+        decorative.element1_animation = request.form.get('element1_animation', decorative.element1_animation)
+        decorative.element1_delay = request.form.get('element1_delay', decorative.element1_delay)
+        
+        # Cập nhật Element 2
+        decorative.element2_enabled = bool(request.form.get('element2_enabled'))
+        decorative.element2_size = request.form.get('element2_size', decorative.element2_size)
+        decorative.element2_position = request.form.get('element2_position', decorative.element2_position)
+        decorative.element2_color = request.form.get('element2_color', decorative.element2_color)
+        decorative.element2_animation = request.form.get('element2_animation', decorative.element2_animation)
+        decorative.element2_delay = request.form.get('element2_delay', decorative.element2_delay)
+        
+        # Cập nhật Element 3
+        decorative.element3_enabled = bool(request.form.get('element3_enabled'))
+        decorative.element3_size = request.form.get('element3_size', decorative.element3_size)
+        decorative.element3_position = request.form.get('element3_position', decorative.element3_position)
+        decorative.element3_color = request.form.get('element3_color', decorative.element3_color)
+        decorative.element3_animation = request.form.get('element3_animation', decorative.element3_animation)
+        decorative.element3_delay = request.form.get('element3_delay', decorative.element3_delay)
+        
+        decorative.updated_at = datetime.utcnow()
+        
+        try:
+            db.session.commit()
+            flash(f'Hiệu ứng trang trí cho {section_name} đã được cập nhật thành công!', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash('Có lỗi xảy ra khi cập nhật hiệu ứng trang trí!', 'error')
+        
+        return redirect(url_for('admin_decorative_edit', section_name=section_name))
+    
+    # GET request - hiển thị form
+    decorative = DecorativeSettings.query.filter_by(section_name=section_name).first()
+    if not decorative:
+        decorative = DecorativeSettings(section_name=section_name)
+        db.session.add(decorative)
+        db.session.commit()
+    
+    return render_template('admin/decorative/edit.html', decorative=decorative, section_name=section_name)
+
+@app.route('/admin/features')
+@login_required
+def admin_features():
+    # Lấy tất cả feature items theo thứ tự
+    features = FeatureItem.query.order_by(FeatureItem.order_index.asc()).all()
+    return render_template('admin/features/list.html', features=features)
+
+@app.route('/admin/features/create', methods=['GET', 'POST'])
+@login_required
+def admin_features_create():
+    if request.method == 'POST':
+        # Tạo feature item mới
+        feature = FeatureItem(
+            icon=request.form.get('icon', 'fas fa-star'),
+            title=request.form.get('title'),
+            description=request.form.get('description'),
+            order_index=int(request.form.get('order_index', 0)),
+            icon_color=request.form.get('icon_color', 'text-primary'),
+            background_color=request.form.get('background_color', 'bg-white'),
+            is_active=bool(request.form.get('is_active'))
+        )
+        
+        try:
+            db.session.add(feature)
+            db.session.commit()
+            flash('Feature đã được tạo thành công!', 'success')
+            return redirect(url_for('admin_features'))
+        except Exception as e:
+            db.session.rollback()
+            flash('Có lỗi xảy ra khi tạo feature!', 'error')
+    
+    return render_template('admin/features/create.html')
+
+@app.route('/admin/features/edit/<int:feature_id>', methods=['GET', 'POST'])
+@login_required
+def admin_features_edit(feature_id):
+    feature = FeatureItem.query.get_or_404(feature_id)
+    
+    if request.method == 'POST':
+        # Cập nhật feature
+        feature.icon = request.form.get('icon', feature.icon)
+        feature.title = request.form.get('title', feature.title)
+        feature.description = request.form.get('description', feature.description)
+        feature.order_index = int(request.form.get('order_index', feature.order_index))
+        feature.icon_color = request.form.get('icon_color', feature.icon_color)
+        feature.background_color = request.form.get('background_color', feature.background_color)
+        feature.is_active = bool(request.form.get('is_active'))
+        feature.updated_at = datetime.utcnow()
+        
+        try:
+            db.session.commit()
+            flash('Feature đã được cập nhật thành công!', 'success')
+            return redirect(url_for('admin_features'))
+        except Exception as e:
+            db.session.rollback()
+            flash('Có lỗi xảy ra khi cập nhật feature!', 'error')
+    
+    return render_template('admin/features/edit.html', feature=feature)
+
+@app.route('/admin/features/delete/<int:feature_id>', methods=['POST'])
+@login_required
+def admin_features_delete(feature_id):
+    feature = FeatureItem.query.get_or_404(feature_id)
+    
+    try:
+        db.session.delete(feature)
+        db.session.commit()
+        flash('Feature đã được xóa thành công!', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash('Có lỗi xảy ra khi xóa feature!', 'error')
+    
+    return redirect(url_for('admin_features'))
 
 @app.route('/admin/slider')
 @login_required
@@ -2766,6 +3146,15 @@ def debug_team_images():
             })
     
     return f"<pre>{debug_info}</pre>"
+
+# Custom Jinja2 Filters
+def nl2br(value):
+    """Convert newlines to <br> tags"""
+    if not value:
+        return value
+    return Markup(str(value).replace('\n', '<br>\n'))
+
+app.jinja_env.filters['nl2br'] = nl2br
 
 if __name__ == '__main__':
     # Lấy port từ environment variable hoặc dùng 5000 làm default

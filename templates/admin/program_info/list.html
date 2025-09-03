@@ -1,0 +1,80 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Quản lý Thông tin chương trình - Admin{% endblock %}
+
+{% block page_title %}Thông tin chương trình{% endblock %}
+{% block page_description %}Quản lý thông tin cố định hiển thị trên trang chương trình{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header Actions -->
+    <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+            <div class="bg-white rounded-lg px-4 py-2 shadow-sm border">
+                <span class="text-sm text-gray-600">Tổng cộng: </span>
+                <span class="font-semibold text-primary">{{ program_info|length }} thông tin</span>
+            </div>
+        </div>
+        
+        <a href="{{ url_for('admin_program_info_create') }}" 
+           class="btn-primary px-6 py-2 rounded-lg font-medium">
+            <i class="fas fa-plus mr-2"></i>
+            Thêm thông tin mới
+        </a>
+    </div>
+
+    <!-- Program Info List -->
+    {% if program_info %}
+    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+        {% for info in program_info %}
+        <div class="admin-card p-6 hover:shadow-lg transition">
+            <!-- Preview -->
+            <div class="flex items-center text-gray-600 group-hover:text-gray-700 transition-colors mb-4">
+                <div class="w-8 h-8 bg-gradient-to-r {{ info.icon_bg_gradient }} rounded-full flex items-center justify-center mr-3">
+                    <i class="{{ info.icon_class }} text-white text-sm"></i>
+                </div>
+                <span class="font-medium">{{ info.title }}</span>
+            </div>
+            
+            <!-- Admin Info -->
+            <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
+                <span class="px-2 py-1 text-xs rounded-full {{ 'bg-green-100 text-green-800' if info.is_active else 'bg-red-100 text-red-800' }}">
+                    {{ 'Hiển thị' if info.is_active else 'Ẩn' }}
+                </span>
+                <span>Thứ tự: {{ info.order_index }}</span>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex space-x-2">
+                <a href="{{ url_for('admin_program_info_edit', id=info.id) }}" 
+                   class="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-center text-sm font-medium transition">
+                    <i class="fas fa-edit mr-1"></i>Sửa
+                </a>
+                <form method="POST" action="{{ url_for('admin_program_info_delete', id=info.id) }}" 
+                      class="flex-1" onsubmit="return confirm('Bạn có chắc muốn xóa thông tin này?')">
+                    <button type="submit" 
+                            class="w-full bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+                        <i class="fas fa-trash mr-1"></i>Xóa
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <!-- Empty State -->
+    <div class="admin-card text-center py-12">
+        <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="fas fa-info-circle text-3xl text-gray-400"></i>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-800 mb-4">Chưa có thông tin nào</h3>
+        <p class="text-gray-600 mb-6">Tạo thông tin đầu tiên để hiển thị trên trang chương trình.</p>
+        <a href="{{ url_for('admin_program_info_create') }}" class="btn-primary px-6 py-3 rounded-lg font-medium">
+            <i class="fas fa-plus mr-2"></i>
+            Thêm thông tin đầu tiên
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+

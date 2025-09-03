@@ -109,7 +109,7 @@
                     </a>
                     
                     <a href="{{ url_for('admin_programs') }}" 
-                       class="sidebar-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:text-white transition duration-200 {{ 'bg-gradient-to-r from-orange-400 to-yellow-400 text-white' if 'programs' in request.endpoint }}">
+                       class="sidebar-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:text-white transition duration-200 {{ 'bg-gradient-to-r from-orange-400 to-yellow-400 text-white' if 'programs' in request.endpoint or 'age_groups' in request.endpoint or 'program_features' in request.endpoint or 'program_info' in request.endpoint }}">
                         <i class="fas fa-graduation-cap mr-3"></i>
                         <span>Chương trình</span>
                     </a>
@@ -124,6 +124,16 @@
                        class="sidebar-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:text-white transition duration-200 {{ 'bg-gradient-to-r from-orange-400 to-yellow-400 text-white' if 'gallery' in request.endpoint }}">
                         <i class="fas fa-images mr-3"></i>
                         <span>Thư viện ảnh</span>
+                    </a>
+                    
+                    <a href="{{ url_for('admin_user_images') }}" 
+                       class="sidebar-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:text-white transition duration-200 {{ 'bg-gradient-to-r from-orange-400 to-yellow-400 text-white' if 'user_images' in request.endpoint }}">
+                        <i class="fas fa-user-images mr-3"></i>
+                        <span>Hình ảnh người dùng</span>
+                        {% set pending_count = [] %}
+                        {% if pending_count %}
+                        <span class="ml-2 bg-red-500 text-white text-xs rounded-full px-2 py-1">{{ pending_count|length }}</span>
+                        {% endif %}
                     </a>
                     
                     <a href="{{ url_for('admin_events') }}" 
@@ -227,6 +237,18 @@
                            class="sidebar-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:text-white transition duration-200 {{ 'bg-gradient-to-r from-blue-500 to-purple-500 text-white' if 'homepage' in request.endpoint }}">
                             <i class="fas fa-home mr-3"></i>
                             <span>Quản lý trang chủ</span>
+                        </a>
+                        
+                        <a href="{{ url_for('admin_decorative') }}" 
+                           class="sidebar-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:text-white transition duration-200 {{ 'bg-gradient-to-r from-purple-500 to-pink-500 text-white' if 'decorative' in request.endpoint }}">
+                            <i class="fas fa-magic mr-3"></i>
+                            <span>Quản lý hiệu ứng</span>
+                        </a>
+                        
+                        <a href="{{ url_for('admin_features') }}" 
+                           class="sidebar-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:text-white transition duration-200 {{ 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white' if 'features' in request.endpoint }}">
+                            <i class="fas fa-star mr-3"></i>
+                            <span>Quản lý Features</span>
                         </a>
                         
                         <a href="{{ url_for('admin_themes') }}" 

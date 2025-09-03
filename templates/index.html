@@ -210,11 +210,32 @@
 {% if intro_videos %}
 <section class="py-20 bg-theme-lighter relative overflow-hidden">
     <!-- Background decorative elements -->
+    {% set video_decorative = global_decorative_settings|selectattr('section_name', 'equalto', 'video')|first %}
+    {% if video_decorative %}
+    <div class="absolute inset-0 overflow-hidden {{ video_decorative.opacity }} {{ video_decorative.blur_effect }}">
+        {% if video_decorative.element1_enabled %}
+        <div class="absolute {{ video_decorative.element1_position }} {{ video_decorative.element1_size }} {{ video_decorative.element1_color }} rounded-full {{ video_decorative.element1_animation }}" 
+             {% if video_decorative.element1_delay != '0s' %}style="animation-delay: {{ video_decorative.element1_delay }};"{% endif %}></div>
+        {% endif %}
+        
+        {% if video_decorative.element2_enabled %}
+        <div class="absolute {{ video_decorative.element2_position }} {{ video_decorative.element2_size }} {{ video_decorative.element2_color }} rounded-full {{ video_decorative.element2_animation }}" 
+             {% if video_decorative.element2_delay != '0s' %}style="animation-delay: {{ video_decorative.element2_delay }};"{% endif %}></div>
+        {% endif %}
+        
+        {% if video_decorative.element3_enabled %}
+        <div class="absolute {{ video_decorative.element3_position }} {{ video_decorative.element3_size }} {{ video_decorative.element3_color }} rounded-full {{ video_decorative.element3_animation }}" 
+             {% if video_decorative.element3_delay != '0s' %}style="animation-delay: {{ video_decorative.element3_delay }};"{% endif %}></div>
+        {% endif %}
+    </div>
+    {% else %}
+    <!-- Fallback to default decorative elements -->
     <div class="absolute inset-0 overflow-hidden">
         <div class="absolute -top-20 -right-20 w-80 h-80 bg-white/10 rounded-full animate-pulse"></div>
         <div class="absolute top-40 -left-20 w-60 h-60 bg-white/20 rounded-full animate-pulse" style="animation-delay: 2s;"></div>
         <div class="absolute -bottom-10 right-1/3 w-40 h-40 bg-white/10 rounded-full animate-pulse" style="animation-delay: 4s;"></div>
     </div>
+    {% endif %}
     
     <div class="container mx-auto px-4 relative z-10">
         <div class="text-center mb-16">
@@ -422,11 +443,32 @@
 <!-- Features Section -->
 <section class="py-20 relative overflow-hidden bg-theme-gradient-horizontal">
     <!-- Background decorative elements -->
+    {% set features_decorative = global_decorative_settings|selectattr('section_name', 'equalto', 'features')|first %}
+    {% if features_decorative %}
+    <div class="absolute inset-0 overflow-hidden {{ features_decorative.opacity }} {{ features_decorative.blur_effect }}">
+        {% if features_decorative.element1_enabled %}
+        <div class="absolute {{ features_decorative.element1_position }} {{ features_decorative.element1_size }} {{ features_decorative.element1_color }} rounded-full {{ features_decorative.element1_animation }}" 
+             {% if features_decorative.element1_delay != '0s' %}style="animation-delay: {{ features_decorative.element1_delay }};"{% endif %}></div>
+        {% endif %}
+        
+        {% if features_decorative.element2_enabled %}
+        <div class="absolute {{ features_decorative.element2_position }} {{ features_decorative.element2_size }} {{ features_decorative.element2_color }} rounded-full {{ features_decorative.element2_animation }}" 
+             {% if features_decorative.element2_delay != '0s' %}style="animation-delay: {{ features_decorative.element2_delay }};"{% endif %}></div>
+        {% endif %}
+        
+        {% if features_decorative.element3_enabled %}
+        <div class="absolute {{ features_decorative.element3_position }} {{ features_decorative.element3_size }} {{ features_decorative.element3_color }} rounded-full {{ features_decorative.element3_animation }}" 
+             {% if features_decorative.element3_delay != '0s' %}style="animation-delay: {{ features_decorative.element3_delay }};"{% endif %}></div>
+        {% endif %}
+    </div>
+    {% else %}
+    <!-- Fallback to default decorative elements -->
     <div class="absolute inset-0 overflow-hidden">
         <div class="absolute -top-20 -left-20 w-80 h-80 bg-theme-decorative-light rounded-full animate-pulse"></div>
         <div class="absolute top-40 -right-20 w-60 h-60 bg-theme-decorative-medium rounded-full animate-pulse" style="animation-delay: 2s;"></div>
         <div class="absolute -bottom-10 left-1/3 w-40 h-40 bg-theme-decorative-light rounded-full animate-pulse" style="animation-delay: 4s;"></div>
     </div>
+    {% endif %}
     
     <div class="container mx-auto px-4 relative z-10">
         <div class="text-center mb-16">
@@ -455,6 +497,37 @@
             </p>
         </div>
         
+        <!-- Dynamic Features Grid -->
+        {% if global_feature_items %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-{{ global_feature_items|length if global_feature_items|length <= 4 else 4 }} gap-8">
+            {% for feature in global_feature_items %}
+            <div class="group transform hover:scale-105 transition-all duration-300">
+                <div class="bg-white/10 backdrop-blur-sm rounded-3xl p-8 h-full border border-white/20 hover:bg-white/15 hover:shadow-2xl transition-all duration-300">
+                    <div class="relative mb-6">
+                        <div class="w-20 h-20 bg-white/25 rounded-2xl flex items-center justify-center mx-auto group-hover:bg-white/35 transition-all duration-300 group-hover:scale-110 shadow-lg">
+                            <i class="{{ feature.icon }} text-3xl text-white"></i>
+                        </div>
+                        <div class="absolute -top-2 -right-2 w-6 h-6 bg-yellow-300 rounded-full flex items-center justify-center">
+                            <i class="fas fa-star text-orange-600 text-xs"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4 text-white group-hover:text-yellow-100 transition-colors">
+                        {{ feature.title }}
+                    </h3>
+                    <p class="text-white/90 leading-relaxed text-center group-hover:text-white transition-colors">
+                        {{ feature.description }}
+                    </p>
+                    <div class="mt-4 flex justify-center space-x-1">
+                        <div class="w-2 h-2 bg-white/50 rounded-full group-hover:bg-yellow-300 transition-all"></div>
+                        <div class="w-2 h-2 bg-white/50 rounded-full group-hover:bg-yellow-300 transition-all" style="animation-delay: 0.1s;"></div>
+                        <div class="w-2 h-2 bg-white/50 rounded-full group-hover:bg-yellow-300 transition-all" style="animation-delay: 0.2s;"></div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <!-- Fallback to default features if no dynamic content -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <!-- Feature 1 -->
             <div class="group transform hover:scale-105 transition-all duration-300">
@@ -556,6 +629,7 @@
                 </div>
             </div>
         </div>
+        {% endif %}
         
         <!-- Call to Action -->
         <div class="text-center mt-16">

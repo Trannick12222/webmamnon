@@ -1,0 +1,341 @@
+{% extends "base.html" %}
+
+{% block title %}Chia Sẻ Hình Ảnh - Trường Mầm Non Hoa Hướng Dương{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-slider relative py-20 md:py-32 flex items-center justify-center overflow-hidden">
+    <!-- Animated Background -->
+    <div class="absolute inset-0 bg-theme-gradient-br" style="z-index: 0;"></div>
+    
+    <!-- Floating Elements -->
+    <div class="absolute top-20 left-20 w-16 h-16 bg-white/20 rounded-full animate-float"></div>
+    <div class="absolute top-40 right-32 w-12 h-12 bg-yellow-300/30 rounded-full animate-float-delay-1"></div>
+    <div class="absolute bottom-32 left-16 w-20 h-20 bg-pink-300/25 rounded-full animate-float-delay-2"></div>
+    <div class="absolute bottom-20 right-20 w-14 h-14 bg-blue-300/30 rounded-full animate-float-delay-3"></div>
+    
+    <!-- Content -->
+    <div class="container mx-auto px-4 relative text-center" style="z-index: 10;">
+        <div class="max-w-4xl mx-auto">
+            <!-- Badge -->
+            <div class="inline-flex items-center px-6 py-3 bg-white/20 backdrop-blur-sm rounded-full text-white mb-8 animate-fade-in-up">
+                <i class="fas fa-camera mr-2"></i>
+                <span class="font-medium">Chia sẻ khoảnh khắc đẹp</span>
+            </div>
+            
+            <!-- Main Title -->
+            <h1 class="text-6xl md:text-7xl lg:text-8xl font-bold text-white mb-8 animate-fade-in-up animation-delay-200">
+                <span class="bg-gradient-to-r from-white to-yellow-200 bg-clip-text text-transparent font-patrick">
+                    Chia Sẻ Hình Ảnh
+                </span>
+            </h1>
+            
+            <!-- Subtitle -->
+            <p class="text-xl md:text-2xl lg:text-3xl text-white/95 max-w-4xl mx-auto leading-relaxed mb-12 animate-fade-in-up animation-delay-400">
+                Hãy chia sẻ với chúng tôi những khoảnh khắc đẹp của bé tại trường! 
+                <span class="text-yellow-200 font-semibold">Mỗi hình ảnh đều là kỷ niệm quý giá</span>
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Form Section -->
+<section class="py-20 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="mb-8">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                                <div class="flex items-center">
+                                    <i class="fas fa-{{ 'exclamation-circle' if category == 'error' else 'check-circle' }} mr-3"></i>
+                                    <span>{{ message }}</span>
+                                </div>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            
+            <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
+                <!-- Header -->
+                <div class="bg-gradient-to-r from-blue-500 to-purple-600 px-8 py-8 text-white text-center">
+                    <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-upload text-3xl"></i>
+                    </div>
+                    <h2 class="text-3xl font-bold mb-2">Gửi Hình Ảnh Của Bạn</h2>
+                    <p class="text-blue-100">Chúng tôi rất mong nhận được những hình ảnh đẹp từ bạn!</p>
+                </div>
+                
+                <!-- Form -->
+                <form method="POST" enctype="multipart/form-data" class="p-8 space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Thông tin người gửi -->
+                        <div class="space-y-6">
+                            <h3 class="text-xl font-semibold text-gray-800 flex items-center">
+                                <i class="fas fa-user text-blue-500 mr-3"></i>
+                                Thông tin của bạn
+                            </h3>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Họ và tên <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" name="sender_name" required 
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                                       placeholder="Nhập họ và tên của bạn">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Email <span class="text-red-500">*</span>
+                                </label>
+                                <input type="email" name="sender_email" required 
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                                       placeholder="your.email@example.com">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Số điện thoại (tùy chọn)
+                                </label>
+                                <input type="tel" name="sender_phone" 
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                                       placeholder="0123 456 789">
+                            </div>
+                        </div>
+                        
+                        <!-- Thông tin hình ảnh -->
+                        <div class="space-y-6">
+                            <h3 class="text-xl font-semibold text-gray-800 flex items-center">
+                                <i class="fas fa-image text-green-500 mr-3"></i>
+                                Thông tin hình ảnh
+                            </h3>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Tiêu đề hình ảnh
+                                </label>
+                                <input type="text" name="title" 
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                                       placeholder="VD: Bé học vẽ, Hoạt động ngoài trời...">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Mô tả (tùy chọn)
+                                </label>
+                                <textarea name="description" rows="4" 
+                                          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                                          placeholder="Chia sẻ câu chuyện về hình ảnh này..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Upload hình ảnh -->
+                    <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-blue-400 transition">
+                        <div class="space-y-4">
+                            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
+                                <i class="fas fa-cloud-upload-alt text-2xl text-blue-500"></i>
+                            </div>
+                            <div>
+                                <label for="image" class="cursor-pointer">
+                                    <span class="text-lg font-medium text-gray-700">Chọn hình ảnh để tải lên</span>
+                                    <input type="file" name="image" id="image" accept="image/*" required 
+                                           class="hidden" onchange="previewImage(this)">
+                                </label>
+                                <p class="text-sm text-gray-500 mt-2">
+                                    Chấp nhận: JPG, JPEG, PNG, GIF (tối đa 10MB)
+                                </p>
+                            </div>
+                            <div id="preview-container" class="hidden">
+                                <img id="preview-image" class="max-w-xs max-h-48 rounded-lg shadow-lg mx-auto">
+                                <p class="text-sm text-green-600 mt-2">✓ Hình ảnh đã chọn</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Ghi chú -->
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                        <div class="flex items-start">
+                            <i class="fas fa-info-circle text-blue-500 mt-1 mr-3"></i>
+                            <div>
+                                <h4 class="font-semibold text-blue-800 mb-2">Lưu ý quan trọng:</h4>
+                                <ul class="text-sm text-blue-700 space-y-1">
+                                    <li>• Hình ảnh sẽ được xem xét trước khi hiển thị công khai</li>
+                                    <li>• Chỉ chấp nhận hình ảnh liên quan đến hoạt động của trường</li>
+                                    <li>• Vui lòng đảm bảo bạn có quyền chia sẻ hình ảnh này</li>
+                                    <li>• Chúng tôi có thể liên hệ với bạn nếu cần thêm thông tin</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center pt-6">
+                        <a href="{{ url_for('gallery') }}" 
+                           class="px-8 py-3 border border-gray-300 rounded-full text-gray-700 hover:bg-gray-50 transition text-center font-medium">
+                            <i class="fas fa-arrow-left mr-2"></i>
+                            Quay lại thư viện
+                        </a>
+                        <button type="submit" 
+                                class="px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full font-bold hover:from-blue-600 hover:to-purple-700 transition transform hover:scale-105 shadow-lg hover:shadow-xl">
+                            <i class="fas fa-paper-plane mr-2"></i>
+                            Gửi hình ảnh
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.alert {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+    border-radius: 0.5rem;
+}
+
+.alert-success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+}
+
+.alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+
+.btn-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: inherit;
+    opacity: 0.5;
+    cursor: pointer;
+    margin-left: auto;
+}
+
+.btn-close:hover {
+    opacity: 0.75;
+}
+
+/* Floating Animations */
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-10px) rotate(1deg); }
+    66% { transform: translateY(5px) rotate(-1deg); }
+}
+
+@keyframes float-delay-1 {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-15px) rotate(-1deg); }
+    66% { transform: translateY(8px) rotate(1deg); }
+}
+
+@keyframes float-delay-2 {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-8px) rotate(1deg); }
+    66% { transform: translateY(12px) rotate(-1deg); }
+}
+
+@keyframes float-delay-3 {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-12px) rotate(-1deg); }
+    66% { transform: translateY(6px) rotate(1deg); }
+}
+
+@keyframes fade-in-up {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-float {
+    animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-delay-1 {
+    animation: float-delay-1 8s ease-in-out infinite;
+}
+
+.animate-float-delay-2 {
+    animation: float-delay-2 7s ease-in-out infinite;
+}
+
+.animate-float-delay-3 {
+    animation: float-delay-3 9s ease-in-out infinite;
+}
+
+.animate-fade-in-up {
+    animation: fade-in-up 0.8s ease-out forwards;
+    opacity: 0;
+}
+
+.animation-delay-200 {
+    animation-delay: 0.2s;
+}
+
+.animation-delay-400 {
+    animation-delay: 0.4s;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function previewImage(input) {
+    const previewContainer = document.getElementById('preview-container');
+    const previewImage = document.getElementById('preview-image');
+    
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            previewImage.src = e.target.result;
+            previewContainer.classList.remove('hidden');
+        };
+        
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+// Auto dismiss alerts after 5 seconds
+document.addEventListener('DOMContentLoaded', function() {
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach(alert => {
+        setTimeout(() => {
+            alert.style.transition = 'opacity 0.5s';
+            alert.style.opacity = '0';
+            setTimeout(() => alert.remove(), 500);
+        }, 5000);
+    });
+    
+    // Close button functionality
+    document.querySelectorAll('.btn-close').forEach(button => {
+        button.addEventListener('click', function() {
+            const alert = this.closest('.alert');
+            alert.style.transition = 'opacity 0.5s';
+            alert.style.opacity = '0';
+            setTimeout(() => alert.remove(), 500);
+        });
+    });
+});
+</script>
+{% endblock %}
+

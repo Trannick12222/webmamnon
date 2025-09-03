@@ -1,0 +1,207 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Chỉnh sửa Feature - Admin{% endblock %}
+{% block page_title %}Chỉnh sửa Feature{% endblock %}
+{% block page_description %}Cập nhật nội dung feature "{{ feature.title }}"{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <nav class="flex" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+            <li>
+                <a href="{{ url_for('admin_features') }}" class="text-gray-700 hover:text-blue-600">
+                    <i class="fas fa-star mr-1"></i>
+                    Quản lý Features
+                </a>
+            </li>
+            <li>
+                <div class="flex items-center">
+                    <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                    <span class="text-gray-500">Chỉnh sửa</span>
+                </div>
+            </li>
+        </ol>
+    </nav>
+</div>
+
+<form method="POST" action="{{ url_for('admin_features_edit', feature_id=feature.id) }}">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        <!-- Left Column - Content -->
+        <div class="space-y-6">
+            <!-- Content Card -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">
+                    <i class="fas fa-edit mr-2 text-blue-500"></i>Nội dung Feature
+                </h2>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Tiêu đề *</label>
+                        <input type="text" name="title" required value="{{ feature.title }}"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                               placeholder="Ví dụ: 🛡️ An toàn tuyệt đối">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Mô tả *</label>
+                        <textarea name="description" rows="4" required
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                                  placeholder="Mô tả chi tiết về feature này...">{{ feature.description }}</textarea>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Thứ tự hiển thị</label>
+                        <input type="number" name="order_index" min="0" value="{{ feature.order_index }}"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Column - Styling -->
+        <div class="space-y-6">
+            <!-- Icon & Style Card -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">
+                    <i class="fas fa-palette mr-2 text-purple-500"></i>Icon & Styling
+                </h2>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">FontAwesome Icon Class</label>
+                        <input type="text" name="icon" value="{{ feature.icon }}"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                               placeholder="fas fa-shield-alt">
+                        <p class="text-xs text-gray-500 mt-1">
+                            Tham khảo: <a href="https://fontawesome.com/icons" target="_blank" class="text-blue-500 hover:underline">FontAwesome Icons</a>
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Màu Icon</label>
+                        <select name="icon_color" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
+                            <option value="text-primary" {{ 'selected' if feature.icon_color == 'text-primary' }}>Primary Blue</option>
+                            <option value="text-red-500" {{ 'selected' if feature.icon_color == 'text-red-500' }}>Đỏ</option>
+                            <option value="text-green-500" {{ 'selected' if feature.icon_color == 'text-green-500' }}>Xanh lá</option>
+                            <option value="text-blue-500" {{ 'selected' if feature.icon_color == 'text-blue-500' }}>Xanh dương</option>
+                            <option value="text-purple-500" {{ 'selected' if feature.icon_color == 'text-purple-500' }}>Tím</option>
+                            <option value="text-yellow-500" {{ 'selected' if feature.icon_color == 'text-yellow-500' }}>Vàng</option>
+                            <option value="text-pink-500" {{ 'selected' if feature.icon_color == 'text-pink-500' }}>Hồng</option>
+                            <option value="text-gray-600" {{ 'selected' if feature.icon_color == 'text-gray-600' }}>Xám</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Màu nền card</label>
+                        <select name="background_color" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
+                            <option value="bg-white" {{ 'selected' if feature.background_color == 'bg-white' }}>Trắng</option>
+                            <option value="bg-gray-50" {{ 'selected' if feature.background_color == 'bg-gray-50' }}>Xám nhạt</option>
+                            <option value="bg-blue-50" {{ 'selected' if feature.background_color == 'bg-blue-50' }}>Xanh nhạt</option>
+                            <option value="bg-green-50" {{ 'selected' if feature.background_color == 'bg-green-50' }}>Xanh lá nhạt</option>
+                            <option value="bg-purple-50" {{ 'selected' if feature.background_color == 'bg-purple-50' }}>Tím nhạt</option>
+                            <option value="bg-yellow-50" {{ 'selected' if feature.background_color == 'bg-yellow-50' }}>Vàng nhạt</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Preview Card -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">
+                    <i class="fas fa-eye mr-2 text-green-500"></i>Xem trước
+                </h2>
+                
+                <div id="feature-preview" class="{{ feature.background_color }} p-6 rounded-lg border shadow-sm">
+                    <div class="text-center">
+                        <div class="w-16 h-16 {{ feature.background_color }} rounded-lg flex items-center justify-center mx-auto mb-4 border">
+                            <i class="{{ feature.icon }} {{ feature.icon_color }} text-2xl"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-800 mb-2">{{ feature.title }}</h3>
+                        <p class="text-gray-600">{{ feature.description }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Settings Card -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">
+                    <i class="fas fa-cog mr-2 text-orange-500"></i>Cài đặt
+                </h2>
+                
+                <div class="space-y-4">
+                    <div class="flex items-center">
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="is_active" value="1" {{ 'checked' if feature.is_active }}
+                                   class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                            <span class="ml-2 text-sm font-medium text-gray-700">Hiển thị feature này</span>
+                        </label>
+                    </div>
+                    
+                    {% if feature.created_at %}
+                    <div class="text-sm text-gray-500">
+                        <i class="fas fa-calendar mr-1"></i>
+                        Tạo: {{ feature.created_at.strftime('%d/%m/%Y %H:%M') }}
+                        {% if feature.updated_at and feature.updated_at != feature.created_at %}
+                        <br>
+                        <i class="fas fa-edit mr-1"></i>
+                        Cập nhật: {{ feature.updated_at.strftime('%d/%m/%Y %H:%M') }}
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="mt-8 flex justify-between">
+        <a href="{{ url_for('admin_features') }}" 
+           class="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition-colors">
+            <i class="fas fa-arrow-left mr-2"></i>Quay lại
+        </a>
+        
+        <button type="submit" 
+                class="bg-gradient-to-r from-green-500 to-blue-500 text-white px-8 py-3 rounded-lg font-semibold hover:from-green-600 hover:to-blue-600 transition-all duration-300 shadow-lg">
+            <i class="fas fa-save mr-2"></i>Cập nhật Feature
+        </button>
+    </div>
+</form>
+
+<script>
+// Live preview update
+function updatePreview() {
+    const title = document.querySelector('input[name="title"]').value || 'Feature Title';
+    const description = document.querySelector('textarea[name="description"]').value || 'Feature description sẽ hiển thị ở đây...';
+    const icon = document.querySelector('input[name="icon"]').value || 'fas fa-star';
+    const iconColor = document.querySelector('select[name="icon_color"]').value || 'text-primary';
+    const bgColor = document.querySelector('select[name="background_color"]').value || 'bg-white';
+    
+    const preview = document.getElementById('feature-preview');
+    preview.className = `${bgColor} p-6 rounded-lg border shadow-sm`;
+    
+    preview.innerHTML = `
+        <div class="text-center">
+            <div class="w-16 h-16 ${bgColor} rounded-lg flex items-center justify-center mx-auto mb-4 border">
+                <i class="${icon} ${iconColor} text-2xl"></i>
+            </div>
+            <h3 class="text-lg font-bold text-gray-800 mb-2">${title}</h3>
+            <p class="text-gray-600">${description}</p>
+        </div>
+    `;
+}
+
+// Add event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    const inputs = ['input[name="title"]', 'textarea[name="description"]', 'input[name="icon"]', 'select[name="icon_color"]', 'select[name="background_color"]'];
+    inputs.forEach(selector => {
+        const element = document.querySelector(selector);
+        if (element) {
+            element.addEventListener('input', updatePreview);
+            element.addEventListener('change', updatePreview);
+        }
+    });
+});
+</script>
+{% endblock %}
+
