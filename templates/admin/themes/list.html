@@ -41,9 +41,12 @@
                 <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
             </div>
             <a href="{{ url_for('admin_theme_create') }}" 
-               class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-orange-500 to-yellow-500 text-white font-medium rounded-lg hover:from-orange-600 hover:to-yellow-600 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-                <i class="fas fa-plus mr-2"></i>
-                Thêm Theme Mới
+               class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white font-semibold rounded-xl hover:from-indigo-700 hover:via-purple-700 hover:to-pink-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 hover:scale-105 border border-white/20">
+                <i class="fas fa-plus mr-2 text-lg"></i>
+                <span class="relative">
+                    Thêm Theme Mới
+                    <div class="absolute inset-0 bg-white/20 rounded-lg opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                </span>
             </a>
         </div>
     </div>
@@ -192,9 +195,12 @@
                     {% endif %}
                     
                     <a href="{{ url_for('admin_theme_edit', id=theme.id) }}" 
-                       class="flex-1 px-3 py-2 bg-amber-500 hover:bg-amber-600 text-white text-sm font-medium rounded-lg transition-colors duration-200 flex items-center justify-center">
-                        <i class="fas fa-edit mr-1"></i>
-                        Sửa
+                       class="flex-1 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-semibold rounded-xl transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 hover:scale-105 border border-blue-400/20">
+                        <i class="fas fa-edit mr-2 text-base"></i>
+                        <span class="relative">
+                            Sửa
+                            <div class="absolute inset-0 bg-white/10 rounded opacity-0 hover:opacity-100 transition-opacity duration-200"></div>
+                        </span>
                     </a>
                     
                     {% if not theme.is_active and not theme.is_default %}
@@ -213,11 +219,19 @@
                     <div class="flex items-center justify-between text-xs text-gray-500">
                         <span class="flex items-center">
                             <i class="fas fa-calendar-alt mr-1"></i>
-                            {{ theme.created_at.strftime('%d/%m/%Y') }}
+                            {% if theme.created_at %}
+                                {{ theme.created_at.strftime('%d/%m/%Y') }}
+                            {% else %}
+                                N/A
+                            {% endif %}
                         </span>
                         <span class="flex items-center">
                             <i class="fas fa-clock mr-1"></i>
-                            {{ theme.created_at.strftime('%H:%M') }}
+                            {% if theme.created_at %}
+                                {{ theme.created_at.strftime('%H:%M') }}
+                            {% else %}
+                                N/A
+                            {% endif %}
                         </span>
                     </div>
                 </div>

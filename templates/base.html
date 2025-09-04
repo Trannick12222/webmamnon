@@ -970,6 +970,47 @@
     </script>
     {% endif %}
     
+    <!-- Auto proxy for external images -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Auto-proxy for all external images that fail to load
+        const images = document.querySelectorAll('img[src^="http"]');
+        console.log(`Found ${images.length} external images to monitor`);
+        
+        images.forEach(function(img, index) {
+            img.addEventListener('error', function() {
+                console.log(`Image ${index + 1} failed to load, trying proxy:`, this.src);
+                const originalSrc = this.src;
+                
+                // Avoid infinite loops
+                if (originalSrc.includes('/proxy-image') || originalSrc.startsWith('data:')) {
+                    return;
+                }
+                
+                // Show loading indicator
+                this.style.opacity = '0.5';
+                
+                fetch('/proxy-image?url=' + encodeURIComponent(originalSrc))
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            console.log(`Proxy image ${index + 1} loaded successfully`);
+                            this.src = data.data_url;
+                            this.style.opacity = '1';
+                        } else {
+                            console.error(`Proxy failed for image ${index + 1}:`, data.error);
+                            this.style.opacity = '1';
+                        }
+                    })
+                    .catch(error => {
+                        console.error(`Proxy request failed for image ${index + 1}:`, error);
+                        this.style.opacity = '1';
+                    });
+            });
+        });
+    });
+    </script>
+    
     {% block extra_js %}{% endblock %}
 </body>
 </html>

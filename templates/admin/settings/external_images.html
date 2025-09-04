@@ -251,43 +251,103 @@ document.getElementById('test-btn').addEventListener('click', async function() {
         const result = await response.json();
         
         if (response.ok) {
-            resultDiv.innerHTML = `
-                <div class="border border-green-200 bg-green-50 rounded-lg p-4">
-                    <h3 class="font-semibold text-green-800 mb-2">
-                        <i class="fas fa-check-circle mr-2"></i>
-                        URL hợp lệ
-                    </h3>
-                    <p class="text-green-700 text-sm mb-3">${result.message}</p>
-                    <div class="bg-white rounded p-3 border">
-                        <img src="${result.location}" alt="Preview" class="max-w-full max-h-64 mx-auto rounded shadow">
-                    </div>
-                    <p class="text-xs text-gray-600 mt-2">Processed URL: <code class="bg-gray-100 px-1 rounded">${result.location}</code></p>
-                </div>
-            `;
+            resultDiv.innerHTML = 
+                '<div class="border border-green-200 bg-green-50 rounded-lg p-4">' +
+                    '<h3 class="font-semibold text-green-800 mb-2">' +
+                        '<i class="fas fa-check-circle mr-2"></i>' +
+                        'URL hợp lệ' +
+                    '</h3>' +
+                    '<p class="text-green-700 text-sm mb-3">' + result.message + '</p>' +
+                    '<div class="bg-white rounded p-3 border">' +
+                        '<div class="text-center py-8 text-gray-500" id="loading-preview">' +
+                            '<i class="fas fa-spinner fa-spin text-2xl mb-2"></i>' +
+                            '<p class="text-sm">Đang tải preview...</p>' +
+                        '</div>' +
+                        '<div id="image-container-preview" style="display:none;">' +
+                            '<img id="preview-image-preview" alt="Preview" class="max-w-full max-h-64 mx-auto rounded shadow">' +
+                        '</div>' +
+                        '<div class="text-center py-8 text-gray-500" id="error-preview" style="display:none;">' +
+                            '<i class="fas fa-image text-4xl mb-2"></i>' +
+                            '<p class="text-sm">Không thể hiển thị preview</p>' +
+                            '<p class="text-xs text-gray-400 mt-1">URL có thể không hợp lệ hoặc bị chặn</p>' +
+                            '<div class="mt-3">' +
+                                '<a href="#" id="open-url-link" target="_blank" class="inline-flex items-center px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600 transition-colors">' +
+                                    '<i class="fas fa-external-link-alt mr-1"></i>' +
+                                    'Mở trong tab mới' +
+                                '</a>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>' +
+                    '<p class="text-xs text-gray-600 mt-2">Processed URL: <code class="bg-gray-100 px-1 rounded" id="processed-url-display"></code></p>' +
+                    '<div class="mt-3 p-2 bg-blue-50 border border-blue-200 rounded text-xs text-blue-700">' +
+                        '<i class="fas fa-info-circle mr-1"></i>' +
+                        '<strong>Lưu ý:</strong> Nếu preview không hiển thị, URL vẫn có thể sử dụng được. Hãy thử copy URL đã xử lý và paste vào trình duyệt để kiểm tra.' +
+                    '</div>' +
+                '</div>';
+            
+            // Load image preview after HTML is set
+            setTimeout(function() {
+                const loadingEl = document.getElementById('loading-preview');
+                const imageContainer = document.getElementById('image-container-preview');
+                const previewImage = document.getElementById('preview-image-preview');
+                const errorEl = document.getElementById('error-preview');
+                const openUrlLink = document.getElementById('open-url-link');
+                const processedUrlDisplay = document.getElementById('processed-url-display');
+                
+                if (loadingEl && imageContainer && previewImage && errorEl && openUrlLink && processedUrlDisplay) {
+                    // Set the processed URL for the link and display
+                    openUrlLink.href = result.location;
+                    processedUrlDisplay.textContent = result.location;
+                    
+                    // Try direct image first
+                    previewImage.src = result.location;
+                    previewImage.onload = function() {
+                        loadingEl.style.display = 'none';
+                        imageContainer.style.display = 'block';
+                    };
+                    previewImage.onerror = function() {
+                        // Try proxy with base64
+                        fetch('/proxy-image?url=' + encodeURIComponent(url))
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    previewImage.src = data.data_url;
+                                    loadingEl.style.display = 'none';
+                                    imageContainer.style.display = 'block';
+                                } else {
+                                    throw new Error(data.error);
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Image load error:', error);
+                                loadingEl.style.display = 'none';
+                                errorEl.style.display = 'block';
+                            });
+                    };
+                }
+            }, 100);
         } else {
-            resultDiv.innerHTML = `
-                <div class="border border-red-200 bg-red-50 rounded-lg p-4">
-                    <h3 class="font-semibold text-red-800 mb-2">
-                        <i class="fas fa-times-circle mr-2"></i>
-                        URL không hợp lệ
-                    </h3>
-                    <p class="text-red-700 text-sm">${result.error}</p>
-                </div>
-            `;
+            resultDiv.innerHTML = 
+                '<div class="border border-red-200 bg-red-50 rounded-lg p-4">' +
+                    '<h3 class="font-semibold text-red-800 mb-2">' +
+                        '<i class="fas fa-times-circle mr-2"></i>' +
+                        'URL không hợp lệ' +
+                    '</h3>' +
+                    '<p class="text-red-700 text-sm">' + result.error + '</p>' +
+                '</div>';
         }
         
         resultDiv.classList.remove('hidden');
         
     } catch (error) {
-        resultDiv.innerHTML = `
-            <div class="border border-red-200 bg-red-50 rounded-lg p-4">
-                <h3 class="font-semibold text-red-800 mb-2">
-                    <i class="fas fa-exclamation-triangle mr-2"></i>
-                    Lỗi kết nối
-                </h3>
-                <p class="text-red-700 text-sm">${error.message}</p>
-            </div>
-        `;
+        resultDiv.innerHTML = 
+            '<div class="border border-red-200 bg-red-50 rounded-lg p-4">' +
+                '<h3 class="font-semibold text-red-800 mb-2">' +
+                    '<i class="fas fa-exclamation-triangle mr-2"></i>' +
+                    'Lỗi kết nối' +
+                '</h3>' +
+                '<p class="text-red-700 text-sm">' + error.message + '</p>' +
+            '</div>';
         resultDiv.classList.remove('hidden');
     } finally {
         btn.disabled = false;

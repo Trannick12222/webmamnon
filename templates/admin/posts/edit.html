@@ -116,7 +116,7 @@
                     
                     <!-- Current Image -->
                     {% if post.featured_image %}
-                    <div class="mb-4">
+                    <div id="currentImageSection" class="mb-4">
                         <p class="text-sm text-gray-600 mb-2">Hình ảnh hiện tại:</p>
                         {% if post.featured_image.startswith('http') %}
                         <img src="{{ post.featured_image }}" alt="{{ post.title }}" 
@@ -131,7 +131,9 @@
                     <!-- Image Preview -->
                     <div id="imagePreview" class="hidden mb-4">
                         <p class="text-sm text-gray-600 mb-2">Hình ảnh mới:</p>
+                        <div id="previewContainer">
                         <img id="previewImg" src="" alt="Preview" class="w-full h-32 object-cover rounded-lg">
+                        </div>
                     </div>
                     
                     <!-- Upload Options -->
@@ -150,10 +152,20 @@
                             <label for="featured_image" class="block text-sm font-medium text-gray-700 mb-1">
                                 Hoặc nhập URL hình ảnh mới
                             </label>
+                            <div class="flex gap-2">
                             <input type="url" id="featured_image" name="featured_image"
                                    value="{{ post.featured_image if post.featured_image and post.featured_image.startswith('http') else '' }}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
+                                       class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
                                    placeholder="https://example.com/image.jpg">
+                                <button type="button" id="applyUrlBtn" onclick="applyImageUrl()" 
+                                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium whitespace-nowrap">
+                                    <i class="fas fa-check mr-1"></i>Áp dụng URL
+                                </button>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                URL sẽ được lưu trực tiếp trong database, không upload file lên server
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -216,6 +228,34 @@ tinymce.init({
     content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size: 16px; }',
     language: 'vi',
     branding: false,
+    
+    // Enable image proxy for better display in editor
+    images_upload_handler: function(blobInfo, success, failure) {
+        // This will be called for pasted images or drag-dropped images
+        const formData = new FormData();
+        formData.append('file', blobInfo.blob(), blobInfo.filename());
+        
+        fetch('{{ url_for("admin_upload_image") }}', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.location) {
+                success(result.location);
+            } else {
+                failure('Upload failed: ' + (result.error || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error('Upload error:', error);
+            failure('Upload failed: ' + error.message);
+        });
+    },
+    
+    // Custom image processing for external URLs
+    image_prepend_url: '',
+    automatic_uploads: true,
     file_picker_callback: function(callback, value, meta) {
         if (meta.filetype === 'image') {
             const choice = confirm('Chọn "OK" để upload file từ máy tính\nChọn "Cancel" để sử dụng URL hình ảnh từ internet');
@@ -264,7 +304,27 @@ tinymce.init({
                         .then(response => response.json())
                         .then(result => {
                             if (result.location) {
-                                callback(result.location, { alt: 'External image', title: 'External image' });
+                                // For Google Drive URLs, use proxy immediately for better editor display
+                                if (result.location.includes('drive.google.com')) {
+                                    console.log('Using proxy for Google Drive URL in editor');
+                                    fetch('/proxy-image?url=' + encodeURIComponent(result.location))
+                                        .then(proxyResponse => proxyResponse.json())
+                                        .then(proxyData => {
+                                            if (proxyData.success) {
+                                                console.log('Google Drive URL proxied for editor');
+                                                callback(proxyData.data_url, { alt: 'External image', title: 'External image' });
+                                            } else {
+                                                // Fallback to original URL
+                                                callback(result.location, { alt: 'External image', title: 'External image' });
+                                            }
+                                        })
+                                        .catch(error => {
+                                            console.error('Proxy error, using original URL:', error);
+                                            callback(result.location, { alt: 'External image', title: 'External image' });
+                                        });
+                                } else {
+                                    callback(result.location, { alt: 'External image', title: 'External image' });
+                                }
                             } else {
                                 alert('URL processing failed: ' + (result.error || 'Unknown error'));
                             }
@@ -281,6 +341,68 @@ tinymce.init({
     setup: function(editor) {
         editor.on('change', function() {
             editor.save();
+        });
+        
+        // Add auto-proxy for external images in editor
+        editor.on('init', function() {
+            console.log('TinyMCE editor initialized, setting up image proxy...');
+            
+            // Function to proxy images in editor
+            function proxyEditorImages() {
+                const editorDoc = editor.getDoc();
+                const images = editorDoc.querySelectorAll('img[src^="http"]');
+                
+                images.forEach(function(img, index) {
+                    const originalSrc = img.src;
+                    
+                    // Skip if already proxied
+                    if (originalSrc.includes('/proxy-image') || originalSrc.startsWith('data:')) {
+                        return;
+                    }
+                    
+                    // Test if image loads
+                    const testImg = new Image();
+                    testImg.onload = function() {
+                        console.log(`Editor image ${index + 1} loaded successfully:`, originalSrc);
+                    };
+                    
+                    testImg.onerror = function() {
+                        console.log(`Editor image ${index + 1} failed to load, proxying:`, originalSrc);
+                        
+                        // Use proxy for failed images
+                        fetch('/proxy-image?url=' + encodeURIComponent(originalSrc))
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    console.log(`Editor image ${index + 1} proxied successfully`);
+                                    img.src = data.data_url;
+                                    // Trigger editor change to save the new src
+                                    editor.fire('change');
+                                } else {
+                                    console.error(`Editor image ${index + 1} proxy failed:`, data.error);
+                                }
+                            })
+                            .catch(error => {
+                                console.error(`Editor image ${index + 1} proxy request failed:`, error);
+                            });
+                    };
+                    
+                    testImg.src = originalSrc;
+                });
+            }
+            
+            // Proxy images when content is loaded
+            editor.on('LoadContent', proxyEditorImages);
+            
+            // Proxy images when new content is added
+            editor.on('SetContent', function() {
+                setTimeout(proxyEditorImages, 100);
+            });
+            
+            // Proxy images when content changes (e.g., after inserting image)
+            editor.on('NodeChange', function() {
+                setTimeout(proxyEditorImages, 100);
+            });
         });
     }
 });
@@ -300,12 +422,303 @@ document.getElementById('featured_image_file').addEventListener('change', functi
 
 document.getElementById('featured_image').addEventListener('input', function(e) {
     const url = e.target.value;
+    const imagePreview = document.getElementById('imagePreview');
+    const previewContainer = document.getElementById('previewContainer');
+    const applyBtn = document.getElementById('applyUrlBtn');
+    
+    console.log('URL input changed:', url);
+    
     if (url) {
-        document.getElementById('previewImg').src = url;
-        document.getElementById('imagePreview').classList.remove('hidden');
+        // Enable apply button
+        applyBtn.disabled = false;
+        
+        // For Google Drive URLs, show placeholder
+        if (url.includes('drive.google.com')) {
+            console.log('Google Drive URL detected - showing placeholder');
+            previewContainer.innerHTML = `
+                <div class="w-full h-32 bg-gray-100 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300">
+                    <div class="text-center text-gray-500">
+                        <i class="fas fa-image text-3xl mb-2"></i>
+                        <p class="text-sm">Google Drive Image</p>
+                        <p class="text-xs">Nhấn "Áp dụng URL" để sử dụng</p>
+                    </div>
+                </div>
+            `;
+            imagePreview.classList.remove('hidden');
+        } else {
+            // Try to load other URLs normally
+            previewContainer.innerHTML = `<img id="previewImg" src="${url}" alt="Preview" class="w-full h-32 object-cover rounded-lg">`;
+            
+            const previewImg = document.getElementById('previewImg');
+            previewImg.onload = function() {
+                console.log('URL preview loaded successfully');
+                imagePreview.classList.remove('hidden');
+            };
+            
+            previewImg.onerror = function() {
+                console.log('URL preview failed to load');
+                previewContainer.innerHTML = `
+                    <div class="w-full h-32 bg-gray-100 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300">
+                        <div class="text-center text-gray-500">
+                            <i class="fas fa-exclamation-triangle text-3xl mb-2"></i>
+                            <p class="text-sm">Không thể tải preview</p>
+                            <p class="text-xs">URL có thể vẫn hoạt động</p>
+                        </div>
+                    </div>
+                `;
+                imagePreview.classList.remove('hidden');
+            };
+        }
     } else {
-        document.getElementById('imagePreview').classList.add('hidden');
+        // Reset preview area
+        console.log('URL cleared - hiding preview');
+        imagePreview.classList.add('hidden');
+        applyBtn.disabled = true;
+        previewContainer.innerHTML = `<img id="previewImg" src="" alt="Preview" class="w-full h-32 object-cover rounded-lg">`;
     }
+});
+
+// Function to apply URL as featured image
+async function applyImageUrl() {
+    const urlInput = document.getElementById('featured_image');
+    const url = urlInput.value.trim();
+    
+    if (!url) {
+        alert('Vui lòng nhập URL hình ảnh');
+        return;
+    }
+    
+    // Validate URL format
+    try {
+        new URL(url);
+    } catch (e) {
+        alert('URL không hợp lệ. Vui lòng kiểm tra lại.');
+        return;
+    }
+    
+    // Show loading state
+    const btn = document.getElementById('applyUrlBtn');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>Đang xử lý...';
+    btn.disabled = true;
+    
+    try {
+        // Use server-side validation same as the URL checker tool
+        const response = await fetch('/admin/process-external-image', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ url: url })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            // URL is valid and processed
+            const processedUrl = result.location;
+            console.log('Original URL:', url);
+            console.log('Processed URL:', processedUrl);
+            
+            // For Google Drive URLs, save original URL but note it will use proxy on frontend
+            if (processedUrl.includes('drive.google.com')) {
+                console.log('Google Drive URL will use auto-proxy on frontend');
+                urlInput.value = processedUrl; // Keep original URL
+            } else {
+                urlInput.value = processedUrl; // Use processed URL
+            }
+            
+            // Update current image display
+            console.log('Updating current image display...');
+            
+            // Find and update the current image section
+            let currentImageDiv = document.getElementById('currentImageSection');
+            
+            if (currentImageDiv) {
+                console.log('Found existing current image section, updating...');
+                // Update existing section
+                // Try to show actual image with proxy fallback
+                currentImageDiv.innerHTML = `
+                    <p class="text-sm text-gray-600 mb-2">Hình ảnh hiện tại:</p>
+                    <img id="currentImg" src="${processedUrl}" alt="Featured Image" class="w-full h-32 object-cover rounded-lg">
+                `;
+                
+                // Set up proxy fallback for current image
+                const currentImg = document.getElementById('currentImg');
+                currentImg.onerror = function() {
+                    console.log('Current image direct load failed, trying proxy...');
+                    fetch('/proxy-image?url=' + encodeURIComponent(processedUrl))
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                console.log('Current image proxy loaded successfully');
+                                currentImg.src = data.data_url;
+                            } else {
+                                throw new Error(data.error);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Current image proxy error:', error);
+                            // Show placeholder if both direct and proxy fail
+                            currentImageDiv.innerHTML = `
+                                <p class="text-sm text-gray-600 mb-2">Hình ảnh hiện tại:</p>
+                                <div class="w-full h-32 bg-blue-100 rounded-lg flex items-center justify-center border-2 border-blue-300">
+                                    <div class="text-center text-blue-700">
+                                        <i class="fas fa-image text-3xl mb-2"></i>
+                                        <p class="text-sm font-semibold">Hình ảnh đã được lưu</p>
+                                        <p class="text-xs">URL: ${processedUrl.substring(0, 50)}...</p>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                };
+            } else {
+                console.log('No existing current image section, creating new one...');
+                // Create new current image section
+                const imagePreview = document.getElementById('imagePreview');
+                const newSection = document.createElement('div');
+                newSection.id = 'currentImageSection';
+                newSection.className = 'mb-4';
+                
+                // Try to show actual image with proxy fallback for new section
+                newSection.innerHTML = `
+                    <p class="text-sm text-gray-600 mb-2">Hình ảnh hiện tại:</p>
+                    <img id="currentImg" src="${processedUrl}" alt="Featured Image" class="w-full h-32 object-cover rounded-lg">
+                `;
+                
+                // Add to DOM first
+                imagePreview.parentNode.insertBefore(newSection, imagePreview);
+                
+                // Set up proxy fallback for new current image
+                const currentImg = document.getElementById('currentImg');
+                currentImg.onerror = function() {
+                    console.log('New current image direct load failed, trying proxy...');
+                    fetch('/proxy-image?url=' + encodeURIComponent(processedUrl))
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                console.log('New current image proxy loaded successfully');
+                                currentImg.src = data.data_url;
+                            } else {
+                                throw new Error(data.error);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('New current image proxy error:', error);
+                            // Show placeholder if both direct and proxy fail
+                            newSection.innerHTML = `
+                                <p class="text-sm text-gray-600 mb-2">Hình ảnh hiện tại:</p>
+                                <div class="w-full h-32 bg-blue-100 rounded-lg flex items-center justify-center border-2 border-blue-300">
+                                    <div class="text-center text-blue-700">
+                                        <i class="fas fa-image text-3xl mb-2"></i>
+                                        <p class="text-sm font-semibold">Hình ảnh đã được lưu</p>
+                                        <p class="text-xs">URL: ${processedUrl.substring(0, 50)}...</p>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                };
+            }
+            
+            // Update preview
+            const imagePreview = document.getElementById('imagePreview');
+            const previewContainer = document.getElementById('previewContainer');
+            
+            console.log('Updating preview with processed URL:', processedUrl);
+            
+            // Try to show actual image using proxy fallback
+            console.log('Attempting to show preview image with proxy fallback');
+            previewContainer.innerHTML = `<img id="previewImg" src="${processedUrl}" alt="Preview" class="w-full h-32 object-cover rounded-lg">`;
+            
+            const previewImg = document.getElementById('previewImg');
+            previewImg.onload = function() {
+                console.log('Preview image loaded successfully');
+                imagePreview.classList.remove('hidden');
+            };
+            
+            previewImg.onerror = function() {
+                console.log('Direct image load failed, trying proxy...');
+                // Try proxy with base64 for Google Drive and other problematic URLs
+                fetch('/proxy-image?url=' + encodeURIComponent(processedUrl))
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            console.log('Proxy image loaded successfully');
+                            previewImg.src = data.data_url;
+                            imagePreview.classList.remove('hidden');
+                        } else {
+                            throw new Error(data.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Proxy image load error:', error);
+                        previewContainer.innerHTML = `
+                            <div class="w-full h-32 bg-yellow-100 rounded-lg flex items-center justify-center border-2 border-yellow-300">
+                                <div class="text-center text-yellow-700">
+                                    <i class="fas fa-exclamation-triangle text-3xl mb-2"></i>
+                                    <p class="text-sm">URL đã được lưu</p>
+                                    <p class="text-xs">Preview không khả dụng</p>
+                                </div>
+                            </div>
+                        `;
+                        imagePreview.classList.remove('hidden');
+                    });
+            };
+            
+            // Show success message
+            showSuccessMessage('URL hình ảnh đã được áp dụng thành công!');
+            
+            // Clear file input if any
+            document.getElementById('featured_image_file').value = '';
+            
+        } else {
+            // Server validation failed
+            alert('Lỗi xử lý URL: ' + (result.error || 'URL không hợp lệ'));
+        }
+        
+    } catch (error) {
+        alert('Lỗi kết nối: ' + error.message);
+        console.error('URL processing error:', error);
+    } finally {
+        // Reset button state
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }
+}
+
+// Function to show success message
+function showSuccessMessage(message) {
+    // Create toast notification
+    const toast = document.createElement('div');
+    toast.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform transition-all duration-300 translate-x-full';
+    toast.innerHTML = `
+        <div class="flex items-center">
+            <i class="fas fa-check-circle mr-2"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    // Animate in
+    setTimeout(() => {
+        toast.classList.remove('translate-x-full');
+    }, 100);
+    
+    // Animate out and remove
+    setTimeout(() => {
+        toast.classList.add('translate-x-full');
+        setTimeout(() => {
+            document.body.removeChild(toast);
+        }, 300);
+    }, 3000);
+}
+
+// Initialize apply button state
+document.addEventListener('DOMContentLoaded', function() {
+    const urlInput = document.getElementById('featured_image');
+    const applyBtn = document.getElementById('applyUrlBtn');
+    applyBtn.disabled = !urlInput.value.trim();
 });
 
 // Save as draft function

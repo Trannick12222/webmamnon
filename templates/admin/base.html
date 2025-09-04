@@ -451,6 +451,51 @@
         }
     </script>
     
+    <!-- Auto proxy for external images in admin -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Auto-proxy for all external images that fail to load
+        const images = document.querySelectorAll('img[src^="http"]');
+        console.log(`[Admin] Found ${images.length} external images to monitor`);
+        
+        images.forEach(function(img, index) {
+            img.addEventListener('error', function() {
+                console.log(`[Admin] Image ${index + 1} failed to load, trying proxy:`, this.src);
+                const originalSrc = this.src;
+                
+                // Avoid infinite loops
+                if (originalSrc.includes('/proxy-image') || originalSrc.startsWith('data:')) {
+                    return;
+                }
+                
+                // Show loading indicator
+                this.style.opacity = '0.5';
+                this.style.filter = 'grayscale(100%)';
+                
+                fetch('/proxy-image?url=' + encodeURIComponent(originalSrc))
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            console.log(`[Admin] Proxy image ${index + 1} loaded successfully`);
+                            this.src = data.data_url;
+                            this.style.opacity = '1';
+                            this.style.filter = 'none';
+                        } else {
+                            console.error(`[Admin] Proxy failed for image ${index + 1}:`, data.error);
+                            this.style.opacity = '1';
+                            this.style.filter = 'none';
+                        }
+                    })
+                    .catch(error => {
+                        console.error(`[Admin] Proxy request failed for image ${index + 1}:`, error);
+                        this.style.opacity = '1';
+                        this.style.filter = 'none';
+                    });
+            });
+        });
+    });
+    </script>
+    
     {% block extra_js %}{% endblock %}
 </body>
 </html>

@@ -277,3 +277,4 @@ class ExternalImagePicker {
 
 // Export for use in TinyMCE configuration
 window.ExternalImagePicker = ExternalImagePicker;
+

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -8,6 +8,7 @@ from PIL import Image
 import os
 import uuid
 from datetime import datetime
+from utils.image_url_handler import process_external_image_url
 import mysql.connector
 from dotenv import load_dotenv
 
@@ -3433,6 +3434,62 @@ def nl2br(value):
     return Markup(str(value).replace('\n', '<br>\n'))
 
 app.jinja_env.filters['nl2br'] = nl2br
+
+@app.route('/proxy-image')
+def proxy_image():
+    """Proxy route để bypass CORS cho image preview"""
+    import requests
+    import base64
+    
+    url = request.args.get('url')
+    print(f"Proxy request for URL: {url}")
+    
+    if not url:
+        print("No URL provided")
+        abort(400)
+    
+    try:
+        # Validate URL
+        if not url.startswith(('http://', 'https://')):
+            print("Invalid URL format")
+            abort(400)
+        
+        # Process URL through our handler
+        processed_url = process_external_image_url(url)
+        print(f"Processed URL: {processed_url}")
+        
+        # Fetch image
+        response = requests.get(processed_url, timeout=10)
+        print(f"Response status: {response.status_code}")
+        print(f"Response content-type: {response.headers.get('content-type')}")
+        print(f"Response content-length: {len(response.content)}")
+        
+        response.raise_for_status()
+        
+        # Return base64 encoded image
+        import base64
+        content_type = response.headers.get('content-type', 'image/jpeg')
+        if not content_type.startswith('image/'):
+            content_type = 'image/jpeg'
+        
+        # Encode to base64
+        base64_data = base64.b64encode(response.content).decode('utf-8')
+        data_url = f"data:{content_type};base64,{base64_data}"
+        
+        # Return as JSON with data URL
+        return jsonify({
+            'success': True,
+            'data_url': data_url,
+            'content_type': content_type,
+            'size': len(response.content)
+        })
+        
+    except Exception as e:
+        print(f"Proxy image error: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
 
 if __name__ == '__main__':
     # Lấy port từ environment variable hoặc dùng 5000 làm default
