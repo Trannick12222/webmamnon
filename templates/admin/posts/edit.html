@@ -323,7 +323,7 @@ tinymce.init({
                                             callback(result.location, { alt: 'External image', title: 'External image' });
                                         });
                                 } else {
-                                    callback(result.location, { alt: 'External image', title: 'External image' });
+                                callback(result.location, { alt: 'External image', title: 'External image' });
                                 }
                             } else {
                                 alert('URL processing failed: ' + (result.error || 'Unknown error'));
