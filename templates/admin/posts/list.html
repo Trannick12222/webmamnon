@@ -1,52 +1,183 @@
 {% extends "admin/base.html" %}
 
-{% block title %}Quản lý bài viết - Admin{% endblock %}
-{% block page_title %}Bài viết{% endblock %}
-{% block page_description %}Quản lý tất cả bài viết trên website{% endblock %}
+{% block title %}Quản lý Blog - Admin{% endblock %}
+{% block page_title %}Blog Giáo dục{% endblock %}
+{% block page_description %}Quản lý bài viết chia sẻ kiến thức giáo dục trẻ em{% endblock %}
 
 {% block content %}
-<div class="admin-card p-6">
-    <div class="flex items-center justify-between mb-6">
-        <h2 class="text-xl font-semibold text-gray-800">Danh sách bài viết</h2>
-        <a href="#" class="btn-primary px-4 py-2 rounded-lg">
-            <i class="fas fa-plus mr-2"></i>Thêm bài viết
-        </a>
+<!-- Header Section -->
+<div class="flex justify-between items-center mb-6">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-800">📝 Blog Giáo dục</h1>
+        <p class="text-gray-600">Chia sẻ kiến thức nuôi dạy con và giáo dục trẻ em</p>
+    </div>
+    <a href="{{ url_for('admin_posts_create') }}" 
+       class="bg-gradient-to-r from-green-500 to-blue-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-green-600 hover:to-blue-600 transition-all duration-300 shadow-lg">
+        <i class="fas fa-plus mr-2"></i>Viết bài mới
+    </a>
+</div>
+
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
+        <div class="flex items-center">
+            <div class="p-3 bg-blue-100 rounded-full mr-4">
+                <i class="fas fa-blog text-blue-600 text-xl"></i>
+            </div>
+            <div>
+                <div class="text-2xl font-bold text-blue-600">{{ posts|length }}</div>
+                <div class="text-sm text-gray-600">Tổng bài viết</div>
+            </div>
+        </div>
     </div>
     
+    <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
+        <div class="flex items-center">
+            <div class="p-3 bg-green-100 rounded-full mr-4">
+                <i class="fas fa-check-circle text-green-600 text-xl"></i>
+            </div>
+            <div>
+                <div class="text-2xl font-bold text-green-600">{{ posts|selectattr('is_published')|list|length }}</div>
+                <div class="text-sm text-gray-600">Đã xuất bản</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-yellow-500">
+        <div class="flex items-center">
+            <div class="p-3 bg-yellow-100 rounded-full mr-4">
+                <i class="fas fa-eye-slash text-yellow-600 text-xl"></i>
+            </div>
+            <div>
+                <div class="text-2xl font-bold text-yellow-600">{{ posts|rejectattr('is_published')|list|length }}</div>
+                <div class="text-sm text-gray-600">Nháp</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-purple-500">
+        <div class="flex items-center">
+            <div class="p-3 bg-purple-100 rounded-full mr-4">
+                <i class="fas fa-tags text-purple-600 text-xl"></i>
+            </div>
+            <div>
+                <div class="text-2xl font-bold text-purple-600">{{ categories|length if categories else 0 }}</div>
+                <div class="text-sm text-gray-600">Chuyên mục</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="bg-white rounded-lg shadow-md p-6">
+    
     {% if posts %}
-    <div class="overflow-x-auto">
-        <table class="w-full text-sm text-left">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-                <tr>
-                    <th class="px-6 py-3">Tiêu đề</th>
-                    <th class="px-6 py-3">Ngày tạo</th>
-                    <th class="px-6 py-3">Trạng thái</th>
-                    <th class="px-6 py-3">Thao tác</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for post in posts %}
-                <tr class="bg-white border-b hover:bg-gray-50">
-                    <td class="px-6 py-4 font-medium text-gray-900">{{ post.title }}</td>
-                    <td class="px-6 py-4">{{ post.created_at.strftime('%d/%m/%Y') }}</td>
-                    <td class="px-6 py-4">
-                        <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                            Đã xuất bản
+    <!-- Blog Posts Grid -->
+    <div class="space-y-4">
+        {% for post in posts %}
+        <div class="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow duration-300">
+            <div class="flex items-start justify-between">
+                <div class="flex-1">
+                    <div class="flex items-center space-x-3 mb-2">
+                        <h3 class="text-lg font-bold text-gray-800">{{ post.title }}</h3>
+                        {% if post.category %}
+                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                            {{ post.category.name }}
                         </span>
-                    </td>
-                    <td class="px-6 py-4">
-                        <a href="#" class="text-blue-600 hover:text-blue-900 mr-3">Sửa</a>
-                        <a href="#" class="text-red-600 hover:text-red-900">Xóa</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                        {% endif %}
+                        {% if post.is_published %}
+                        <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                            <i class="fas fa-check mr-1"></i>Đã xuất bản
+                        </span>
+                        {% else %}
+                        <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                            <i class="fas fa-edit mr-1"></i>Nháp
+                        </span>
+                        {% endif %}
+                    </div>
+                    
+                    {% if post.excerpt %}
+                    <p class="text-gray-600 mb-3 leading-relaxed">{{ post.excerpt[:150] }}...</p>
+                    {% else %}
+                    <p class="text-gray-600 mb-3 leading-relaxed">{{ post.content[:150]|striptags }}...</p>
+                    {% endif %}
+                    
+                    <div class="flex items-center text-sm text-gray-500 space-x-4">
+                        <span><i class="fas fa-calendar mr-1"></i>{{ post.created_at.strftime('%d/%m/%Y') }}</span>
+                        {% if post.updated_at and post.updated_at != post.created_at %}
+                        <span><i class="fas fa-edit mr-1"></i>Cập nhật: {{ post.updated_at.strftime('%d/%m/%Y') }}</span>
+                        {% endif %}
+                        <span><i class="fas fa-eye mr-1"></i>Xem trước</span>
+                    </div>
+                </div>
+                
+                <!-- Featured Image -->
+                {% if post.featured_image %}
+                <div class="ml-6">
+                    {% if post.featured_image.startswith('http') %}
+                    <img src="{{ post.featured_image }}" alt="{{ post.title }}" 
+                         class="w-24 h-24 object-cover rounded-lg">
+                    {% else %}
+                    <img src="/static/{{ post.featured_image }}" alt="{{ post.title }}" 
+                         class="w-24 h-24 object-cover rounded-lg">
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Actions -->
+            <div class="flex justify-end space-x-2 mt-4 pt-4 border-t border-gray-100">
+                <a href="{{ url_for('admin_posts_edit', id=post.id) }}" 
+                   class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+                    <i class="fas fa-edit mr-1"></i>Sửa
+                </a>
+                <a href="{{ url_for('blog_detail', id=post.id) }}" target="_blank"
+                   class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">
+                    <i class="fas fa-external-link-alt mr-1"></i>Xem
+                </a>
+                <form method="POST" action="{{ url_for('admin_posts_delete', id=post.id) }}" 
+                      onsubmit="return confirm('Bạn có chắc chắn muốn xóa bài viết này?')" class="inline">
+                    <button type="submit" 
+                            class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors">
+                        <i class="fas fa-trash mr-1"></i>Xóa
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
     </div>
     {% else %}
-    <div class="text-center py-12">
-        <i class="fas fa-file-alt text-gray-400 text-4xl mb-4"></i>
-        <p class="text-gray-500">Chưa có bài viết nào</p>
+    <!-- Empty State -->
+    <div class="text-center py-16">
+        <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="fas fa-blog text-gray-400 text-3xl"></i>
+        </div>
+        <h3 class="text-xl font-medium text-gray-800 mb-2">Chưa có bài viết Blog nào</h3>
+        <p class="text-gray-600 mb-6">Hãy tạo bài viết đầu tiên để chia sẻ kiến thức giáo dục trẻ em</p>
+        <a href="{{ url_for('admin_posts_create') }}" 
+           class="bg-gradient-to-r from-green-500 to-blue-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-green-600 hover:to-blue-600 transition-all duration-300">
+            <i class="fas fa-plus mr-2"></i>Viết bài đầu tiên
+        </a>
+        
+        <!-- Quick Tips -->
+        <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <i class="fas fa-lightbulb text-blue-600 text-2xl mb-3"></i>
+                <h4 class="font-semibold text-gray-800 mb-2">Ý tưởng bài viết</h4>
+                <p class="text-sm text-gray-600">Hướng dẫn nuôi dạy con, dinh dưỡng trẻ em, phát triển kỹ năng</p>
+            </div>
+            
+            <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                <i class="fas fa-users text-green-600 text-2xl mb-3"></i>
+                <h4 class="font-semibold text-gray-800 mb-2">Đối tượng độc giả</h4>
+                <p class="text-sm text-gray-600">Phụ huynh, giáo viên, những người quan tâm đến giáo dục trẻ em</p>
+            </div>
+            
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <i class="fas fa-star text-yellow-600 text-2xl mb-3"></i>
+                <h4 class="font-semibold text-gray-800 mb-2">Chất lượng nội dung</h4>
+                <p class="text-sm text-gray-600">Nội dung hữu ích, dễ hiểu, có ví dụ thực tế và hình ảnh minh họa</p>
+            </div>
+        </div>
     </div>
     {% endif %}
 </div>

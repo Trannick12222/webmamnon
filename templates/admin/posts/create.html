@@ -1,0 +1,285 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Tạo bài viết mới - Blog Giáo dục{% endblock %}
+{% block page_title %}Tạo bài viết Blog{% endblock %}
+{% block page_description %}Viết bài viết mới cho Blog giáo dục{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="flex items-center justify-between mb-6">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-800">✍️ Tạo bài viết mới</h1>
+        <p class="text-gray-600">Chia sẻ kiến thức giáo dục với cộng đồng</p>
+    </div>
+    <a href="{{ url_for('admin_posts') }}" class="btn-secondary">
+        <i class="fas fa-arrow-left mr-2"></i>Quay lại
+    </a>
+</div>
+
+<!-- Form -->
+<div class="bg-white rounded-lg shadow-md p-6">
+    <form method="POST" enctype="multipart/form-data" id="postForm">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main Content -->
+            <div class="lg:col-span-2">
+                <!-- Title -->
+                <div class="mb-6">
+                    <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-heading mr-2 text-primary"></i>Tiêu đề bài viết *
+                    </label>
+                    <input type="text" id="title" name="title" required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                           placeholder="Nhập tiêu đề hấp dẫn cho bài viết...">
+                </div>
+
+                <!-- Excerpt -->
+                <div class="mb-6">
+                    <label for="excerpt" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-align-left mr-2 text-primary"></i>Tóm tắt bài viết
+                    </label>
+                    <textarea id="excerpt" name="excerpt" rows="3"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                              placeholder="Viết tóm tắt ngắn gọn về nội dung bài viết (tối đa 200 ký tự)..."></textarea>
+                    <p class="text-sm text-gray-500 mt-1">Tóm tắt sẽ hiển thị trên trang danh sách blog</p>
+                </div>
+
+                <!-- Content -->
+                <div class="mb-6">
+                    <label for="content" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-edit mr-2 text-primary"></i>Nội dung bài viết *
+                    </label>
+                    <textarea id="content" name="content" required></textarea>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="lg:col-span-1">
+                <!-- Publish Settings -->
+                <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                    <h3 class="font-semibold text-gray-800 mb-4">
+                        <i class="fas fa-cog mr-2 text-primary"></i>Cài đặt xuất bản
+                    </h3>
+                    
+                    <!-- Status -->
+                    <div class="mb-4">
+                        <label class="flex items-center">
+                            <input type="checkbox" name="is_published" class="rounded border-gray-300 text-primary focus:ring-primary">
+                            <span class="ml-2 text-sm text-gray-700">Xuất bản ngay</span>
+                        </label>
+                        <p class="text-xs text-gray-500 mt-1">Bỏ chọn để lưu dưới dạng nháp</p>
+                    </div>
+                    
+                    <!-- Category -->
+                    <div class="mb-4">
+                        <label for="category_id" class="block text-sm font-medium text-gray-700 mb-2">
+                            Chuyên mục
+                        </label>
+                        <select id="category_id" name="category_id" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <option value="">-- Chọn chuyên mục --</option>
+                            {% for category in categories %}
+                            <option value="{{ category.id }}">{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Featured Image -->
+                <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                    <h3 class="font-semibold text-gray-800 mb-4">
+                        <i class="fas fa-image mr-2 text-primary"></i>Hình ảnh đại diện
+                    </h3>
+                    
+                    <!-- Image Preview -->
+                    <div id="imagePreview" class="hidden mb-4">
+                        <img id="previewImg" src="" alt="Preview" class="w-full h-32 object-cover rounded-lg">
+                    </div>
+                    
+                    <!-- Upload Options -->
+                    <div class="space-y-3">
+                        <!-- File Upload -->
+                        <div>
+                            <label for="featured_image_file" class="block text-sm font-medium text-gray-700 mb-1">
+                                Upload từ máy tính
+                            </label>
+                            <input type="file" id="featured_image_file" name="featured_image_file" 
+                                   accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary/90">
+                        </div>
+                        
+                        <!-- URL Input -->
+                        <div>
+                            <label for="featured_image" class="block text-sm font-medium text-gray-700 mb-1">
+                                Hoặc nhập URL hình ảnh
+                            </label>
+                            <input type="url" id="featured_image" name="featured_image"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
+                                   placeholder="https://example.com/image.jpg">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Tips -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h4 class="font-semibold text-blue-800 mb-2">
+                        <i class="fas fa-lightbulb mr-2"></i>Mẹo viết bài hay
+                    </h4>
+                    <ul class="text-sm text-blue-700 space-y-1">
+                        <li>• Tiêu đề ngắn gọn, hấp dẫn</li>
+                        <li>• Nội dung dễ hiểu, có ví dụ thực tế</li>
+                        <li>• Sử dụng hình ảnh minh họa</li>
+                        <li>• Chia nhỏ thành các đoạn ngắn</li>
+                        <li>• Kết thúc với lời khuyên thiết thực</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex justify-between items-center mt-8 pt-6 border-t border-gray-200">
+            <div class="text-sm text-gray-500">
+                <i class="fas fa-info-circle mr-1"></i>
+                Các trường có dấu * là bắt buộc
+            </div>
+            <div class="flex space-x-3">
+                <button type="button" onclick="saveDraft()" 
+                        class="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition-colors">
+                    <i class="fas fa-save mr-2"></i>Lưu nháp
+                </button>
+                <button type="submit" 
+                        class="bg-gradient-to-r from-green-500 to-blue-500 text-white px-6 py-2 rounded-lg hover:from-green-600 hover:to-blue-600 transition-all duration-300 font-semibold">
+                    <i class="fas fa-paper-plane mr-2"></i>Xuất bản
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/tinymce@6/tinymce.min.js" referrerpolicy="origin"></script>
+<script src="{{ url_for('static', filename='js/external-image-picker.js') }}"></script>
+<script>
+// Initialize TinyMCE editor
+tinymce.init({
+    selector: '#content',
+    height: 500,
+    plugins: [
+        'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+        'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+        'insertdatetime', 'media', 'table', 'help', 'wordcount'
+    ],
+    toolbar: 'undo redo | blocks | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | image link | help',
+    content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size: 16px; }',
+    language: 'vi',
+    branding: false,
+    file_picker_callback: function(callback, value, meta) {
+        if (meta.filetype === 'image') {
+            const choice = confirm('Chọn "OK" để upload file từ máy tính\nChọn "Cancel" để sử dụng URL hình ảnh từ internet');
+            if (choice) {
+                // Local file upload
+                const input = document.createElement('input');
+                input.setAttribute('type', 'file');
+                input.setAttribute('accept', 'image/*');
+                input.onchange = function() {
+                    const file = this.files[0];
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    
+                    fetch('{{ url_for("admin_upload_image") }}', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result.location) {
+                            callback(result.location, { alt: file.name, title: file.name });
+                        } else {
+                            alert('Upload failed: ' + (result.error || 'Unknown error'));
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Upload error:', error);
+                        alert('Upload failed: ' + error.message);
+                    });
+                };
+                input.click();
+            } else {
+                // External URL
+                if (window.ExternalImagePicker) {
+                    const picker = new ExternalImagePicker(callback);
+                    picker.showModal();
+                } else {
+                    // Fallback - simple prompt
+                    const url = prompt('Nhập URL hình ảnh:');
+                    if (url) {
+                        fetch('{{ url_for("admin_process_external_image") }}', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ url: url })
+                        })
+                        .then(response => response.json())
+                        .then(result => {
+                            if (result.location) {
+                                callback(result.location, { alt: 'External image', title: 'External image' });
+                            } else {
+                                alert('URL processing failed: ' + (result.error || 'Unknown error'));
+                            }
+                        })
+                        .catch(error => {
+                            console.error('URL processing error:', error);
+                            alert('URL processing failed: ' + error.message);
+                        });
+                    }
+                }
+            }
+        }
+    },
+    setup: function(editor) {
+        editor.on('change', function() {
+            editor.save();
+        });
+    }
+});
+
+// Image preview functionality
+document.getElementById('featured_image_file').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('previewImg').src = e.target.result;
+            document.getElementById('imagePreview').classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+document.getElementById('featured_image').addEventListener('input', function(e) {
+    const url = e.target.value;
+    if (url) {
+        document.getElementById('previewImg').src = url;
+        document.getElementById('imagePreview').classList.remove('hidden');
+    } else {
+        document.getElementById('imagePreview').classList.add('hidden');
+    }
+});
+
+// Save as draft function
+function saveDraft() {
+    document.querySelector('input[name="is_published"]').checked = false;
+    document.getElementById('postForm').submit();
+}
+
+// Character counter for excerpt
+document.getElementById('excerpt').addEventListener('input', function(e) {
+    const maxLength = 200;
+    const currentLength = e.target.value.length;
+    const remaining = maxLength - currentLength;
+    
+    // You can add a character counter display here if needed
+    if (remaining < 0) {
+        e.target.value = e.target.value.substring(0, maxLength);
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,298 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Cài đặt hình ảnh từ URL - Admin{% endblock %}
+{% block page_title %}Cài đặt hình ảnh từ URL bên ngoài{% endblock %}
+{% block page_description %}Quản lý việc sử dụng hình ảnh từ các dịch vụ cloud storage{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    
+    <!-- Instructions Card -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">
+            <i class="fas fa-info-circle mr-2 text-blue-500"></i>
+            Hướng dẫn sử dụng hình ảnh từ URL
+        </h2>
+        
+        <div class="prose max-w-none">
+            <p class="text-gray-600 mb-4">
+                Thay vì upload hình ảnh trực tiếp lên server (tốn dung lượng), bạn có thể sử dụng hình ảnh từ các dịch vụ cloud storage như Google Drive, OneDrive, Dropbox.
+            </p>
+            
+            <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                <h3 class="font-semibold text-green-800 mb-2">
+                    <i class="fas fa-check-circle mr-2"></i>
+                    Ưu điểm
+                </h3>
+                <ul class="text-green-700 text-sm space-y-1">
+                    <li>• Tiết kiệm dung lượng server</li>
+                    <li>• Tốc độ tải trang nhanh hơn</li>
+                    <li>• Dễ dàng quản lý từ dịch vụ cloud</li>
+                    <li>• Không giới hạn dung lượng</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supported Services -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">
+            <i class="fas fa-cloud mr-2 text-purple-500"></i>
+            Dịch vụ được hỗ trợ
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Google Drive -->
+            <div class="border border-gray-200 rounded-lg p-4">
+                <div class="flex items-center mb-3">
+                    <i class="fab fa-google-drive text-blue-500 text-2xl mr-3"></i>
+                    <h3 class="font-semibold text-gray-800">Google Drive</h3>
+                </div>
+                <p class="text-sm text-gray-600 mb-3">
+                    Chuột phải vào file → Get link → Copy link
+                </p>
+                <code class="text-xs bg-gray-100 p-2 rounded block">
+                    https://drive.google.com/file/d/FILE_ID/view?usp=sharing
+                </code>
+            </div>
+
+            <!-- Google Photos -->
+            <div class="border border-yellow-200 rounded-lg p-4 bg-yellow-50">
+                <div class="flex items-center mb-3">
+                    <i class="fas fa-camera text-yellow-600 text-2xl mr-3"></i>
+                    <h3 class="font-semibold text-gray-800">Google Photos</h3>
+                    <span class="ml-2 px-2 py-1 bg-yellow-200 text-yellow-800 text-xs rounded">Beta</span>
+                </div>
+                <p class="text-sm text-gray-600 mb-2">
+                    Chọn ảnh → Share → Create link → Copy link
+                </p>
+                <div class="bg-yellow-100 border border-yellow-200 rounded p-2 mb-3">
+                    <p class="text-xs text-yellow-700">
+                        <i class="fas fa-exclamation-triangle mr-1"></i>
+                        <strong>Lưu ý:</strong> Google Photos có thể cần authentication. Khuyến nghị upload lên Google Drive thay thế.
+                    </p>
+                </div>
+                <code class="text-xs bg-gray-100 p-2 rounded block">
+                    https://photos.app.goo.gl/...
+                </code>
+            </div>
+
+            <!-- OneDrive -->
+            <div class="border border-gray-200 rounded-lg p-4">
+                <div class="flex items-center mb-3">
+                    <i class="fab fa-microsoft text-blue-600 text-2xl mr-3"></i>
+                    <h3 class="font-semibold text-gray-800">OneDrive</h3>
+                </div>
+                <p class="text-sm text-gray-600 mb-3">
+                    Chuột phải vào file → Share → Copy link
+                </p>
+                <code class="text-xs bg-gray-100 p-2 rounded block">
+                    https://1drv.ms/i/s!...
+                </code>
+            </div>
+
+            <!-- Dropbox -->
+            <div class="border border-gray-200 rounded-lg p-4">
+                <div class="flex items-center mb-3">
+                    <i class="fab fa-dropbox text-blue-500 text-2xl mr-3"></i>
+                    <h3 class="font-semibold text-gray-800">Dropbox</h3>
+                </div>
+                <p class="text-sm text-gray-600 mb-3">
+                    Chuột phải vào file → Copy Dropbox link
+                </p>
+                <code class="text-xs bg-gray-100 p-2 rounded block">
+                    https://www.dropbox.com/s/...?dl=0
+                </code>
+            </div>
+
+            <!-- Imgur -->
+            <div class="border border-gray-200 rounded-lg p-4">
+                <div class="flex items-center mb-3">
+                    <i class="fas fa-image text-green-500 text-2xl mr-3"></i>
+                    <h3 class="font-semibold text-gray-800">Imgur</h3>
+                </div>
+                <p class="text-sm text-gray-600 mb-3">
+                    Upload ảnh lên Imgur → Copy direct link
+                </p>
+                <code class="text-xs bg-gray-100 p-2 rounded block">
+                    https://imgur.com/IMAGE_ID
+                </code>
+            </div>
+
+            <!-- Direct URL -->
+            <div class="border border-gray-200 rounded-lg p-4">
+                <div class="flex items-center mb-3">
+                    <i class="fas fa-link text-gray-500 text-2xl mr-3"></i>
+                    <h3 class="font-semibold text-gray-800">Direct URL</h3>
+                </div>
+                <p class="text-sm text-gray-600 mb-3">
+                    URL trực tiếp đến file hình ảnh
+                </p>
+                <code class="text-xs bg-gray-100 p-2 rounded block">
+                    https://example.com/image.jpg
+                </code>
+            </div>
+
+            <!-- GitHub -->
+            <div class="border border-gray-200 rounded-lg p-4">
+                <div class="flex items-center mb-3">
+                    <i class="fab fa-github text-gray-800 text-2xl mr-3"></i>
+                    <h3 class="font-semibold text-gray-800">GitHub</h3>
+                </div>
+                <p class="text-sm text-gray-600 mb-3">
+                    Upload vào repository → Copy raw URL
+                </p>
+                <code class="text-xs bg-gray-100 p-2 rounded block">
+                    https://raw.githubusercontent.com/...
+                </code>
+            </div>
+        </div>
+    </div>
+
+    <!-- How to Use -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">
+            <i class="fas fa-question-circle mr-2 text-orange-500"></i>
+            Cách sử dụng
+        </h2>
+        
+        <div class="space-y-4">
+            <div class="flex items-start">
+                <div class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-sm mr-4 mt-1">1</div>
+                <div>
+                    <h3 class="font-semibold text-gray-800">Upload hình ảnh lên dịch vụ cloud</h3>
+                    <p class="text-gray-600 text-sm">Upload hình ảnh lên Google Drive, OneDrive, Dropbox hoặc dịch vụ khác</p>
+                </div>
+            </div>
+            
+            <div class="flex items-start">
+                <div class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-sm mr-4 mt-1">2</div>
+                <div>
+                    <h3 class="font-semibold text-gray-800">Lấy link chia sẻ</h3>
+                    <p class="text-gray-600 text-sm">Tạo link chia sẻ công khai cho hình ảnh (anyone with the link can view)</p>
+                </div>
+            </div>
+            
+            <div class="flex items-start">
+                <div class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-sm mr-4 mt-1">3</div>
+                <div>
+                    <h3 class="font-semibold text-gray-800">Sử dụng trong editor</h3>
+                    <p class="text-gray-600 text-sm">Trong TinyMCE editor, chọn Insert Image → Cancel → Dán URL vào hộp thoại</p>
+                </div>
+            </div>
+            
+            <div class="flex items-start">
+                <div class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold text-sm mr-4 mt-1">✓</div>
+                <div>
+                    <h3 class="font-semibold text-gray-800">Hoàn thành</h3>
+                    <p class="text-gray-600 text-sm">Hệ thống sẽ tự động xử lý và hiển thị hình ảnh</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Test URL Tool -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">
+            <i class="fas fa-test-tube mr-2 text-green-500"></i>
+            Công cụ kiểm tra URL
+        </h2>
+        
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Nhập URL để kiểm tra
+                </label>
+                <div class="flex space-x-2">
+                    <input type="url" id="test-url" 
+                           class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                           placeholder="https://drive.google.com/file/d/...">
+                    <button id="test-btn" 
+                            class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                        Kiểm tra
+                    </button>
+                </div>
+            </div>
+            
+            <div id="test-result" class="hidden">
+                <!-- Results will be shown here -->
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('test-btn').addEventListener('click', async function() {
+    const url = document.getElementById('test-url').value.trim();
+    const resultDiv = document.getElementById('test-result');
+    const btn = this;
+    
+    if (!url) {
+        alert('Vui lòng nhập URL');
+        return;
+    }
+    
+    btn.disabled = true;
+    btn.textContent = 'Đang kiểm tra...';
+    resultDiv.classList.add('hidden');
+    
+    try {
+        const response = await fetch('/admin/process-external-image', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ url: url })
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+            resultDiv.innerHTML = `
+                <div class="border border-green-200 bg-green-50 rounded-lg p-4">
+                    <h3 class="font-semibold text-green-800 mb-2">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        URL hợp lệ
+                    </h3>
+                    <p class="text-green-700 text-sm mb-3">${result.message}</p>
+                    <div class="bg-white rounded p-3 border">
+                        <img src="${result.location}" alt="Preview" class="max-w-full max-h-64 mx-auto rounded shadow">
+                    </div>
+                    <p class="text-xs text-gray-600 mt-2">Processed URL: <code class="bg-gray-100 px-1 rounded">${result.location}</code></p>
+                </div>
+            `;
+        } else {
+            resultDiv.innerHTML = `
+                <div class="border border-red-200 bg-red-50 rounded-lg p-4">
+                    <h3 class="font-semibold text-red-800 mb-2">
+                        <i class="fas fa-times-circle mr-2"></i>
+                        URL không hợp lệ
+                    </h3>
+                    <p class="text-red-700 text-sm">${result.error}</p>
+                </div>
+            `;
+        }
+        
+        resultDiv.classList.remove('hidden');
+        
+    } catch (error) {
+        resultDiv.innerHTML = `
+            <div class="border border-red-200 bg-red-50 rounded-lg p-4">
+                <h3 class="font-semibold text-red-800 mb-2">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    Lỗi kết nối
+                </h3>
+                <p class="text-red-700 text-sm">${error.message}</p>
+            </div>
+        `;
+        resultDiv.classList.remove('hidden');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Kiểm tra';
+    }
+});
+</script>
+{% endblock %}

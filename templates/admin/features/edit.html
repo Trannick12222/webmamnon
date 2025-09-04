@@ -64,12 +64,12 @@
             <!-- Icon & Style Card -->
             <div class="bg-white rounded-lg shadow-md p-6">
                 <h2 class="text-xl font-bold text-gray-800 mb-4">
-                    <i class="fas fa-palette mr-2 text-purple-500"></i>Icon & Styling
+                    <i class="fas fa-palette mr-2 text-purple-500"></i>Icon & Thiết kế
                 </h2>
                 
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">FontAwesome Icon Class</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Lớp Icon FontAwesome</label>
                         <input type="text" name="icon" value="{{ feature.icon }}"
                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                                placeholder="fas fa-shield-alt">
@@ -81,7 +81,7 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Màu Icon</label>
                         <select name="icon_color" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
-                            <option value="text-primary" {{ 'selected' if feature.icon_color == 'text-primary' }}>Primary Blue</option>
+                            <option value="text-primary" {{ 'selected' if feature.icon_color == 'text-primary' }}>Xanh chính</option>
                             <option value="text-red-500" {{ 'selected' if feature.icon_color == 'text-red-500' }}>Đỏ</option>
                             <option value="text-green-500" {{ 'selected' if feature.icon_color == 'text-green-500' }}>Xanh lá</option>
                             <option value="text-blue-500" {{ 'selected' if feature.icon_color == 'text-blue-500' }}>Xanh dương</option>
@@ -169,10 +169,10 @@
 </form>
 
 <script>
-// Live preview update
+// Cập nhật xem trước trực tiếp
 function updatePreview() {
-    const title = document.querySelector('input[name="title"]').value || 'Feature Title';
-    const description = document.querySelector('textarea[name="description"]').value || 'Feature description sẽ hiển thị ở đây...';
+    const title = document.querySelector('input[name="title"]').value || 'Tiêu đề Feature';
+    const description = document.querySelector('textarea[name="description"]').value || 'Mô tả feature sẽ hiển thị ở đây...';
     const icon = document.querySelector('input[name="icon"]').value || 'fas fa-star';
     const iconColor = document.querySelector('select[name="icon_color"]').value || 'text-primary';
     const bgColor = document.querySelector('select[name="background_color"]').value || 'bg-white';
@@ -191,7 +191,7 @@ function updatePreview() {
     `;
 }
 
-// Add event listeners
+// Thêm event listeners
 document.addEventListener('DOMContentLoaded', function() {
     const inputs = ['input[name="title"]', 'textarea[name="description"]', 'input[name="icon"]', 'select[name="icon_color"]', 'select[name="background_color"]'];
     inputs.forEach(selector => {

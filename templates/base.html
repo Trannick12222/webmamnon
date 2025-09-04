@@ -91,6 +91,19 @@
             z-index: 1;
         }
         
+        .bg-theme-gradient-br {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        }
+        
+        .bg-theme-primary-light {
+            background-color: rgba(var(--primary-color-rgb), 0.1);
+        }
+        
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+        
         .card-hover {
             transition: all 0.3s ease;
         }
@@ -98,6 +111,59 @@
         .card-hover:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        /* Floating animations */
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+        
+        @keyframes float-delay-1 {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+        
+        @keyframes float-delay-2 {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-25px);
+            }
+        }
+        
+        @keyframes float-delay-3 {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-18px);
+            }
+        }
+        
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .animate-float-delay-1 {
+            animation: float-delay-1 5s ease-in-out infinite;
+        }
+        
+        .animate-float-delay-2 {
+            animation: float-delay-2 7s ease-in-out infinite;
+        }
+        
+        .animate-float-delay-3 {
+            animation: float-delay-3 4s ease-in-out infinite;
         }
         
         .btn-primary {
@@ -347,6 +413,7 @@
                             <a href="/chuong-trinh" class="text-gray-700 hover:text-primary font-medium transition">Chương trình</a>
                         </div>
                         <a href="/tin-tuc" class="text-gray-700 hover:text-primary font-medium transition">Tin tức</a>
+                        <a href="/blog" class="text-gray-700 hover:text-primary font-medium transition">Blog</a>
                         <a href="/thu-vien-anh" class="text-gray-700 hover:text-primary font-medium transition">Thư viện ảnh</a>
                         <a href="/su-kien" class="text-gray-700 hover:text-primary font-medium transition">Sự kiện</a>
                         <a href="/lien-he" class="text-gray-700 hover:text-primary font-medium transition">Liên hệ</a>
@@ -368,6 +435,7 @@
                         <a href="/gioi-thieu" class="text-gray-700 hover:text-primary font-medium">Giới thiệu</a>
                         <a href="/chuong-trinh" class="text-gray-700 hover:text-primary font-medium">Chương trình</a>
                         <a href="/tin-tuc" class="text-gray-700 hover:text-primary font-medium">Tin tức</a>
+                        <a href="/blog" class="text-gray-700 hover:text-primary font-medium">Blog</a>
                         <a href="/thu-vien-anh" class="text-gray-700 hover:text-primary font-medium">Thư viện ảnh</a>
                         <a href="/su-kien" class="text-gray-700 hover:text-primary font-medium">Sự kiện</a>
                         <a href="/lien-he" class="text-gray-700 hover:text-primary font-medium">Liên hệ</a>

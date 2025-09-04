@@ -1,0 +1,285 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }} - Blog Giáo dục{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<section class="py-8 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <nav class="flex" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                <li>
+                    <a href="{{ url_for('index') }}" class="text-gray-700 hover:text-primary">
+                        <i class="fas fa-home mr-1"></i>Trang chủ
+                    </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                        <a href="{{ url_for('blog') }}" class="text-gray-700 hover:text-primary">Blog</a>
+                    </div>
+                </li>
+                {% if post.category %}
+                <li>
+                    <div class="flex items-center">
+                        <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                        <a href="{{ url_for('blog', category=post.category.id) }}" class="text-gray-700 hover:text-primary">
+                            {{ post.category.name }}
+                        </a>
+                    </div>
+                </li>
+                {% endif %}
+                <li>
+                    <div class="flex items-center">
+                        <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                        <span class="text-gray-500">{{ post.title[:50] }}...</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
+<!-- Blog Post Content -->
+<section class="py-12 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto">
+            <article>
+                <!-- Post Header -->
+                <header class="mb-8">
+                    {% if post.category %}
+                    <div class="mb-4">
+                        <a href="{{ url_for('blog', category=post.category.id) }}" 
+                           class="inline-flex items-center bg-primary/10 text-primary text-sm font-medium px-3 py-1 rounded-full hover:bg-primary hover:text-white transition-colors">
+                            <i class="fas fa-tag mr-2"></i>{{ post.category.name }}
+                        </a>
+                    </div>
+                    {% endif %}
+                    
+                    <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6 leading-tight font-patrick">
+                        {{ post.title }}
+                    </h1>
+                    
+                    {% if post.excerpt %}
+                    <p class="text-xl text-gray-600 mb-6 leading-relaxed">
+                        {{ post.excerpt }}
+                    </p>
+                    {% endif %}
+                    
+                    <div class="flex items-center text-gray-500 text-sm space-x-6">
+                        <div class="flex items-center">
+                            <i class="fas fa-calendar mr-2"></i>
+                            <span>{{ post.created_at.strftime('%d/%m/%Y') }}</span>
+                        </div>
+                        {% if post.updated_at and post.updated_at != post.created_at %}
+                        <div class="flex items-center">
+                            <i class="fas fa-edit mr-2"></i>
+                            <span>Cập nhật: {{ post.updated_at.strftime('%d/%m/%Y') }}</span>
+                        </div>
+                        {% endif %}
+                        <div class="flex items-center">
+                            <i class="fas fa-clock mr-2"></i>
+                            <span>{{ (post.content|length / 200)|round|int }} phút đọc</span>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Featured Image -->
+                {% if post.featured_image %}
+                <div class="mb-8">
+                    <div class="aspect-video overflow-hidden rounded-2xl shadow-lg">
+                        {% if post.featured_image.startswith('http') %}
+                        <img src="{{ post.featured_image }}" alt="{{ post.title }}" 
+                             class="w-full h-full object-cover">
+                        {% else %}
+                        <img src="/static/{{ post.featured_image }}" alt="{{ post.title }}" 
+                             class="w-full h-full object-cover">
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Post Content -->
+                <div class="prose prose-lg max-w-none mb-12">
+                    {{ post.content|safe }}
+                </div>
+
+                <!-- Social Share -->
+                <div class="border-t border-b border-gray-200 py-6 mb-8">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-gray-800">Chia sẻ bài viết:</h3>
+                        <div class="flex items-center space-x-3">
+                            <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.url }}" 
+                               target="_blank"
+                               class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                <i class="fab fa-facebook-f mr-2"></i>Facebook
+                            </a>
+                            <a href="https://twitter.com/intent/tweet?url={{ request.url }}&text={{ post.title }}" 
+                               target="_blank"
+                               class="bg-blue-400 text-white px-4 py-2 rounded-lg hover:bg-blue-500 transition-colors">
+                                <i class="fab fa-twitter mr-2"></i>Twitter
+                            </a>
+                            <button onclick="copyToClipboard('{{ request.url }}')" 
+                                    class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                                <i class="fas fa-link mr-2"></i>Copy Link
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Author Info (if available) -->
+                <div class="bg-gray-50 rounded-2xl p-6 mb-8">
+                    <div class="flex items-center">
+                        <div class="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-user text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-800 mb-1">Trường Mầm non Hoa Hướng Dương</h4>
+                            <p class="text-gray-600">Đội ngũ giáo viên và chuyên gia giáo dục</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </div>
+</section>
+
+<!-- Related Posts -->
+{% if related_posts %}
+<section class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">
+                <i class="fas fa-bookmark mr-3 text-primary"></i>
+                Bài viết liên quan
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {% for related_post in related_posts %}
+                <article class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                    {% if related_post.featured_image %}
+                    <div class="aspect-video overflow-hidden">
+                        {% if related_post.featured_image.startswith('http') %}
+                        <img src="{{ related_post.featured_image }}" alt="{{ related_post.title }}" 
+                             class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
+                        {% else %}
+                        <img src="/static/{{ related_post.featured_image }}" alt="{{ related_post.title }}" 
+                             class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="p-4">
+                        <div class="text-sm text-gray-500 mb-2">
+                            <i class="fas fa-calendar mr-1"></i>
+                            {{ related_post.created_at.strftime('%d/%m/%Y') }}
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-800 mb-2 leading-tight">
+                            {{ related_post.title }}
+                        </h3>
+                        <p class="text-gray-600 text-sm mb-3">
+                            {% if related_post.excerpt %}
+                                {{ related_post.excerpt[:80] }}...
+                            {% else %}
+                                {{ related_post.content[:80]|striptags }}...
+                            {% endif %}
+                        </p>
+                        <a href="{{ url_for('blog_detail', id=related_post.id) }}" 
+                           class="text-primary font-semibold hover:text-secondary transition-colors text-sm">
+                            Đọc thêm <i class="fas fa-arrow-right ml-1"></i>
+                        </a>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Back to Blog -->
+<section class="py-12 bg-white">
+    <div class="container mx-auto px-4 text-center">
+        <a href="{{ url_for('blog') }}" 
+           class="inline-flex items-center bg-gradient-to-r from-primary to-secondary text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-300">
+            <i class="fas fa-arrow-left mr-2"></i>
+            Quay lại Blog
+        </a>
+    </div>
+</section>
+
+<script>
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(function() {
+        // Show success message
+        const button = event.target.closest('button');
+        const originalText = button.innerHTML;
+        button.innerHTML = '<i class="fas fa-check mr-2"></i>Đã copy!';
+        button.classList.add('bg-green-600');
+        button.classList.remove('bg-gray-600');
+        
+        setTimeout(() => {
+            button.innerHTML = originalText;
+            button.classList.remove('bg-green-600');
+            button.classList.add('bg-gray-600');
+        }, 2000);
+    });
+}
+</script>
+
+<style>
+.prose {
+    color: #374151;
+    line-height: 1.75;
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+    color: #1f2937;
+    font-weight: 600;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.prose h1 { font-size: 2.25rem; }
+.prose h2 { font-size: 1.875rem; }
+.prose h3 { font-size: 1.5rem; }
+
+.prose p {
+    margin-bottom: 1.25rem;
+}
+
+.prose ul, .prose ol {
+    margin-bottom: 1.25rem;
+    padding-left: 1.5rem;
+}
+
+.prose li {
+    margin-bottom: 0.5rem;
+}
+
+.prose blockquote {
+    border-left: 4px solid var(--primary-color);
+    padding-left: 1rem;
+    margin: 1.5rem 0;
+    font-style: italic;
+    background: #f9fafb;
+    padding: 1rem;
+    border-radius: 0.5rem;
+}
+
+.prose img {
+    border-radius: 0.75rem;
+    margin: 1.5rem 0;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.prose a {
+    color: var(--primary-color);
+    text-decoration: underline;
+}
+
+.prose a:hover {
+    color: var(--secondary-color);
+}
+</style>
+{% endblock %}

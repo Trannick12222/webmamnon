@@ -15,6 +15,19 @@
             <div>
                 <h2 class="text-2xl font-bold text-gray-900">Quản lý Theme</h2>
                 <p class="text-gray-600">Tùy chỉnh giao diện và màu sắc website</p>
+                <div class="flex items-center space-x-4 mt-2">
+                    <div class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-medium">
+                        <i class="fas fa-palette mr-1"></i>
+                        {{ themes|length }} themes có sẵn
+                    </div>
+                    {% set active_theme = themes|selectattr('is_active')|first %}
+                    {% if active_theme %}
+                    <div class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                        <i class="fas fa-check-circle mr-1"></i>
+                        Đang dùng: {{ active_theme.theme_name }}
+                    </div>
+                    {% endif %}
+                </div>
             </div>
         </div>
         
@@ -35,12 +48,55 @@
         </div>
     </div>
 
+    <!-- Category Filter -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">
+            <i class="fas fa-filter mr-2 text-orange-500"></i>
+            Lọc theo danh mục
+        </h3>
+        <div class="flex flex-wrap gap-2">
+            <button onclick="filterThemes('all')" 
+                    class="filter-btn active px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 bg-orange-100 text-orange-800 border border-orange-200">
+                <i class="fas fa-th-large mr-1"></i>Tất cả ({{ themes|length }})
+            </button>
+            <button onclick="filterThemes('nature')" 
+                    class="filter-btn px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 bg-gray-100 text-gray-700 border border-gray-200 hover:bg-green-100 hover:text-green-800">
+                <i class="fas fa-leaf mr-1"></i>Thiên nhiên
+            </button>
+            <button onclick="filterThemes('modern')" 
+                    class="filter-btn px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 bg-gray-100 text-gray-700 border border-gray-200 hover:bg-blue-100 hover:text-blue-800">
+                <i class="fas fa-city mr-1"></i>Hiện đại
+            </button>
+            <button onclick="filterThemes('season')" 
+                    class="filter-btn px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 bg-gray-100 text-gray-700 border border-gray-200 hover:bg-yellow-100 hover:text-yellow-800">
+                <i class="fas fa-calendar-alt mr-1"></i>Theo mùa
+            </button>
+            <button onclick="filterThemes('pastel')" 
+                    class="filter-btn px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 bg-gray-100 text-gray-700 border border-gray-200 hover:bg-pink-100 hover:text-pink-800">
+                <i class="fas fa-heart mr-1"></i>Pastel
+            </button>
+            <button onclick="filterThemes('dark')" 
+                    class="filter-btn px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 bg-gray-100 text-gray-700 border border-gray-200 hover:bg-purple-100 hover:text-purple-800">
+                <i class="fas fa-moon mr-1"></i>Tối màu
+            </button>
+            <button onclick="filterThemes('vintage')" 
+                    class="filter-btn px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 bg-gray-100 text-gray-700 border border-gray-200 hover:bg-amber-100 hover:text-amber-800">
+                <i class="fas fa-history mr-1"></i>Vintage
+            </button>
+            <button onclick="filterThemes('kids')" 
+                    class="filter-btn px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 bg-gray-100 text-gray-700 border border-gray-200 hover:bg-red-100 hover:text-red-800">
+                <i class="fas fa-child mr-1"></i>Trẻ em
+            </button>
+        </div>
+    </div>
+
     <!-- Themes Grid -->
     {% if themes %}
     <div id="themes-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {% for theme in themes %}
         <div class="theme-card group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 overflow-hidden" 
-             data-theme-name="{{ theme.theme_name|lower }}">
+             data-theme-name="{{ theme.theme_name|lower }}"
+             data-category="{% if '🌅' in theme.theme_name or '🌊' in theme.theme_name or '🌸' in theme.theme_name or '🍃' in theme.theme_name %}nature{% elif '🌃' in theme.theme_name or '✨' in theme.theme_name or '🎨' in theme.theme_name %}modern{% elif '🍂' in theme.theme_name or '❄️' in theme.theme_name or '🌺' in theme.theme_name or '🌱' in theme.theme_name %}season{% elif '🧸' in theme.theme_name or '🍰' in theme.theme_name or '🌈' in theme.theme_name %}pastel{% elif '🌙' in theme.theme_name or '🖤' in theme.theme_name %}dark{% elif '📜' in theme.theme_name or '🏛️' in theme.theme_name %}vintage{% elif '🎈' in theme.theme_name or '🧩' in theme.theme_name or '🎪' in theme.theme_name %}kids{% else %}other{% endif %}">
             
             <!-- Theme Header with Gradient -->
             <div class="relative h-24 bg-gradient-to-r" 
@@ -274,6 +330,105 @@
 
 {% block extra_js %}
 <script>
+// Theme filtering functionality
+function filterThemes(category) {
+    const themeCards = document.querySelectorAll('.theme-card');
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    
+    // Update active filter button
+    filterBtns.forEach(btn => {
+        btn.classList.remove('active', 'bg-orange-100', 'text-orange-800', 'border-orange-200');
+        btn.classList.add('bg-gray-100', 'text-gray-700', 'border-gray-200');
+    });
+    
+    event.target.classList.remove('bg-gray-100', 'text-gray-700', 'border-gray-200');
+    event.target.classList.add('active', 'bg-orange-100', 'text-orange-800', 'border-orange-200');
+    
+    // Filter theme cards
+    let visibleCount = 0;
+    themeCards.forEach((card, index) => {
+        const cardCategory = card.getAttribute('data-category');
+        let shouldShow = category === 'all' || cardCategory === category;
+        
+        if (shouldShow) {
+            card.style.display = 'block';
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            
+            // Stagger animation
+            setTimeout(() => {
+                card.style.transition = 'all 0.4s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 50);
+            
+            visibleCount++;
+        } else {
+            card.style.transition = 'all 0.3s ease';
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(-20px)';
+            setTimeout(() => {
+                card.style.display = 'none';
+            }, 300);
+        }
+    });
+    
+    // Update count in "Tất cả" button
+    const allBtn = document.querySelector('[onclick="filterThemes(\'all\')"]');
+    if (category === 'all') {
+        allBtn.innerHTML = '<i class="fas fa-th-large mr-1"></i>Tất cả (' + visibleCount + ')';
+    }
+    
+    // Show empty state if no themes found
+    showEmptyState(visibleCount === 0, category);
+}
+
+function showEmptyState(show, category) {
+    let emptyState = document.getElementById('category-empty-state');
+    
+    if (show) {
+        if (!emptyState) {
+            const grid = document.getElementById('themes-grid');
+            emptyState = document.createElement('div');
+            emptyState.id = 'category-empty-state';
+            emptyState.className = 'col-span-full text-center py-16';
+            grid.appendChild(emptyState);
+        }
+        
+        const categoryNames = {
+            'nature': 'Thiên nhiên',
+            'modern': 'Hiện đại', 
+            'season': 'Theo mùa',
+            'pastel': 'Pastel',
+            'dark': 'Tối màu',
+            'vintage': 'Vintage',
+            'kids': 'Trẻ em'
+        };
+        
+        emptyState.innerHTML = `
+            <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-palette text-gray-400 text-3xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-800 mb-2">
+                Không tìm thấy theme ${categoryNames[category] || ''}
+            </h3>
+            <p class="text-gray-600 mb-6">
+                Hiện tại chưa có theme nào trong danh mục này. Hãy thử tạo theme mới!
+            </p>
+            <a href="{{ url_for('admin_theme_create') }}" 
+               class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-orange-500 to-yellow-500 text-white font-medium rounded-lg hover:from-orange-600 hover:to-yellow-600 transition-all duration-200">
+                <i class="fas fa-plus mr-2"></i>
+                Tạo Theme Mới
+            </a>
+        `;
+        emptyState.style.display = 'block';
+    } else {
+        if (emptyState) {
+            emptyState.style.display = 'none';
+        }
+    }
+}
+
 // Theme search functionality
 document.getElementById('theme-search').addEventListener('input', function(e) {
     const searchTerm = e.target.value.toLowerCase();

@@ -504,6 +504,45 @@ class UserSubmittedImage(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+class AgeGroup(db.Model):
+    __tablename__ = 'age_groups'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    age_range = db.Column(db.String(50), nullable=False)
+    description = db.Column(db.Text)
+    icon_class = db.Column(db.String(100), default='fas fa-baby')
+    icon_bg_color = db.Column(db.String(50), default='bg-pink-100')
+    icon_text_color = db.Column(db.String(50), default='text-pink-600')
+    skills = db.Column(db.Text)
+    order_index = db.Column(db.Integer, default=0)
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+class ProgramFeature(db.Model):
+    __tablename__ = 'program_features'
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    icon_class = db.Column(db.String(100), default='fas fa-check-circle')
+    background_gradient = db.Column(db.String(100), default='from-green-100 to-emerald-100')
+    text_color = db.Column(db.String(50), default='text-green-800')
+    border_color = db.Column(db.String(50), default='border-green-200')
+    order_index = db.Column(db.Integer, default=0)
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+class ProgramInfo(db.Model):
+    __tablename__ = 'program_info'
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    icon_class = db.Column(db.String(100), default='fas fa-users')
+    icon_bg_gradient = db.Column(db.String(100), default='from-purple-400 to-pink-500')
+    order_index = db.Column(db.Integer, default=0)
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -840,6 +879,7 @@ def before_request():
 def index():
     featured_programs = Program.query.filter_by(is_active=True, is_featured=True).limit(6).all()
     latest_news = News.query.filter_by(is_published=True).order_by(News.created_at.desc()).limit(3).all()
+    latest_posts = Post.query.filter_by(is_published=True).order_by(Post.created_at.desc()).limit(3).all()
     gallery_images = Gallery.query.filter_by(is_featured=True).limit(8).all()
     upcoming_events = Event.query.filter_by(is_active=True).filter(Event.event_date > datetime.utcnow()).limit(3).all()
     slider_images = Slider.query.filter_by(is_active=True).order_by(Slider.order_index.asc()).all()
@@ -858,6 +898,7 @@ def index():
     return render_template('index.html', 
                          featured_programs=featured_programs,
                          latest_news=latest_news,
+                         latest_posts=latest_posts,
                          gallery_images=gallery_images,
                          upcoming_events=upcoming_events,
                          slider_images=slider_images,
@@ -1316,6 +1357,109 @@ def admin_upload_image():
     
     return jsonify({'error': 'Invalid file type'}), 400
 
+@app.route('/admin/process-external-image', methods=['POST'])
+@login_required
+def admin_process_external_image():
+    """Process external image URL for TinyMCE editor"""
+    try:
+        from utils.image_url_handler import process_external_image_url, validate_image_url
+        
+        data = request.get_json()
+        if not data or 'url' not in data:
+            return jsonify({'error': 'No URL provided'}), 400
+        
+        original_url = data['url'].strip()
+        if not original_url:
+            return jsonify({'error': 'Empty URL'}), 400
+        
+        # Xử lý URL
+        processed_url = process_external_image_url(original_url)
+        
+        # Kiểm tra tính hợp lệ của URL
+        is_valid, message = validate_image_url(processed_url)
+        
+        if not is_valid:
+            return jsonify({'error': f'Invalid image URL: {message}'}), 400
+        
+        # Trả về URL đã xử lý
+        return jsonify({
+            'location': processed_url,
+            'original_url': original_url,
+            'message': 'External image URL processed successfully'
+        })
+        
+    except ImportError:
+        return jsonify({'error': 'Image URL handler not available'}), 500
+    except Exception as e:
+        return jsonify({'error': f'Processing failed: {str(e)}'}), 500
+
+@app.route('/admin/get-supported-services', methods=['GET'])
+@login_required
+def admin_get_supported_services():
+    """Get list of supported external image services"""
+    try:
+        from utils.image_url_handler import get_supported_services
+        return jsonify(get_supported_services())
+    except ImportError:
+        return jsonify({'error': 'Service list not available'}), 500
+
+@app.route('/admin/settings/external-images')
+@login_required
+def admin_external_images_settings():
+    """Page for external image settings and instructions"""
+    return render_template('admin/settings/external_images.html')
+
+@app.route('/blog')
+def blog():
+    """Blog listing page"""
+    page = request.args.get('page', 1, type=int)
+    category_id = request.args.get('category', type=int)
+    
+    # Base query for published posts
+    query = Post.query.filter_by(is_published=True)
+    
+    # Filter by category if specified
+    if category_id:
+        query = query.filter_by(category_id=category_id)
+    
+    # Paginate posts
+    posts = query.order_by(Post.created_at.desc()).paginate(
+        page=page, per_page=9, error_out=False
+    )
+    
+    # Get all categories for filter
+    categories = Category.query.all()
+    
+    # Get selected category for display
+    selected_category = None
+    if category_id:
+        selected_category = Category.query.get(category_id)
+    
+    return render_template('blog.html', 
+                         posts=posts, 
+                         categories=categories,
+                         selected_category=selected_category)
+
+@app.route('/blog/<int:id>')
+def blog_detail(id):
+    """Blog post detail page"""
+    post = Post.query.get_or_404(id)
+    
+    # Check if post is published
+    if not post.is_published:
+        abort(404)
+    
+    # Get related posts from same category
+    related_posts = []
+    if post.category:
+        related_posts = Post.query.filter(
+            Post.category_id == post.category_id,
+            Post.id != post.id,
+            Post.is_published == True
+        ).limit(3).all()
+    
+    return render_template('blog_detail.html', post=post, related_posts=related_posts)
+
 @app.route('/admin/programs')
 @login_required
 def admin_programs():
@@ -1637,7 +1781,114 @@ def admin_contacts_delete(id):
 @login_required
 def admin_posts():
     posts = Post.query.order_by(Post.created_at.desc()).all()
-    return render_template('admin/posts/list.html', posts=posts)
+    categories = Category.query.all()
+    return render_template('admin/posts/list.html', posts=posts, categories=categories)
+
+@app.route('/admin/posts/create', methods=['GET', 'POST'])
+@login_required
+def admin_posts_create():
+    categories = Category.query.all()
+    
+    if request.method == 'POST':
+        title = request.form.get('title')
+        excerpt = request.form.get('excerpt')
+        content = request.form.get('content')
+        category_id = request.form.get('category_id')
+        is_published = request.form.get('is_published') == 'on'
+        featured_image = request.form.get('featured_image')
+        
+        # Handle file upload
+        if 'featured_image_file' in request.files:
+            file = request.files['featured_image_file']
+            if file and file.filename:
+                filename = secure_filename(file.filename)
+                unique_filename = f"{uuid.uuid4()}_{filename}"
+                
+                # Create uploads directory if it doesn't exist
+                upload_dir = os.path.join(app.static_folder, 'uploads', 'posts')
+                os.makedirs(upload_dir, exist_ok=True)
+                
+                file_path = os.path.join(upload_dir, unique_filename)
+                file.save(file_path)
+                featured_image = f"uploads/posts/{unique_filename}"
+        
+        post = Post(
+            title=title,
+            excerpt=excerpt,
+            content=content,
+            category_id=int(category_id) if category_id else None,
+            is_published=is_published,
+            featured_image=featured_image
+        )
+        
+        db.session.add(post)
+        db.session.commit()
+        
+        flash('Bài viết đã được tạo thành công!', 'success')
+        return redirect(url_for('admin_posts'))
+    
+    return render_template('admin/posts/create.html', categories=categories)
+
+@app.route('/admin/posts/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
+def admin_posts_edit(id):
+    post = Post.query.get_or_404(id)
+    categories = Category.query.all()
+    
+    if request.method == 'POST':
+        post.title = request.form.get('title')
+        post.excerpt = request.form.get('excerpt')
+        post.content = request.form.get('content')
+        post.category_id = int(request.form.get('category_id')) if request.form.get('category_id') else None
+        post.is_published = request.form.get('is_published') == 'on'
+        
+        # Handle featured image
+        featured_image = request.form.get('featured_image')
+        if featured_image:
+            post.featured_image = featured_image
+        
+        # Handle file upload
+        if 'featured_image_file' in request.files:
+            file = request.files['featured_image_file']
+            if file and file.filename:
+                filename = secure_filename(file.filename)
+                unique_filename = f"{uuid.uuid4()}_{filename}"
+                
+                # Create uploads directory if it doesn't exist
+                upload_dir = os.path.join(app.static_folder, 'uploads', 'posts')
+                os.makedirs(upload_dir, exist_ok=True)
+                
+                file_path = os.path.join(upload_dir, unique_filename)
+                file.save(file_path)
+                post.featured_image = f"uploads/posts/{unique_filename}"
+        
+        post.updated_at = datetime.utcnow()
+        db.session.commit()
+        
+        flash('Bài viết đã được cập nhật!', 'success')
+        return redirect(url_for('admin_posts'))
+    
+    return render_template('admin/posts/edit.html', post=post, categories=categories)
+
+@app.route('/admin/posts/delete/<int:id>', methods=['POST'])
+@login_required
+def admin_posts_delete(id):
+    post = Post.query.get_or_404(id)
+    
+    # Delete associated image file if exists
+    if post.featured_image and not post.featured_image.startswith('http'):
+        try:
+            image_path = os.path.join(app.static_folder, post.featured_image)
+            if os.path.exists(image_path):
+                os.remove(image_path)
+        except Exception as e:
+            print(f"Error deleting image: {e}")
+    
+    db.session.delete(post)
+    db.session.commit()
+    
+    flash('Bài viết đã được xóa!', 'success')
+    return redirect(url_for('admin_posts'))
 
 @app.route('/admin/settings', methods=['GET', 'POST'])
 @login_required
@@ -2799,9 +3050,36 @@ def admin_cta_delete(id):
     flash('Call-to-Action đã được xóa!', 'success')
     return redirect(url_for('admin_cta'))
 
+def init_blog_categories():
+    """Initialize default blog categories"""
+    default_categories = [
+        {'name': 'Giáo dục trẻ em', 'description': 'Phương pháp giáo dục và phát triển trẻ em'},
+        {'name': 'Dinh dưỡng', 'description': 'Chế độ ăn uống và dinh dưỡng cho trẻ'},
+        {'name': 'Tâm lý trẻ em', 'description': 'Tâm lý học trẻ em và cách ứng xử'},
+        {'name': 'Hoạt động vui chơi', 'description': 'Các hoạt động vui chơi giải trí cho trẻ'},
+        {'name': 'Kỹ năng sống', 'description': 'Dạy trẻ các kỹ năng sống cần thiết'},
+        {'name': 'Sức khỏe trẻ em', 'description': 'Chăm sóc sức khỏe và phòng bệnh cho trẻ'}
+    ]
+    
+    for cat_data in default_categories:
+        existing = Category.query.filter_by(name=cat_data['name']).first()
+        if not existing:
+            category = Category(name=cat_data['name'], description=cat_data['description'])
+            db.session.add(category)
+    
+    try:
+        db.session.commit()
+        print("✅ Blog categories initialized successfully!")
+    except Exception as e:
+        db.session.rollback()
+        print(f"❌ Error initializing categories: {e}")
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
+        
+        # Initialize blog categories
+        init_blog_categories()
         
         if not User.query.first():
             admin = User(

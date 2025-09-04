@@ -727,6 +727,77 @@
 </section>
 {% endif %}
 
+<!-- Blog Section -->
+{% if latest_posts %}
+<section class="py-20 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
+                <span class="text-primary font-patrick">Blog Giáo dục</span>
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Chia sẻ kiến thức nuôi dạy con và giáo dục trẻ em từ các chuyên gia
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {% for post in latest_posts %}
+            <article class="bg-white rounded-2xl shadow-lg overflow-hidden card-hover border">
+                {% if post.featured_image %}
+                    {% if post.featured_image.startswith('http') %}
+                    <img src="{{ post.featured_image }}" 
+                         alt="{{ post.title }}" class="w-full h-48 object-cover">
+                    {% else %}
+                    <img src="/static/{{ post.featured_image }}" 
+                         alt="{{ post.title }}" class="w-full h-48 object-cover">
+                    {% endif %}
+                {% else %}
+                <div class="w-full h-48 bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
+                    <i class="fas fa-blog text-white text-3xl"></i>
+                </div>
+                {% endif %}
+                
+                <div class="p-6">
+                    {% if post.category %}
+                    <div class="mb-3">
+                        <span class="bg-primary/10 text-primary text-xs font-medium px-3 py-1 rounded-full">
+                            {{ post.category.name }}
+                        </span>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="text-sm text-gray-500 mb-3">
+                        <i class="fas fa-calendar mr-2"></i>
+                        {{ post.created_at.strftime('%d/%m/%Y') }}
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-3 leading-tight">
+                        {{ post.title }}
+                    </h3>
+                    <p class="text-gray-600 mb-4 leading-relaxed">
+                        {% if post.excerpt %}
+                            {{ post.excerpt[:100] }}...
+                        {% else %}
+                            {{ post.content[:100]|striptags }}...
+                        {% endif %}
+                    </p>
+                    <a href="{{ url_for('blog_detail', id=post.id) }}" 
+                       class="text-primary font-semibold hover:text-secondary transition">
+                        Đọc thêm <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-12">
+            <a href="{{ url_for('blog') }}" class="btn-primary">
+                Xem tất cả bài viết Blog
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
 <!-- Gallery Section -->
 {% if gallery_images %}
 <section class="py-20 bg-white">

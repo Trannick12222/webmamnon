@@ -121,7 +121,8 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="https://cdn.jsdelivr.net/npm/tinymce@6/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tinymce@6/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="{{ url_for('static', filename='js/external-image-picker.js') }}"></script>
 <script>
     // Initialize TinyMCE editor with image upload
     tinymce.init({
@@ -145,38 +146,77 @@
         file_picker_types: 'image',
         file_picker_callback: function(callback, value, meta) {
             if (meta.filetype === 'image') {
-                var input = document.createElement('input');
-                input.setAttribute('type', 'file');
-                input.setAttribute('accept', 'image/*');
+                // Hiển thị dialog cho phép chọn upload file hoặc URL
+                const choice = confirm('Chọn "OK" để upload file từ máy tính\nChọn "Cancel" để sử dụng URL hình ảnh từ internet');
                 
-                input.onchange = function() {
-                    var file = this.files[0];
-                    var formData = new FormData();
-                    formData.append('file', file);
+                if (choice) {
+                    // Upload file từ máy tính
+                    var input = document.createElement('input');
+                    input.setAttribute('type', 'file');
+                    input.setAttribute('accept', 'image/*');
                     
-                    fetch('{{ url_for("admin_upload_image") }}', {
-                        method: 'POST',
-                        body: formData,
-                        credentials: 'same-origin'
-                    })
-                    .then(response => response.json())
-                    .then(result => {
-                        if (result.location) {
-                            callback(result.location, {
-                                alt: file.name,
-                                title: file.name
+                    input.onchange = function() {
+                        var file = this.files[0];
+                        var formData = new FormData();
+                        formData.append('file', file);
+                        
+                        fetch('{{ url_for("admin_upload_image") }}', {
+                            method: 'POST',
+                            body: formData,
+                            credentials: 'same-origin'
+                        })
+                        .then(response => response.json())
+                        .then(result => {
+                            if (result.location) {
+                                callback(result.location, {
+                                    alt: file.name,
+                                    title: file.name
+                                });
+                            } else {
+                                alert('Upload failed: ' + (result.error || 'Unknown error'));
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Upload error:', error);
+                            alert('Upload failed: ' + error.message);
+                        });
+                    };
+                    
+                    input.click();
+                } else {
+                    // Sử dụng URL hình ảnh từ bên ngoài
+                    if (window.ExternalImagePicker) {
+                        const picker = new ExternalImagePicker(callback);
+                        picker.showModal();
+                    } else {
+                        // Fallback - simple prompt
+                        const url = prompt('Nhập URL hình ảnh:');
+                        if (url) {
+                            fetch('{{ url_for("admin_process_external_image") }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ url: url })
+                            })
+                            .then(response => response.json())
+                            .then(result => {
+                                if (result.location) {
+                                    callback(result.location, {
+                                        alt: 'External image',
+                                        title: 'External image'
+                                    });
+                                } else {
+                                    alert('URL processing failed: ' + (result.error || 'Unknown error'));
+                                }
+                            })
+                            .catch(error => {
+                                console.error('URL processing error:', error);
+                                alert('URL processing failed: ' + error.message);
                             });
-                        } else {
-                            alert('Upload failed: ' + (result.error || 'Unknown error'));
                         }
-                    })
-                    .catch(error => {
-                        console.error('Upload error:', error);
-                        alert('Upload failed: ' + error.message);
-                    });
-                };
-                
-                input.click();
+                    }
+                }
             }
         },
         
