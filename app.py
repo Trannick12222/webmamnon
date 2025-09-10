@@ -98,7 +98,21 @@ class Gallery(db.Model):
     description = db.Column(db.Text)
     category = db.Column(db.String(100))
     is_featured = db.Column(db.Boolean, default=False)
+    album_id = db.Column(db.Integer, db.ForeignKey('gallery_album.id'), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class GalleryAlbum(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.Text)
+    category = db.Column(db.String(100))
+    is_featured = db.Column(db.Boolean, default=False)
+    cover_image_id = db.Column(db.Integer, db.ForeignKey('gallery.id'), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Relationships
+    images = db.relationship('Gallery', backref='album', lazy=True, foreign_keys=[Gallery.album_id])
+    cover_image = db.relationship('Gallery', foreign_keys=[cover_image_id], post_update=True)
 
 class News(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -1001,9 +1015,30 @@ def news_detail(id):
 
 @app.route('/thu-vien-anh')
 def gallery():
-    images = Gallery.query.order_by(Gallery.created_at.desc()).all()
+    # Lấy tất cả ảnh (bao gồm cả ảnh trong album và ảnh đơn lẻ)
+    all_images = Gallery.query.order_by(Gallery.created_at.desc()).all()
+    
+    # Lấy album để hiển thị riêng
+    albums = GalleryAlbum.query.order_by(GalleryAlbum.created_at.desc()).all()
+    
+    # Lấy ảnh đơn lẻ (không thuộc album nào)
+    standalone_images = Gallery.query.filter_by(album_id=None).order_by(Gallery.created_at.desc()).all()
+    
+    # Lấy categories từ cả album và ảnh đơn lẻ
     categories = db.session.query(Gallery.category).distinct().all()
-    return render_template('gallery.html', images=images, categories=categories)
+    album_categories = db.session.query(GalleryAlbum.category).distinct().all()
+    all_categories = list(set([cat[0] for cat in categories if cat[0]] + [cat[0] for cat in album_categories if cat[0]]))
+    
+    return render_template('gallery.html', 
+                         images=all_images,  # Để tương thích với template hiện tại
+                         albums=albums,
+                         standalone_images=standalone_images,
+                         categories=all_categories)
+
+@app.route('/thu-vien-anh/album/<int:id>')
+def album_detail(id):
+    album = GalleryAlbum.query.get_or_404(id)
+    return render_template('album_detail.html', album=album)
 
 @app.route('/chia-se-hinh-anh', methods=['GET', 'POST'])
 def share_image():
@@ -1514,24 +1549,23 @@ def admin_programs_edit(id):
         program.is_active = bool(request.form.get('is_active'))
         program.is_featured = bool(request.form.get('is_featured'))
         
-        # Handle file upload
-        print(f"DEBUG: cropped_image_data exists: {bool(request.form.get('cropped_image_data'))}")
-        print(f"DEBUG: featured_image file exists: {'featured_image' in request.files and request.files['featured_image'].filename}")
+        # Handle image removal first
+        if request.form.get('remove_image') == '1':
+            if program.featured_image:
+                delete_old_image(program.featured_image)
+            program.featured_image = None
         
-        if request.form.get('cropped_image_data'):
+        # Handle file upload
+        elif request.form.get('cropped_image_data'):
             # Use cropped image data if available
-            print("DEBUG: Using cropped image data")
             delete_old_image(program.featured_image)
             image_path = save_cropped_image(request.form.get('cropped_image_data'), 'programs')
-            print(f"DEBUG: Cropped image saved to: {image_path}")
             if image_path:
                 program.featured_image = image_path
         elif 'featured_image' in request.files and request.files['featured_image'].filename:
             # Fallback to regular file upload
-            print("DEBUG: Using regular file upload")
             delete_old_image(program.featured_image)
             image_path = save_image(request.files['featured_image'], 'programs')
-            print(f"DEBUG: Regular image saved to: {image_path}")
             if image_path:
                 program.featured_image = image_path
         
@@ -1556,9 +1590,15 @@ def admin_programs_delete(id):
 @login_required
 def admin_gallery():
     page = request.args.get('page', 1, type=int)
-    images = Gallery.query.order_by(Gallery.created_at.desc()).paginate(
+    
+    # Lấy ảnh đơn lẻ (không thuộc album nào)
+    standalone_images = Gallery.query.filter_by(album_id=None).order_by(Gallery.created_at.desc()).paginate(
         page=page, per_page=12, error_out=False)
-    return render_template('admin/gallery/list.html', images=images)
+    
+    # Lấy tất cả album
+    albums = GalleryAlbum.query.order_by(GalleryAlbum.created_at.desc()).all()
+    
+    return render_template('admin/gallery/list.html', images=standalone_images, albums=albums)
 
 @app.route('/admin/gallery/create', methods=['GET', 'POST'])
 @login_required
@@ -1567,23 +1607,51 @@ def admin_gallery_create():
         if 'images' in request.files:
             files = request.files.getlist('images')
             uploaded_count = 0
+            album = None
             
+            # Nếu upload nhiều hơn 1 ảnh, tạo album
+            if len(files) > 1:
+                album = GalleryAlbum(
+                    title=request.form.get('title', f'Album {datetime.now().strftime("%d/%m/%Y %H:%M")}'),
+                    description=request.form.get('description'),
+                    category=request.form.get('category'),
+                    is_featured=bool(request.form.get('is_featured'))
+                )
+                db.session.add(album)
+                db.session.flush()  # Để có album.id
+            
+            first_image_id = None
             for file in files:
                 if file and allowed_file(file.filename):
                     image_path = save_image(file, 'gallery')
                     if image_path:
                         gallery_item = Gallery(
-                            title=request.form.get('title', file.filename),
+                            title=request.form.get('title', file.filename) if len(files) == 1 else file.filename,
                             image_path=image_path,
-                            description=request.form.get('description'),
+                            description=request.form.get('description') if len(files) == 1 else None,
                             category=request.form.get('category'),
-                            is_featured=bool(request.form.get('is_featured'))
+                            is_featured=bool(request.form.get('is_featured')) if len(files) == 1 else False,
+                            album_id=album.id if album else None
                         )
                         db.session.add(gallery_item)
+                        db.session.flush()  # Để có gallery_item.id
+                        
+                        # Đặt ảnh đầu tiên làm cover của album
+                        if album and first_image_id is None:
+                            first_image_id = gallery_item.id
+                        
                         uploaded_count += 1
             
+            # Cập nhật cover image cho album
+            if album and first_image_id:
+                album.cover_image_id = first_image_id
+            
             db.session.commit()
-            flash(f'Đã tải lên {uploaded_count} hình ảnh thành công!', 'success')
+            
+            if album:
+                flash(f'Đã tạo album "{album.title}" với {uploaded_count} hình ảnh!', 'success')
+            else:
+                flash(f'Đã tải lên {uploaded_count} hình ảnh thành công!', 'success')
             return redirect(url_for('admin_gallery'))
     
     return render_template('admin/gallery/create.html')
@@ -1598,6 +1666,112 @@ def admin_gallery_delete(id):
     db.session.commit()
     flash('Hình ảnh đã được xóa!', 'success')
     return redirect(url_for('admin_gallery'))
+
+# Album management routes
+@app.route('/admin/albums')
+@login_required
+def admin_albums():
+    page = request.args.get('page', 1, type=int)
+    albums = GalleryAlbum.query.order_by(GalleryAlbum.created_at.desc()).paginate(
+        page=page, per_page=12, error_out=False)
+    return render_template('admin/albums/list.html', albums=albums)
+
+@app.route('/admin/albums/<int:id>')
+@login_required
+def admin_album_detail(id):
+    album = GalleryAlbum.query.get_or_404(id)
+    return render_template('admin/albums/detail.html', album=album)
+
+@app.route('/admin/albums/<int:id>/edit', methods=['GET', 'POST'])
+@login_required
+def admin_album_edit(id):
+    album = GalleryAlbum.query.get_or_404(id)
+    
+    if request.method == 'POST':
+        album.title = request.form.get('title')
+        album.description = request.form.get('description')
+        album.category = request.form.get('category')
+        album.is_featured = bool(request.form.get('is_featured'))
+        
+        # Xử lý thêm ảnh mới vào album
+        if 'new_images' in request.files:
+            files = request.files.getlist('new_images')
+            added_count = 0
+            
+            for file in files:
+                if file and allowed_file(file.filename):
+                    image_path = save_image(file, 'gallery')
+                    if image_path:
+                        gallery_item = Gallery(
+                            title=file.filename,
+                            image_path=image_path,
+                            category=album.category,
+                            album_id=album.id
+                        )
+                        db.session.add(gallery_item)
+                        added_count += 1
+            
+            if added_count > 0:
+                flash(f'Đã thêm {added_count} ảnh vào album!', 'success')
+        
+        db.session.commit()
+        flash('Cập nhật album thành công!', 'success')
+        return redirect(url_for('admin_album_detail', id=id))
+    
+    return render_template('admin/albums/edit.html', album=album)
+
+@app.route('/admin/albums/<int:id>/delete', methods=['POST'])
+@login_required
+def admin_album_delete(id):
+    album = GalleryAlbum.query.get_or_404(id)
+    
+    # Xóa tất cả ảnh trong album
+    for image in album.images:
+        delete_old_image(image.image_path)
+        db.session.delete(image)
+    
+    db.session.delete(album)
+    db.session.commit()
+    flash('Album đã được xóa!', 'success')
+    return redirect(url_for('admin_albums'))
+
+@app.route('/admin/albums/<int:album_id>/remove-image/<int:image_id>', methods=['POST'])
+@login_required
+def admin_album_remove_image(album_id, image_id):
+    album = GalleryAlbum.query.get_or_404(album_id)
+    image = Gallery.query.get_or_404(image_id)
+    
+    if image.album_id != album.id:
+        flash('Ảnh không thuộc album này!', 'error')
+        return redirect(url_for('admin_album_detail', id=album_id))
+    
+    # Nếu đây là cover image, chọn ảnh khác làm cover
+    if album.cover_image_id == image.id:
+        remaining_images = Gallery.query.filter_by(album_id=album.id).filter(Gallery.id != image.id).first()
+        album.cover_image_id = remaining_images.id if remaining_images else None
+    
+    delete_old_image(image.image_path)
+    db.session.delete(image)
+    db.session.commit()
+    
+    flash('Đã xóa ảnh khỏi album!', 'success')
+    return redirect(url_for('admin_album_detail', id=album_id))
+
+@app.route('/admin/albums/<int:album_id>/set-cover/<int:image_id>', methods=['POST'])
+@login_required
+def admin_album_set_cover(album_id, image_id):
+    album = GalleryAlbum.query.get_or_404(album_id)
+    image = Gallery.query.get_or_404(image_id)
+    
+    if image.album_id != album.id:
+        flash('Ảnh không thuộc album này!', 'error')
+        return redirect(url_for('admin_album_detail', id=album_id))
+    
+    album.cover_image_id = image.id
+    db.session.commit()
+    
+    flash('Đã đặt ảnh bìa cho album!', 'success')
+    return redirect(url_for('admin_album_detail', id=album_id))
 
 # User Submitted Images Routes
 @app.route('/admin/user-images')
@@ -2943,8 +3117,14 @@ def admin_special_programs_edit(id):
         special_program.order_index = int(request.form.get('order_index', 0))
         special_program.is_active = bool(request.form.get('is_active'))
         
+        # Handle image removal first
+        if request.form.get('remove_image') == '1':
+            if special_program.image_path:
+                delete_old_image(special_program.image_path)
+            special_program.image_path = None
+        
         # Handle image upload
-        if 'image' in request.files and request.files['image'].filename:
+        elif 'image' in request.files and request.files['image'].filename:
             # Delete old image before saving new one
             delete_old_image(special_program.image_path)
             special_program.image_path = save_image(request.files['image'], 'special_programs')
@@ -3054,18 +3234,18 @@ def admin_cta_delete(id):
 def init_blog_categories():
     """Initialize default blog categories"""
     default_categories = [
-        {'name': 'Giáo dục trẻ em', 'description': 'Phương pháp giáo dục và phát triển trẻ em'},
-        {'name': 'Dinh dưỡng', 'description': 'Chế độ ăn uống và dinh dưỡng cho trẻ'},
-        {'name': 'Tâm lý trẻ em', 'description': 'Tâm lý học trẻ em và cách ứng xử'},
-        {'name': 'Hoạt động vui chơi', 'description': 'Các hoạt động vui chơi giải trí cho trẻ'},
-        {'name': 'Kỹ năng sống', 'description': 'Dạy trẻ các kỹ năng sống cần thiết'},
-        {'name': 'Sức khỏe trẻ em', 'description': 'Chăm sóc sức khỏe và phòng bệnh cho trẻ'}
+        {'name': 'Giáo dục trẻ em', 'slug': 'giao-duc-tre-em'},
+        {'name': 'Dinh dưỡng', 'slug': 'dinh-duong'},
+        {'name': 'Tâm lý trẻ em', 'slug': 'tam-ly-tre-em'},
+        {'name': 'Hoạt động vui chơi', 'slug': 'hoat-dong-vui-choi'},
+        {'name': 'Kỹ năng sống', 'slug': 'ky-nang-song'},
+        {'name': 'Sức khỏe trẻ em', 'slug': 'suc-khoe-tre-em'}
     ]
     
     for cat_data in default_categories:
         existing = Category.query.filter_by(name=cat_data['name']).first()
         if not existing:
-            category = Category(name=cat_data['name'], description=cat_data['description'])
+            category = Category(name=cat_data['name'], slug=cat_data['slug'])
             db.session.add(category)
     
     try:

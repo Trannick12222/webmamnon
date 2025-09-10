@@ -9,6 +9,10 @@
     <div class="flex items-center justify-between mb-6">
         <h2 class="text-xl font-semibold text-gray-800">Thư viện ảnh</h2>
         <div style="display: flex; align-items: center; gap: 10px;">
+            <a href="{{ url_for('admin_albums') }}" 
+               class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200">
+                <i class="fas fa-folder mr-2"></i>Quản lý Album
+            </a>
             <a href="{{ url_for('admin_gallery_create') }}" 
                style="background: linear-gradient(45deg, #ff6b35, #f7931e); 
                       color: white; 
@@ -32,9 +36,87 @@
         </div>
     </div>
     
+    {% if albums %}
+    <!-- Albums Section -->
+    <div class="mb-8">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+            <i class="fas fa-folder text-blue-500 mr-2"></i>
+            Album ({{ albums|length }})
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {% for album in albums %}
+            <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 border-l-4 border-blue-500">
+                <div class="aspect-w-16 aspect-h-9 bg-gray-200 relative">
+                    {% if album.cover_image %}
+                    <img src="{{ url_for('static', filename=album.cover_image.image_path) }}" 
+                         alt="{{ album.title }}" 
+                         class="w-full h-48 object-cover">
+                    {% else %}
+                    <div class="w-full h-48 bg-gray-300 flex items-center justify-center">
+                        <i class="fas fa-images text-gray-500 text-3xl"></i>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Album badge -->
+                    <div class="absolute top-2 right-2 bg-blue-600 text-white px-2 py-1 rounded-full text-xs font-medium">
+                        <i class="fas fa-folder mr-1"></i>{{ album.images|length }} ảnh
+                    </div>
+                </div>
+                
+                <div class="p-4">
+                    <h3 class="font-medium text-gray-900 truncate">{{ album.title }}</h3>
+                    {% if album.description %}
+                    <p class="text-sm text-gray-600 mt-1 line-clamp-2">{{ album.description }}</p>
+                    {% endif %}
+                    
+                    <div class="flex items-center justify-between mt-3">
+                        <div class="flex items-center space-x-2">
+                            {% if album.is_featured %}
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                <i class="fas fa-star mr-1"></i>Nổi bật
+                            </span>
+                            {% endif %}
+                            {% if album.category %}
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                {{ album.category }}
+                            </span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="flex items-center space-x-2">
+                            <a href="{{ url_for('admin_album_detail', id=album.id) }}" 
+                               class="text-gray-400 hover:text-blue-600 transition-colors" 
+                               title="Xem chi tiết">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="{{ url_for('admin_album_edit', id=album.id) }}" 
+                               class="text-gray-400 hover:text-green-600 transition-colors" 
+                               title="Chỉnh sửa">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="text-xs text-gray-500 mt-2">
+                        Tạo lúc: {{ album.created_at.strftime('%d/%m/%Y %H:%M') }}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    
     {% if images.items %}
-    <!-- Gallery Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <!-- Standalone Images Section -->
+    <div>
+        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+            <i class="fas fa-image text-green-500 mr-2"></i>
+            Ảnh đơn lẻ ({{ images.total }})
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {% for image in images.items %}
         <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
             <div class="aspect-w-16 aspect-h-9 bg-gray-200">
@@ -81,6 +163,7 @@
             </div>
         </div>
         {% endfor %}
+        </div>
     </div>
 
     <!-- Pagination -->
@@ -122,10 +205,19 @@
     {% endif %}
     
     {% else %}
-    <!-- Empty State -->
+    <!-- Empty standalone images message -->
+    <div class="text-center py-8">
+        <i class="fas fa-image text-gray-400 text-3xl mb-4"></i>
+        <p class="text-gray-500">Chưa có ảnh đơn lẻ nào</p>
+        <p class="text-gray-400 text-sm">Upload 1 ảnh để tạo ảnh đơn lẻ hoặc upload nhiều ảnh để tạo album</p>
+    </div>
+    {% endif %}
+    
+    {% if not albums and not images.items %}
+    <!-- Completely empty state -->
     <div class="text-center py-12">
         <i class="fas fa-images text-gray-400 text-4xl mb-4"></i>
-        <p class="text-gray-500">Chưa có hình ảnh nào</p>
+        <p class="text-gray-500">Thư viện ảnh trống</p>
         <p class="text-gray-400 text-sm">Hãy tải lên một số hình ảnh đẹp cho trường</p>
     </div>
     {% endif %}

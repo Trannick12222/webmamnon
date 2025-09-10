@@ -89,7 +89,18 @@
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Hình ảnh hiện tại</label>
                     <div class="border border-gray-300 rounded-lg p-4 bg-white">
-                        <img src="/static/{{ program.featured_image }}" alt="{{ program.name }}" class="max-w-full h-48 object-cover rounded-lg">
+                        <div class="relative inline-block">
+                            <img src="/static/{{ program.featured_image }}" alt="{{ program.name }}" class="max-w-full h-48 object-cover rounded-lg">
+                            <div class="absolute top-2 right-2">
+                                <button type="button" 
+                                        onclick="removeCurrentImage()"
+                                        class="bg-red-500 text-white p-1 rounded-full text-xs hover:bg-red-600"
+                                        title="Xóa ảnh hiện tại">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <input type="hidden" name="remove_image" id="remove_image" value="0">
                     </div>
                 </div>
                 {% endif %}
@@ -164,6 +175,14 @@
         <input type="hidden" id="cropped-image-data" name="cropped_image_data">
         
         <script>
+        // Remove current image function
+        function removeCurrentImage() {
+            if (confirm('Bạn có chắc muốn xóa hình ảnh hiện tại?')) {
+                document.getElementById('remove_image').value = '1';
+                document.querySelector('.relative').style.display = 'none';
+            }
+        }
+        
         // Debug form submission
         document.querySelector('form').addEventListener('submit', function(e) {
             const croppedData = document.getElementById('cropped-image-data').value;

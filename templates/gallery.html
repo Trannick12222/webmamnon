@@ -79,9 +79,73 @@
 <!-- Gallery Section -->
 <section id="gallery" class="py-16 bg-gray-50">
     <div class="container mx-auto px-4">
-        {% if images %}
+        
+        {% if albums %}
+        <!-- Albums Section -->
+        <div class="mb-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">
+                    <i class="fas fa-folder text-blue-500 mr-3"></i>
+                    Album Ảnh
+                </h2>
+                <p class="text-gray-600">Khám phá các bộ sưu tập ảnh theo chủ đề</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {% for album in albums %}
+                <a href="{{ url_for('album_detail', id=album.id) }}" 
+                   class="group block bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+                    <div class="aspect-w-16 aspect-h-9 bg-gray-200 relative">
+                        {% if album.cover_image %}
+                        <img src="{{ url_for('static', filename=album.cover_image.image_path) }}" 
+                             alt="{{ album.title }}" 
+                             class="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-300">
+                        {% else %}
+                        <div class="w-full h-64 bg-gray-300 flex items-center justify-center">
+                            <i class="fas fa-images text-gray-500 text-4xl"></i>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Album info overlay -->
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                        <div class="absolute bottom-0 left-0 right-0 p-6 text-white">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="font-bold text-xl">{{ album.title }}</h3>
+                                <span class="bg-blue-600 px-2 py-1 rounded-full text-sm">
+                                    {{ album.images|length }} ảnh
+                                </span>
+                            </div>
+                            {% if album.description %}
+                            <p class="text-white/90 text-sm line-clamp-2">{{ album.description }}</p>
+                            {% endif %}
+                            {% if album.category %}
+                            <div class="mt-2">
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-white/20">
+                                    <i class="fas fa-tag mr-1"></i>{{ album.category }}
+                                </span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if standalone_images %}
+        <!-- Standalone Images Section -->
+        <div>
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">
+                    <i class="fas fa-image text-green-500 mr-3"></i>
+                    Ảnh Đơn Lẻ
+                </h2>
+                <p class="text-gray-600">Những hình ảnh đẹp không thuộc album nào</p>
+            </div>
+            
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="gallery-grid">
-                {% for image in images %}
+                {% for image in standalone_images %}
                 <div class="gallery-item group relative overflow-hidden rounded-2xl shadow-lg bg-white hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer" 
                      data-category="{{ image.category or 'uncategorized' }}"
                      {% if image.image_path.startswith('http') %}
@@ -108,13 +172,7 @@
                     <!-- Overlay -->
                     <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
                         <div class="text-white text-center p-4 pointer-events-none">
-                            <i class="fas fa-search-plus text-3xl mb-3"></i>
-                            {% if image.title %}
-                            <h3 class="font-bold text-lg mb-2">{{ image.title }}</h3>
-                            {% endif %}
-                            {% if image.description %}
-                            <p class="text-sm opacity-90 line-clamp-2">{{ image.description }}</p>
-                            {% endif %}
+                            <i class="fas fa-search-plus text-3xl"></i>
                         </div>
                     </div>
                     
@@ -140,25 +198,20 @@
                 </div>
                 {% endfor %}
             </div>
-            
-            <!-- Load More Button -->
-            <div class="text-center mt-12">
-                <button id="loadMoreBtn" class="px-8 py-3 bg-purple-600 text-white rounded-full hover:bg-purple-700 transition-colors transform hover:scale-105 hidden">
-                    <i class="fas fa-plus mr-2"></i>
-                    Xem thêm
-                </button>
-            </div>
-        {% else %}
-            <!-- Empty State -->
-            <div class="text-center py-16">
-                <div class="max-w-md mx-auto">
-                    <div class="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <i class="fas fa-images text-3xl text-gray-400"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Chưa có hình ảnh nào</h3>
-                    <p class="text-gray-600">Thư viện ảnh hiện tại chưa có hình ảnh nào. Vui lòng quay lại sau!</p>
+        </div>
+        {% endif %}
+        
+        {% if not albums and not standalone_images %}
+        <!-- Completely Empty State -->
+        <div class="text-center py-16">
+            <div class="max-w-md mx-auto">
+                <div class="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-images text-3xl text-gray-400"></i>
                 </div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">Chưa có hình ảnh nào</h3>
+                <p class="text-gray-600">Thư viện ảnh hiện tại chưa có hình ảnh nào. Vui lòng quay lại sau!</p>
             </div>
+        </div>
         {% endif %}
     </div>
 </section>

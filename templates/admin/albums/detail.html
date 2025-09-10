@@ -1,0 +1,158 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{{ album.title }} - Admin{% endblock %}
+{% block page_title %}{{ album.title }}{% endblock %}
+{% block page_description %}Chi tiết album ảnh{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-6">
+    <!-- Album Info Card -->
+    <div class="admin-card p-6">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h2 class="text-2xl font-semibold text-gray-800">{{ album.title }}</h2>
+                {% if album.description %}
+                <p class="text-gray-600 mt-2">{{ album.description }}</p>
+                {% endif %}
+                
+                <div class="flex items-center space-x-4 mt-4">
+                    {% if album.is_featured %}
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+                        <i class="fas fa-star mr-2"></i>Nổi bật
+                    </span>
+                    {% endif %}
+                    {% if album.category %}
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                        {{ album.category }}
+                    </span>
+                    {% endif %}
+                    <span class="text-sm text-gray-500">{{ album.images|length }} ảnh</span>
+                    <span class="text-sm text-gray-500">Tạo lúc: {{ album.created_at.strftime('%d/%m/%Y %H:%M') }}</span>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-3">
+                <a href="{{ url_for('admin_albums') }}" 
+                   class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition duration-200">
+                    <i class="fas fa-arrow-left mr-2"></i>Quay lại
+                </a>
+                <a href="{{ url_for('admin_album_edit', id=album.id) }}" 
+                   class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200">
+                    <i class="fas fa-edit mr-2"></i>Chỉnh sửa
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    {% if album.images %}
+    <!-- Images Grid -->
+    <div class="admin-card p-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">
+            <i class="fas fa-images text-blue-500 mr-2"></i>
+            Ảnh trong album ({{ album.images|length }})
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {% for image in album.images %}
+            <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 relative group">
+                <div class="aspect-w-16 aspect-h-9 bg-gray-200 relative">
+                    <img src="{{ url_for('static', filename=image.image_path) }}" 
+                         alt="{{ image.title or 'Album Image' }}" 
+                         class="w-full h-48 object-cover">
+                    
+                    {% if album.cover_image_id == image.id %}
+                    <div class="absolute top-2 left-2 bg-green-600 text-white px-2 py-1 rounded-full text-xs font-medium">
+                        <i class="fas fa-star mr-1"></i>Bìa
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Action buttons overlay -->
+                    <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                        <div class="flex space-x-2">
+                            {% if album.cover_image_id != image.id %}
+                            <form method="POST" action="{{ url_for('admin_album_set_cover', album_id=album.id, image_id=image.id) }}" class="inline">
+                                <button type="submit" 
+                                        class="px-3 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 text-sm"
+                                        title="Đặt làm ảnh bìa">
+                                    <i class="fas fa-star"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                            
+                            <button onclick="copyImageUrl('{{ url_for('static', filename=image.image_path, _external=True) }}')" 
+                                    class="px-3 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-sm"
+                                    title="Copy URL">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                            
+                            <form method="POST" action="{{ url_for('admin_album_remove_image', album_id=album.id, image_id=image.id) }}" class="inline">
+                                <button type="button" 
+                                        class="remove-image-btn px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 text-sm"
+                                        title="Xóa ảnh">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="p-3">
+                    <h4 class="font-medium text-gray-900 truncate text-sm">{{ image.title or image.image_path.split('/')[-1] }}</h4>
+                    <div class="text-xs text-gray-500 mt-1">
+                        Tải lên: {{ image.created_at.strftime('%d/%m/%Y %H:%M') }}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    {% else %}
+    <!-- Empty State -->
+    <div class="admin-card p-6">
+        <div class="text-center py-12">
+            <i class="fas fa-images text-gray-400 text-4xl mb-4"></i>
+            <p class="text-gray-500">Album chưa có ảnh nào</p>
+            <p class="text-gray-400 text-sm">Hãy chỉnh sửa album để thêm ảnh</p>
+            <div class="mt-6">
+                <a href="{{ url_for('admin_album_edit', id=album.id) }}" 
+                   class="btn-primary px-6 py-3 rounded-lg">
+                    <i class="fas fa-plus mr-2"></i>Thêm ảnh
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Xác nhận xóa ảnh
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.remove-image-btn')) {
+            e.preventDefault();
+            if (confirm('Bạn có chắc chắn muốn xóa ảnh này khỏi album không?')) {
+                e.target.closest('form').submit();
+            }
+        }
+    });
+
+    // Copy image URL to clipboard
+    function copyImageUrl(url) {
+        navigator.clipboard.writeText(url).then(function() {
+            // Show success message
+            const button = event.target.closest('button');
+            const originalIcon = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-check"></i>';
+            
+            setTimeout(() => {
+                button.innerHTML = originalIcon;
+            }, 2000);
+        }).catch(function(err) {
+            console.error('Could not copy text: ', err);
+            alert('Không thể copy URL. Vui lòng thử lại.');
+        });
+    }
+</script>
+{% endblock %}

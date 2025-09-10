@@ -1,0 +1,150 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Chỉnh sửa Album - {{ album.title }} - Admin{% endblock %}
+{% block page_title %}Chỉnh sửa Album{% endblock %}
+{% block page_description %}Cập nhật thông tin và quản lý ảnh trong album{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <form method="POST" enctype="multipart/form-data" class="space-y-6">
+        <!-- Album Info -->
+        <div class="admin-card p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-6">Thông tin album</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
+                        Tiêu đề album <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="title" name="title" required
+                           value="{{ album.title }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                           placeholder="Ví dụ: Hoạt động học tập tháng 10">
+                </div>
+                
+                <div>
+                    <label for="category" class="block text-sm font-medium text-gray-700 mb-2">
+                        Danh mục
+                    </label>
+                    <select id="category" name="category"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                        <option value="">Chọn danh mục</option>
+                        <option value="Hoạt động học tập" {{ 'selected' if album.category == 'Hoạt động học tập' }}>Hoạt động học tập</option>
+                        <option value="Vui chơi giải trí" {{ 'selected' if album.category == 'Vui chơi giải trí' }}>Vui chơi giải trí</option>
+                        <option value="Sự kiện đặc biệt" {{ 'selected' if album.category == 'Sự kiện đặc biệt' }}>Sự kiện đặc biệt</option>
+                        <option value="Cơ sở vật chất" {{ 'selected' if album.category == 'Cơ sở vật chất' }}>Cơ sở vật chất</option>
+                        <option value="Đội ngũ giáo viên" {{ 'selected' if album.category == 'Đội ngũ giáo viên' }}>Đội ngũ giáo viên</option>
+                        <option value="Khác" {{ 'selected' if album.category == 'Khác' }}>Khác</option>
+                    </select>
+                </div>
+                
+                <div class="md:col-span-2">
+                    <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
+                        Mô tả
+                    </label>
+                    <textarea id="description" name="description" rows="3"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                              placeholder="Mô tả ngắn gọn về album này">{{ album.description or '' }}</textarea>
+                </div>
+                
+                <div class="md:col-span-2">
+                    <div class="flex items-center">
+                        <input id="is_featured" name="is_featured" type="checkbox" {{ 'checked' if album.is_featured }}
+                               class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded">
+                        <label for="is_featured" class="ml-2 block text-sm text-gray-900">
+                            Hiển thị nổi bật trên trang chủ
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Add New Images -->
+        <div class="admin-card p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-6">
+                <i class="fas fa-plus text-green-500 mr-2"></i>
+                Thêm ảnh mới vào album
+            </h2>
+            
+            <div class="space-y-6">
+                <div>
+                    <label for="new_images" class="block text-sm font-medium text-gray-700 mb-2">
+                        Chọn ảnh mới <span class="text-gray-500">(Ctrl/Cmd + Click để chọn nhiều)</span>
+                    </label>
+                    <div class="flex items-center justify-center w-full">
+                        <label for="new_images" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                                <p class="text-sm text-gray-500">
+                                    <span class="font-semibold">Nhấp để tải lên</span> hoặc kéo thả ảnh
+                                </p>
+                                <p class="text-xs text-gray-500">PNG, JPG, JPEG (MAX. 16MB mỗi file)</p>
+                            </div>
+                            <input id="new_images" name="new_images" type="file" class="hidden" 
+                                   accept="image/*" multiple>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="flex items-center justify-between pt-6">
+            <a href="{{ url_for('admin_album_detail', id=album.id) }}" 
+               class="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition duration-200">
+                <i class="fas fa-arrow-left mr-2"></i>Quay lại
+            </a>
+            
+            <div class="flex space-x-4">
+                <form method="POST" action="{{ url_for('admin_album_delete', id=album.id) }}" class="inline">
+                    <button type="button" 
+                            class="delete-album-btn px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-200">
+                        <i class="fas fa-trash mr-2"></i>Xóa Album
+                    </button>
+                </form>
+                
+                <button type="submit"
+                        class="btn-primary px-6 py-3 rounded-lg hover:bg-orange-600 transition duration-200">
+                    <i class="fas fa-save mr-2"></i>Lưu thay đổi
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Xác nhận xóa album
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.delete-album-btn')) {
+            e.preventDefault();
+            if (confirm('Bạn có chắc chắn muốn xóa album này không?\n\nTất cả ảnh trong album sẽ bị xóa vĩnh viễn. Hành động này không thể hoàn tác.')) {
+                e.target.closest('form').submit();
+            }
+        }
+    });
+    
+    // Preview new images
+    document.getElementById('new_images').addEventListener('change', function(e) {
+        const files = e.target.files;
+        if (files.length > 0) {
+            const fileNames = Array.from(files).map(f => f.name).join(', ');
+            const label = e.target.closest('label');
+            const originalContent = label.innerHTML;
+            
+            label.innerHTML = `
+                <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                    <i class="fas fa-check-circle text-3xl text-green-500 mb-2"></i>
+                    <p class="text-sm text-green-600 font-semibold">
+                        Đã chọn ${files.length} ảnh
+                    </p>
+                    <p class="text-xs text-gray-500 mt-1 text-center px-4">
+                        ${fileNames.length > 100 ? fileNames.substring(0, 100) + '...' : fileNames}
+                    </p>
+                    <p class="text-xs text-blue-500 mt-2">Nhấp để chọn ảnh khác</p>
+                </div>
+            `;
+        }
+    });
+</script>
+{% endblock %}

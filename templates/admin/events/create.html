@@ -36,6 +36,10 @@
                         </label>
                         <input type="date" id="event_date" name="event_date" required
                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                        <p class="text-xs text-gray-500 mt-1">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Có thể thêm sự kiện trong quá khứ để lưu trữ lịch sử
+                        </p>
                     </div>
                     
                     <div>
@@ -218,21 +222,17 @@
             return false;
         }
         
-        // Check if event date is in the future
+        // Check if event date is in the future (just inform, don't prevent)
         const selectedDate = new Date(eventDate + 'T' + eventTime);
         const now = new Date();
         
         if (selectedDate < now) {
-            const confirm = window.confirm('Ngày giờ sự kiện đã qua. Bạn có chắc chắn muốn tạo sự kiện này không?');
-            if (!confirm) {
-                e.preventDefault();
-                return false;
-            }
+            // Just inform user, but allow them to proceed
+            console.log('Event date is in the past - this is allowed for historical events');
         }
     });
     
-    // Set minimum date to today
-    document.getElementById('event_date').min = new Date().toISOString().split('T')[0];
+    // No minimum date restriction - allow past events
 </script>
 
 <!-- TinyMCE Editor -->
