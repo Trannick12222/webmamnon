@@ -145,8 +145,8 @@
         <!-- Image -->
         <img id="lightboxImage" src="" alt="" class="max-w-full max-h-screen object-contain rounded-lg">
         
-        <!-- Image info -->
-        <div id="lightboxInfo" class="absolute bottom-0 left-0 right-0 bg-black/80 text-white p-4 rounded-b-lg">
+        <!-- Image info (hidden) -->
+        <div id="lightboxInfo" class="hidden absolute bottom-0 left-0 right-0 bg-black/80 text-white p-4 rounded-b-lg">
             <h3 id="lightboxTitle" class="font-bold text-lg mb-2"></h3>
             <p id="lightboxDescription" class="text-sm opacity-90"></p>
         </div>
@@ -234,8 +234,6 @@
     
     function showLightboxImage(src, title, description) {
         document.getElementById('lightboxImage').src = src;
-        document.getElementById('lightboxTitle').textContent = title || '';
-        document.getElementById('lightboxDescription').textContent = description || '';
         
         // Show/hide navigation buttons
         const prevBtn = document.getElementById('lightboxPrev');
