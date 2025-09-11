@@ -99,7 +99,7 @@
                     </h3>
                     
                     {% if event.description %}
-                    <p class="text-gray-600 mb-4 line-clamp-3">{{ event.description }}</p>
+                    <p class="text-gray-600 mb-4 line-clamp-3">{{ event.description | safe }}</p>
                     {% endif %}
                     
                     <div class="flex items-center justify-between">
@@ -159,7 +159,7 @@
                     </h3>
                     
                     {% if event.description %}
-                    <p class="text-gray-600 mb-4 line-clamp-3">{{ event.description }}</p>
+                    <p class="text-gray-600 mb-4 line-clamp-3">{{ event.description | safe }}</p>
                     {% endif %}
                     
                     <div class="flex items-center justify-between">
