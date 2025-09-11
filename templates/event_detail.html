@@ -165,7 +165,7 @@
                         </h3>
                         
                         {% if related_event.description %}
-                        <p class="text-gray-600 mb-4 line-clamp-3">{{ related_event.description }}</p>
+                        <p class="text-gray-600 mb-4 line-clamp-3">{{ related_event.description | safe }}</p>
                         {% endif %}
                         
                         <div class="flex items-center justify-between">

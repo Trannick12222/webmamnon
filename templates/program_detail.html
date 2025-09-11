@@ -108,7 +108,7 @@
                                 <i class="fas fa-file-alt text-green-500 mr-2"></i>
                                 Mô tả
                             </h3>
-                            <p class="text-gray-600 leading-relaxed">{{ program.description }}</p>
+                            <p class="text-gray-600 leading-relaxed">{{ program.description | safe }}</p>
                         </div>
                         {% endif %}
                         

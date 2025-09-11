@@ -97,7 +97,7 @@
                                 </span>
                             </div>
                             {% if album.description %}
-                            <p class="text-white/90 text-sm line-clamp-2">{{ album.description }}</p>
+                            <p class="text-white/90 text-sm line-clamp-2">{{ album.description | safe }}</p>
                             {% endif %}
                             {% if album.category %}
                             <div class="mt-2">
