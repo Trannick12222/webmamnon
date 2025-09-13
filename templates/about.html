@@ -280,29 +280,57 @@
         </div>
         
         <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div class="text-center text-white">
-                <div class="text-5xl font-bold font-patrick mb-4">200+</div>
-                <div class="text-lg font-medium">Học sinh</div>
-                <div class="text-white/80 text-sm">hiện tại</div>
-            </div>
-            
-            <div class="text-center text-white">
-                <div class="text-5xl font-bold font-patrick mb-4">25</div>
-                <div class="text-lg font-medium">Giáo viên</div>
-                <div class="text-white/80 text-sm">chuyên nghiệp</div>
-            </div>
-            
-            <div class="text-center text-white">
-                <div class="text-5xl font-bold font-patrick mb-4">10+</div>
-                <div class="text-lg font-medium">Năm</div>
-                <div class="text-white/80 text-sm">kinh nghiệm</div>
-            </div>
-            
-            <div class="text-center text-white">
-                <div class="text-5xl font-bold font-patrick mb-4">95%</div>
-                <div class="text-lg font-medium">Hài lòng</div>
-                <div class="text-white/80 text-sm">phụ huynh</div>
-            </div>
+            {% if about_stats %}
+                {% for stat in about_stats %}
+                <div class="text-center text-white">
+                    <!-- Icon -->
+                    <div class="w-16 h-16 {{ stat.color_class }} rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="{{ stat.icon_class }} text-white text-2xl"></i>
+                    </div>
+                    <!-- Stats -->
+                    <div class="text-5xl font-bold font-patrick mb-4">{{ stat.stat_value }}</div>
+                    <div class="text-lg font-medium">{{ stat.stat_label }}</div>
+                    <div class="text-white/80 text-sm">{{ stat.stat_key.replace('_', ' ') }}</div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <!-- Default stats if no data in database -->
+                <div class="text-center text-white">
+                    <div class="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-users text-white text-2xl"></i>
+                    </div>
+                    <div class="text-5xl font-bold font-patrick mb-4">200+</div>
+                    <div class="text-lg font-medium">Học sinh</div>
+                    <div class="text-white/80 text-sm">hiện tại</div>
+                </div>
+                
+                <div class="text-center text-white">
+                    <div class="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-chalkboard-teacher text-white text-2xl"></i>
+                    </div>
+                    <div class="text-5xl font-bold font-patrick mb-4">25</div>
+                    <div class="text-lg font-medium">Giáo viên</div>
+                    <div class="text-white/80 text-sm">chuyên nghiệp</div>
+                </div>
+                
+                <div class="text-center text-white">
+                    <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-calendar-alt text-white text-2xl"></i>
+                    </div>
+                    <div class="text-5xl font-bold font-patrick mb-4">10+</div>
+                    <div class="text-lg font-medium">Năm</div>
+                    <div class="text-white/80 text-sm">kinh nghiệm</div>
+                </div>
+                
+                <div class="text-center text-white">
+                    <div class="w-16 h-16 bg-yellow-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-star text-white text-2xl"></i>
+                    </div>
+                    <div class="text-5xl font-bold font-patrick mb-4">95%</div>
+                    <div class="text-lg font-medium">Hài lòng</div>
+                    <div class="text-white/80 text-sm">phụ huynh</div>
+                </div>
+            {% endif %}
         </div>
     </div>
 </section>
