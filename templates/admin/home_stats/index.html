@@ -1,0 +1,89 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Thống kê Trang chủ - Admin{% endblock %}
+{% block page_title %}Thành tựu của chúng tôi{% endblock %}
+{% block page_description %}Quản lý thống kê hiển thị trên trang chủ{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-800">Thống kê Trang chủ</h2>
+            <p class="text-gray-600 mt-1">Quản lý các số liệu trong phần "Thành tựu của chúng tôi"</p>
+        </div>
+        <a href="{{ url_for('admin_home_stats_create') }}" 
+           class="btn-primary px-6 py-3 rounded-lg font-medium">
+            <i class="fas fa-plus mr-2"></i>
+            Thêm thống kê
+        </a>
+    </div>
+    
+    {% if home_stats %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for stat in home_stats %}
+        <div class="admin-card p-6 hover:shadow-lg transition duration-200">
+            <!-- Preview -->
+            <div class="text-center mb-4 p-4 rounded-lg" style="background: linear-gradient(to right, var(--primary-color), var(--secondary-color))">
+                <div class="w-16 h-16 {{ stat.color_class }} rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="{{ stat.icon_class }} text-white text-2xl"></i>
+                </div>
+                <div class="text-3xl font-bold text-white mb-2">{{ stat.stat_value }}</div>
+                <div class="text-lg text-white font-medium">{{ stat.stat_label }}</div>
+                {% if stat.stat_description %}
+                <div class="text-white/80 text-sm">{{ stat.stat_description }}</div>
+                {% endif %}
+            </div>
+            
+            <!-- Info -->
+            <div class="space-y-2 mb-4">
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-600">Khóa:</span>
+                    <span class="text-sm font-medium">{{ stat.stat_key }}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-600">Thứ tự:</span>
+                    <span class="text-sm font-medium">{{ stat.order_index }}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-600">Trạng thái:</span>
+                    <span class="text-xs px-2 py-1 rounded-full {{ 'bg-green-100 text-green-800' if stat.is_active else 'bg-red-100 text-red-800' }}">
+                        {{ 'Hiển thị' if stat.is_active else 'Ẩn' }}
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="flex items-center justify-between">
+                <a href="{{ url_for('admin_home_stats_edit', id=stat.id) }}" 
+                   class="text-blue-600 hover:text-blue-800 font-medium">
+                    <i class="fas fa-edit mr-1"></i>
+                    Chỉnh sửa
+                </a>
+                <form method="POST" action="{{ url_for('admin_home_stats_delete', id=stat.id) }}" 
+                      onsubmit="return confirm('Bạn có chắc muốn xóa thống kê này?')" class="inline">
+                    <button type="submit" class="text-red-600 hover:text-red-800 font-medium">
+                        <i class="fas fa-trash mr-1"></i>
+                        Xóa
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="admin-card p-12 text-center">
+        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-chart-bar text-gray-400 text-2xl"></i>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">Chưa có thống kê nào</h3>
+        <p class="text-gray-600 mb-6">Hãy thêm thống kê đầu tiên để hiển thị trên trang chủ</p>
+        <a href="{{ url_for('admin_home_stats_create') }}" 
+           class="btn-primary px-6 py-3 rounded-lg font-medium">
+            <i class="fas fa-plus mr-2"></i>
+            Thêm thống kê đầu tiên
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

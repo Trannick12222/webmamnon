@@ -290,7 +290,9 @@
                     <!-- Stats -->
                     <div class="text-5xl font-bold font-patrick mb-4">{{ stat.stat_value }}</div>
                     <div class="text-lg font-medium">{{ stat.stat_label }}</div>
-                    <div class="text-white/80 text-sm">{{ stat.stat_key.replace('_', ' ') }}</div>
+                    {% if stat.stat_description %}
+                    <div class="text-white/80 text-sm">{{ stat.stat_description }}</div>
+                    {% endif %}
                 </div>
                 {% endfor %}
             {% else %}

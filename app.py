@@ -243,6 +243,20 @@ class AboutStats(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+class HomeStats(db.Model):
+    """Stats for homepage 'Thành tựu của chúng tôi' section"""
+    id = db.Column(db.Integer, primary_key=True)
+    stat_key = db.Column(db.String(50), unique=True, nullable=False)  # 'students', 'teachers', etc.
+    stat_value = db.Column(db.String(20), nullable=False)  # '200+', '25', etc.
+    stat_label = db.Column(db.String(100), nullable=False)  # 'Học sinh', 'Giáo viên'
+    stat_description = db.Column(db.String(200))  # 'hiện tại', 'chuyên nghiệp'
+    icon_class = db.Column(db.String(100), default='fas fa-users')  # FontAwesome icon
+    color_class = db.Column(db.String(50), default='bg-orange-500')  # Tailwind color
+    order_index = db.Column(db.Integer, default=0)
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
 class FAQ(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     question = db.Column(db.Text, nullable=False)  # Câu hỏi
@@ -907,6 +921,9 @@ def index():
     about_section = AboutSection.query.first()
     about_stats = AboutStats.query.filter_by(is_active=True).order_by(AboutStats.order_index.asc()).all()
     
+    # Get home stats for achievements section
+    home_stats = HomeStats.query.filter_by(is_active=True).order_by(HomeStats.order_index.asc()).all()
+    
     # Get system settings for school information
     system_settings = SystemSettings.query.first()
     
@@ -921,6 +938,7 @@ def index():
                          contact_settings=contact_settings,
                          about_section=about_section,
                          about_stats=about_stats,
+                         home_stats=home_stats,
                          system_settings=system_settings)
 
 @app.route('/health')
@@ -943,8 +961,8 @@ def about():
     history_section = HistorySection.query.first()
     history_events = HistoryEvent.query.filter_by(is_active=True).order_by(HistoryEvent.order_index.asc(), HistoryEvent.year.asc()).all()
     
-    # Add about stats data
-    about_stats = AboutStats.query.filter_by(is_active=True).order_by(AboutStats.order_index.asc()).all()
+    # Add home stats data (same as homepage)
+    home_stats = HomeStats.query.filter_by(is_active=True).order_by(HomeStats.order_index.asc()).all()
     
     return render_template('about.html', 
                          team_members=team_members,
@@ -952,7 +970,7 @@ def about():
                          mission_items=mission_items,
                          history_section=history_section,
                          history_events=history_events,
-                         about_stats=about_stats)
+                         about_stats=home_stats)
 
 @app.route('/debug-programs')
 def debug_programs():
@@ -2996,6 +3014,76 @@ def admin_about_stats_delete(id):
     
     flash('Thống kê đã được xóa!', 'success')
     return redirect(url_for('admin_about'))
+
+# Home Stats Management Routes
+@app.route('/admin/home-stats')
+@login_required
+def admin_home_stats():
+    home_stats = HomeStats.query.order_by(HomeStats.order_index.asc(), HomeStats.created_at.desc()).all()
+    return render_template('admin/home_stats/index.html', home_stats=home_stats)
+
+@app.route('/admin/home-stats/create', methods=['GET', 'POST'])
+@login_required
+def admin_home_stats_create():
+    if request.method == 'POST':
+        stat_key = request.form['stat_key']
+        stat_value = request.form['stat_value']
+        stat_label = request.form['stat_label']
+        stat_description = request.form.get('stat_description', '')
+        icon_class = request.form['icon_class']
+        color_class = request.form['color_class']
+        order_index = int(request.form.get('order_index', 0))
+        is_active = bool(request.form.get('is_active'))
+        
+        home_stat = HomeStats(
+            stat_key=stat_key,
+            stat_value=stat_value,
+            stat_label=stat_label,
+            stat_description=stat_description,
+            icon_class=icon_class,
+            color_class=color_class,
+            order_index=order_index,
+            is_active=is_active
+        )
+        
+        db.session.add(home_stat)
+        db.session.commit()
+        
+        flash('Thống kê trang chủ đã được thêm!', 'success')
+        return redirect(url_for('admin_home_stats'))
+    
+    return render_template('admin/home_stats/create.html')
+
+@app.route('/admin/home-stats/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
+def admin_home_stats_edit(id):
+    home_stat = HomeStats.query.get_or_404(id)
+    
+    if request.method == 'POST':
+        home_stat.stat_key = request.form['stat_key']
+        home_stat.stat_value = request.form['stat_value']
+        home_stat.stat_label = request.form['stat_label']
+        home_stat.stat_description = request.form.get('stat_description', '')
+        home_stat.icon_class = request.form['icon_class']
+        home_stat.color_class = request.form['color_class']
+        home_stat.order_index = int(request.form.get('order_index', 0))
+        home_stat.is_active = bool(request.form.get('is_active'))
+        
+        db.session.commit()
+        flash('Thống kê trang chủ đã được cập nhật!', 'success')
+        return redirect(url_for('admin_home_stats'))
+    
+    return render_template('admin/home_stats/edit.html', home_stat=home_stat)
+
+@app.route('/admin/home-stats/delete/<int:id>', methods=['POST'])
+@login_required
+def admin_home_stats_delete(id):
+    home_stat = HomeStats.query.get_or_404(id)
+    db.session.delete(home_stat)
+    db.session.commit()
+    
+    flash('Thống kê trang chủ đã được xóa!', 'success')
+    return redirect(url_for('admin_home_stats'))
 
 # FAQ Management Routes
 @app.route('/admin/faq')

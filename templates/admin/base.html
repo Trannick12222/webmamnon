@@ -263,6 +263,12 @@
                             <span>Quản lý trang chủ</span>
                         </a>
                         
+                        <a href="{{ url_for('admin_home_stats') }}" 
+                           class="sidebar-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:text-white transition duration-200 {{ 'bg-gradient-to-r from-orange-500 to-red-500 text-white' if 'home_stats' in request.endpoint }}">
+                            <i class="fas fa-chart-bar mr-3"></i>
+                            <span>Thành tựu trang chủ</span>
+                        </a>
+                        
                         <a href="{{ url_for('admin_decorative') }}" 
                            class="sidebar-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:text-white transition duration-200 {{ 'bg-gradient-to-r from-purple-500 to-pink-500 text-white' if 'decorative' in request.endpoint }}">
                             <i class="fas fa-magic mr-3"></i>
