@@ -943,12 +943,16 @@ def about():
     history_section = HistorySection.query.first()
     history_events = HistoryEvent.query.filter_by(is_active=True).order_by(HistoryEvent.order_index.asc(), HistoryEvent.year.asc()).all()
     
+    # Add about stats data
+    about_stats = AboutStats.query.filter_by(is_active=True).order_by(AboutStats.order_index.asc()).all()
+    
     return render_template('about.html', 
                          team_members=team_members,
                          mission_content=mission_content,
                          mission_items=mission_items,
                          history_section=history_section,
-                         history_events=history_events)
+                         history_events=history_events,
+                         about_stats=about_stats)
 
 @app.route('/debug-programs')
 def debug_programs():

@@ -206,6 +206,37 @@
     </div>
 </section>
 
+<!-- Achievements Section -->
+{% if about_stats %}
+<section class="py-20" style="background: linear-gradient(to right, var(--primary-color), var(--secondary-color))">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold text-white mb-6 font-patrick">
+                Thành tựu của chúng tôi
+            </h2>
+            <p class="text-xl text-white/90 max-w-3xl mx-auto">
+                Những con số ấn tượng khẳng định chất lượng giáo dục
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {% for stat in about_stats %}
+            <div class="text-center text-white">
+                <!-- Icon -->
+                <div class="w-16 h-16 {{ stat.color_class }} rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="{{ stat.icon_class }} text-white text-2xl"></i>
+                </div>
+                <!-- Stats -->
+                <div class="text-5xl font-bold font-patrick mb-4">{{ stat.stat_value }}</div>
+                <div class="text-lg font-medium">{{ stat.stat_label }}</div>
+                <div class="text-white/80 text-sm">{{ stat.stat_key.replace('_', ' ') }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
 <!-- Video Section -->
 {% if intro_videos %}
 <section class="py-20 bg-theme-lighter relative overflow-hidden">
