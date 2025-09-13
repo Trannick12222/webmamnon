@@ -269,6 +269,12 @@
                             <span>Thành tựu trang chủ</span>
                         </a>
                         
+                        <a href="{{ url_for('admin_working_hours') }}" 
+                           class="sidebar-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:text-white transition duration-200 {{ 'bg-gradient-to-r from-green-500 to-teal-500 text-white' if 'working_hours' in request.endpoint }}">
+                            <i class="fas fa-clock mr-3"></i>
+                            <span>Giờ làm việc</span>
+                        </a>
+                        
                         <a href="{{ url_for('admin_decorative') }}" 
                            class="sidebar-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:text-white transition duration-200 {{ 'bg-gradient-to-r from-purple-500 to-pink-500 text-white' if 'decorative' in request.endpoint }}">
                             <i class="fas fa-magic mr-3"></i>

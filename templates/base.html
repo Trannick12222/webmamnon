@@ -574,9 +574,15 @@
                 <div>
                     <h4 class="text-lg font-semibold mb-4">Giờ làm việc</h4>
                     <div class="space-y-2 text-gray-300 text-sm">
-                        <div>Thứ 2 - Thứ 6: 7:00 - 17:00</div>
-                        <div>Thứ 7: 7:30 - 11:30</div>
-                        <div>Chủ nhật: Nghỉ</div>
+                        {% if working_hours %}
+                            {% for hour in working_hours %}
+                            <div>{{ hour.day_label }}: {{ hour.hours }}</div>
+                            {% endfor %}
+                        {% else %}
+                            <div>Thứ 2 - Thứ 6: 7:00 - 17:00</div>
+                            <div>Thứ 7: 7:30 - 11:30</div>
+                            <div>Chủ nhật: Nghỉ</div>
+                        {% endif %}
                     </div>
                     
                     <div class="mt-6">

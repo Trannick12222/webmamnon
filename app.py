@@ -257,6 +257,17 @@ class HomeStats(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+class WorkingHours(db.Model):
+    """Working hours for contact page and footer"""
+    id = db.Column(db.Integer, primary_key=True)
+    day_key = db.Column(db.String(20), unique=True, nullable=False)  # 'monday_friday', 'saturday', 'sunday'
+    day_label = db.Column(db.String(50), nullable=False)  # 'Thứ 2 - Thứ 6', 'Thứ 7', 'Chủ nhật'
+    hours = db.Column(db.String(100), nullable=False)  # '7:00 - 17:00', '7:30 - 11:30', 'Nghỉ'
+    order_index = db.Column(db.Integer, default=0)
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
 class FAQ(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     question = db.Column(db.Text, nullable=False)  # Câu hỏi
@@ -898,6 +909,17 @@ def track_page_visit():
     except Exception as e:
         print(f"Error tracking page visit: {e}")
         # Không làm gián đoạn request nếu có lỗi tracking
+
+def get_working_hours():
+    """Helper function to get active working hours"""
+    return WorkingHours.query.filter_by(is_active=True).order_by(WorkingHours.order_index.asc()).all()
+
+@app.context_processor
+def inject_global_vars():
+    """Inject global variables into all templates"""
+    return {
+        'working_hours': get_working_hours()
+    }
 
 @app.before_request
 def before_request():
@@ -3084,6 +3106,67 @@ def admin_home_stats_delete(id):
     
     flash('Thống kê trang chủ đã được xóa!', 'success')
     return redirect(url_for('admin_home_stats'))
+
+# Working Hours Management Routes
+@app.route('/admin/working-hours')
+@login_required
+def admin_working_hours():
+    working_hours = WorkingHours.query.order_by(WorkingHours.order_index.asc(), WorkingHours.created_at.desc()).all()
+    return render_template('admin/working_hours/index.html', working_hours=working_hours)
+
+@app.route('/admin/working-hours/create', methods=['GET', 'POST'])
+@login_required
+def admin_working_hours_create():
+    if request.method == 'POST':
+        day_key = request.form['day_key']
+        day_label = request.form['day_label']
+        hours = request.form['hours']
+        order_index = int(request.form.get('order_index', 0))
+        is_active = bool(request.form.get('is_active'))
+        
+        working_hour = WorkingHours(
+            day_key=day_key,
+            day_label=day_label,
+            hours=hours,
+            order_index=order_index,
+            is_active=is_active
+        )
+        
+        db.session.add(working_hour)
+        db.session.commit()
+        
+        flash('Giờ làm việc đã được thêm!', 'success')
+        return redirect(url_for('admin_working_hours'))
+    
+    return render_template('admin/working_hours/create.html')
+
+@app.route('/admin/working-hours/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
+def admin_working_hours_edit(id):
+    working_hour = WorkingHours.query.get_or_404(id)
+    
+    if request.method == 'POST':
+        working_hour.day_key = request.form['day_key']
+        working_hour.day_label = request.form['day_label']
+        working_hour.hours = request.form['hours']
+        working_hour.order_index = int(request.form.get('order_index', 0))
+        working_hour.is_active = bool(request.form.get('is_active'))
+        
+        db.session.commit()
+        flash('Giờ làm việc đã được cập nhật!', 'success')
+        return redirect(url_for('admin_working_hours'))
+    
+    return render_template('admin/working_hours/edit.html', working_hour=working_hour)
+
+@app.route('/admin/working-hours/delete/<int:id>', methods=['POST'])
+@login_required
+def admin_working_hours_delete(id):
+    working_hour = WorkingHours.query.get_or_404(id)
+    db.session.delete(working_hour)
+    db.session.commit()
+    
+    flash('Giờ làm việc đã được xóa!', 'success')
+    return redirect(url_for('admin_working_hours'))
 
 # FAQ Management Routes
 @app.route('/admin/faq')

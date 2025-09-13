@@ -196,9 +196,15 @@
                             </div>
                             <div>
                                 <h3 class="text-lg font-semibold text-gray-800 mb-2">Giờ làm việc</h3>
-                                <p class="text-gray-600">Thứ 2 - Thứ 6: 7:00 - 17:00</p>
-                                <p class="text-gray-600">Thứ 7: 7:30 - 11:30</p>
-                                <p class="text-gray-600">Chủ nhật: Nghỉ</p>
+                                {% if working_hours %}
+                                    {% for hour in working_hours %}
+                                    <p class="text-gray-600">{{ hour.day_label }}: {{ hour.hours }}</p>
+                                    {% endfor %}
+                                {% else %}
+                                    <p class="text-gray-600">Thứ 2 - Thứ 6: 7:00 - 17:00</p>
+                                    <p class="text-gray-600">Thứ 7: 7:30 - 11:30</p>
+                                    <p class="text-gray-600">Chủ nhật: Nghỉ</p>
+                                {% endif %}
                             </div>
                         </div>
                     </div>

@@ -1,0 +1,111 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Giờ làm việc - Admin{% endblock %}
+{% block page_title %}Giờ làm việc{% endblock %}
+{% block page_description %}Quản lý giờ làm việc hiển thị trên website{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-800">Quản lý giờ làm việc</h2>
+            <p class="text-gray-600 mt-1">Cài đặt giờ làm việc hiển thị trên trang liên hệ và footer</p>
+        </div>
+        <a href="{{ url_for('admin_working_hours_create') }}" 
+           class="btn-primary px-6 py-3 rounded-lg font-medium">
+            <i class="fas fa-plus mr-2"></i>
+            Thêm giờ làm việc
+        </a>
+    </div>
+    
+    {% if working_hours %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for hour in working_hours %}
+        <div class="admin-card p-6 hover:shadow-lg transition duration-200">
+            <!-- Preview -->
+            <div class="text-center mb-4 p-4 bg-gray-50 rounded-lg">
+                <div class="flex items-center justify-center mb-3">
+                    <i class="fas fa-clock text-blue-600 text-2xl mr-3"></i>
+                    <div class="text-left">
+                        <div class="font-semibold text-gray-800">{{ hour.day_label }}</div>
+                        <div class="text-lg font-bold text-blue-600">{{ hour.hours }}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Info -->
+            <div class="space-y-2 mb-4">
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-600">Khóa:</span>
+                    <span class="text-sm font-medium">{{ hour.day_key }}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-600">Thứ tự:</span>
+                    <span class="text-sm font-medium">{{ hour.order_index }}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-600">Trạng thái:</span>
+                    <span class="text-xs px-2 py-1 rounded-full {{ 'bg-green-100 text-green-800' if hour.is_active else 'bg-red-100 text-red-800' }}">
+                        {{ 'Hiển thị' if hour.is_active else 'Ẩn' }}
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="flex items-center justify-between">
+                <a href="{{ url_for('admin_working_hours_edit', id=hour.id) }}" 
+                   class="text-blue-600 hover:text-blue-800 font-medium">
+                    <i class="fas fa-edit mr-1"></i>
+                    Chỉnh sửa
+                </a>
+                <form method="POST" action="{{ url_for('admin_working_hours_delete', id=hour.id) }}" 
+                      onsubmit="return confirm('Bạn có chắc muốn xóa giờ làm việc này?')" class="inline">
+                    <button type="submit" class="text-red-600 hover:text-red-800 font-medium">
+                        <i class="fas fa-trash mr-1"></i>
+                        Xóa
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Preview Section -->
+    <div class="mt-12 admin-card p-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">
+            <i class="fas fa-eye mr-2"></i>
+            Xem trước hiển thị
+        </h3>
+        
+        <div class="bg-gray-50 p-6 rounded-lg">
+            <h4 class="font-medium text-gray-800 mb-4">Giờ làm việc</h4>
+            <div class="space-y-2">
+                {% for hour in working_hours %}
+                {% if hour.is_active %}
+                <div class="flex justify-between">
+                    <span class="text-gray-600">{{ hour.day_label }}:</span>
+                    <span class="font-medium text-gray-800">{{ hour.hours }}</span>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    {% else %}
+    <div class="admin-card p-12 text-center">
+        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-clock text-gray-400 text-2xl"></i>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">Chưa có giờ làm việc nào</h3>
+        <p class="text-gray-600 mb-6">Hãy thêm giờ làm việc đầu tiên để hiển thị trên website</p>
+        <a href="{{ url_for('admin_working_hours_create') }}" 
+           class="btn-primary px-6 py-3 rounded-lg font-medium">
+            <i class="fas fa-plus mr-2"></i>
+            Thêm giờ làm việc đầu tiên
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
