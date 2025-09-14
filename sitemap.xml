@@ -31,14 +31,6 @@
     <priority>0.5</priority>
   </url>
   
-  <!-- Chương trình -->
-  <url>
-    <loc>https://mamnon.hoahuongduong.org/chuong-trinh</loc>
-    <lastmod>2025-09-14</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
   <!-- Tin tức -->
   <url>
     <loc>https://mamnon.hoahuongduong.org/tin-tuc</loc>

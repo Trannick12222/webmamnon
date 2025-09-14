@@ -72,7 +72,7 @@
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {% for program in programs %}
-            <div class="group bg-white rounded-3xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100 relative">
+            <a href="{{ url_for('program_detail', id=program.id) }}" class="block group bg-white rounded-3xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100 relative">
                 <!-- Popular Badge -->
                 {% if program.is_featured %}
                 <div class="absolute top-4 right-4 z-10">
@@ -149,6 +149,7 @@
                     <!-- Action Button -->
                     <div class="flex justify-center">
                         <a href="/lien-he" 
+                           onclick="event.stopPropagation(); event.preventDefault(); window.location.href='/lien-he';"
                            class="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-6 rounded-full font-bold text-center hover:from-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
                             <i class="fas fa-phone mr-2"></i>Đăng ký ngay
                         </a>
@@ -170,7 +171,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </a>
             {% endfor %}
         </div>
         
