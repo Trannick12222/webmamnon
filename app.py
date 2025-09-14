@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify, abort
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify, abort, make_response
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -951,7 +951,7 @@ def index():
     # Get system settings for school information
     system_settings = SystemSettings.query.first()
     
-    return render_template('index.html', 
+    response = make_response(render_template('index.html', 
                          featured_programs=featured_programs,
                          latest_news=latest_news,
                          latest_posts=latest_posts,
@@ -963,7 +963,14 @@ def index():
                          about_section=about_section,
                          about_stats=about_stats,
                          home_stats=home_stats,
-                         system_settings=system_settings)
+                         system_settings=system_settings))
+    
+    # Add cache control headers to prevent caching issues
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    
+    return response
 
 @app.route('/health')
 def health_check():
