@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  STATIC SITEMAP BACKUP
+  
+  Lưu ý: File này hiện tại chỉ là backup tĩnh.
+  Sitemap thực tế được phục vụ động qua route /sitemap.xml trong Flask app.
+  
+  Sitemap động bao gồm:
+  - Tất cả trang tĩnh chính
+  - Các tin tức từ database
+  - Các chương trình từ database  
+  - Các sự kiện từ database
+  - Các bài blog từ database
+  
+  Để truy cập sitemap động: https://mamnon.hoahuongduong.org/sitemap.xml
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Trang chủ -->
+  <url>
+    <loc>https://mamnon.hoahuongduong.org</loc>
+    <lastmod>2025-09-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <!-- Giới thiệu -->
+  <url>
+    <loc>https://mamnon.hoahuongduong.org/gioi-thieu</loc>
+    <lastmod>2025-09-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- Chương trình -->
+  <url>
+    <loc>https://mamnon.hoahuongduong.org/chuong-trinh</loc>
+    <lastmod>2025-09-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- Tin tức -->
+  <url>
+    <loc>https://mamnon.hoahuongduong.org/tin-tuc</loc>
+    <lastmod>2025-09-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Liên hệ -->
+  <url>
+    <loc>https://mamnon.hoahuongduong.org/lien-he</loc>
+    <lastmod>2025-09-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- Sự kiện -->
+  <url>
+    <loc>https://mamnon.hoahuongduong.org/su-kien</loc>
+    <lastmod>2025-09-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Blog -->
+  <url>
+    <loc>https://mamnon.hoahuongduong.org/blog</loc>
+    <lastmod>2025-09-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Thư viện ảnh -->
+  <url>
+    <loc>https://mamnon.hoahuongduong.org/thu-vien</loc>
+    <lastmod>2025-09-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+</urlset>
