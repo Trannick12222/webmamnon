@@ -5,17 +5,13 @@
   Lưu ý: File này hiện tại chỉ là backup tĩnh.
   Sitemap thực tế được phục vụ động qua route /sitemap.xml trong Flask app.
   
-  Sitemap động CHỈ BAO GỒM CÁC TRANG CHÍNH:
-  - Trang chủ
-  - Giới thiệu
-  - Chương trình (danh sách)
-  - Tin tức (danh sách)
-  - Liên hệ
-  - Sự kiện (danh sách)
-  - Blog (danh sách)
-  - Thư viện ảnh
+  Sitemap động bao gồm:
+  - Tất cả trang tĩnh chính
+  - Các tin tức từ database
+  - Các chương trình từ database  
+  - Các sự kiện từ database
+  - Các bài blog từ database
   
-  KHÔNG bao gồm các trang chi tiết để tránh 404 errors.
   Để truy cập sitemap động: https://mamnon.hoahuongduong.org/sitemap.xml
 -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -30,6 +26,14 @@
   <!-- Giới thiệu -->
   <url>
     <loc>https://mamnon.hoahuongduong.org/gioi-thieu</loc>
+    <lastmod>2025-09-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <!-- Chương trình -->
+  <url>
+    <loc>https://mamnon.hoahuongduong.org/chuong-trinh</loc>
     <lastmod>2025-09-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
