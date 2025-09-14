@@ -1043,11 +1043,24 @@ def programs():
 
 @app.route('/chuong-trinh/<int:id>')
 def program_detail(id):
-    program = Program.query.get(id)
-    if not program or not program.is_active:
-        # Redirect về trang chương trình thay vì 404
-        flash('Chương trình này không tồn tại hoặc đã bị gỡ bỏ.', 'warning')
-        return redirect(url_for('programs'))
+    # Redirect cứng cho chương trình ID 7 (từ Google sitemap cũ)
+    if id == 7:
+        # Trả về 410 Gone thay vì redirect để báo Google URL đã bị xóa vĩnh viễn
+        return '''<!DOCTYPE html>
+<html>
+<head>
+    <meta name="robots" content="noindex, nofollow">
+    <title>Trang không còn tồn tại</title>
+    <script>
+        window.location.href = "/";
+    </script>
+</head>
+<body>
+    <p>Trang này đã được chuyển về trang chủ...</p>
+</body>
+</html>''', 410  # 410 = Gone permanently
+    
+    program = Program.query.get_or_404(id)
     return render_template('program_detail.html', program=program)
 
 @app.route('/tin-tuc')
@@ -1059,11 +1072,7 @@ def news():
 
 @app.route('/tin-tuc/<int:id>')
 def news_detail(id):
-    article = News.query.get(id)
-    if not article or not article.is_published:
-        # Redirect về trang tin tức thay vì 404
-        flash('Tin tức này không tồn tại hoặc đã bị gỡ bỏ.', 'warning')
-        return redirect(url_for('news'))
+    article = News.query.get_or_404(id)
     related_news = News.query.filter(News.id != id, News.is_published == True).limit(3).all()
     return render_template('news_detail.html', article=article, related_news=related_news)
 
@@ -1166,12 +1175,7 @@ def events():
 
 @app.route('/su-kien/<int:event_id>')
 def event_detail(event_id):
-    event = Event.query.get(event_id)
-    if not event or not event.is_active:
-        # Redirect về trang sự kiện thay vì 404
-        flash('Sự kiện này không tồn tại hoặc đã bị gỡ bỏ.', 'warning')
-        return redirect(url_for('events'))
-    # event = Event.query.get_or_404(event_id)
+    event = Event.query.get_or_404(event_id)
     
     # Get related events (exclude current event)
     related_events = Event.query.filter_by(is_active=True).filter(Event.id != event_id).limit(3).all()
@@ -1538,11 +1542,11 @@ def blog():
 @app.route('/blog/<int:id>')
 def blog_detail(id):
     """Blog post detail page"""
-    post = Post.query.get(id)
-    if not post or not post.is_published:
-        # Redirect về trang blog thay vì 404
-        flash('Bài viết này không tồn tại hoặc đã bị gỡ bỏ.', 'warning')
-        return redirect(url_for('blog'))
+    post = Post.query.get_or_404(id)
+    
+    # Check if post is published
+    if not post.is_published:
+        abort(404)
     
     # Get related posts from same category
     related_posts = []
@@ -3901,10 +3905,8 @@ def sitemap():
         # Thêm các tin tức (sử dụng is_published thay vì is_active)
         news_items = News.query.filter_by(is_published=True).all()
         for news in news_items:
-            # Kiểm tra xem tin tức có tồn tại và có thể truy cập được không
-            if news and news.id:
-                lastmod = news.created_at.strftime('%Y-%m-%d') if news.created_at else today
-                xml_content += f'''
+            lastmod = news.created_at.strftime('%Y-%m-%d') if news.created_at else today
+            xml_content += f'''
   <url>
     <loc>{base_url}/tin-tuc/{news.id}</loc>
     <lastmod>{lastmod}</lastmod>
@@ -3912,11 +3914,11 @@ def sitemap():
     <priority>0.6</priority>
   </url>'''
         
-        # Thêm các chương trình (sử dụng is_active)
+        # Thêm các chương trình (sử dụng is_active, loại trừ ID 7)
         programs = Program.query.filter_by(is_active=True).all()
         for program in programs:
-            # Kiểm tra xem chương trình có tồn tại và có thể truy cập được không
-            if program and program.id:
+            # Loại trừ ID 7 khỏi sitemap vì đã redirect về trang chủ
+            if program.id != 7:
                 lastmod = program.created_at.strftime('%Y-%m-%d') if program.created_at else today
                 xml_content += f'''
   <url>
@@ -3929,10 +3931,8 @@ def sitemap():
         # Thêm các sự kiện (sử dụng is_active)
         events = Event.query.filter_by(is_active=True).all()
         for event in events:
-            # Kiểm tra xem sự kiện có tồn tại và có thể truy cập được không
-            if event and event.id:
-                lastmod = event.created_at.strftime('%Y-%m-%d') if event.created_at else today
-                xml_content += f'''
+            lastmod = event.created_at.strftime('%Y-%m-%d') if event.created_at else today
+            xml_content += f'''
   <url>
     <loc>{base_url}/su-kien/{event.id}</loc>
     <lastmod>{lastmod}</lastmod>
@@ -3943,10 +3943,8 @@ def sitemap():
         # Thêm các bài blog (sử dụng is_published)
         posts = Post.query.filter_by(is_published=True).all()
         for post in posts:
-            # Kiểm tra xem bài post có tồn tại và có thể truy cập được không
-            if post and post.id:
-                lastmod = post.updated_at.strftime('%Y-%m-%d') if post.updated_at else today
-                xml_content += f'''
+            lastmod = post.updated_at.strftime('%Y-%m-%d') if post.updated_at else today
+            xml_content += f'''
   <url>
     <loc>{base_url}/blog/{post.id}</loc>
     <lastmod>{lastmod}</lastmod>
@@ -3982,6 +3980,9 @@ Disallow: /admin/*
 Disallow: /proxy-image
 Disallow: /health
 
+# Disallow specific old URLs from Google index
+Disallow: /chuong-trinh/7
+
 # Allow important pages
 Allow: /
 Allow: /gioi-thieu
@@ -3998,19 +3999,6 @@ Sitemap: https://mamnon.hoahuongduong.org/sitemap.xml"""
     response = Response(robots_content, mimetype='text/plain')
     response.headers['Content-Type'] = 'text/plain; charset=utf-8'
     return response
-
-@app.errorhandler(404)
-def not_found_error(error):
-    """Xử lý lỗi 404 - redirect về trang chủ với thông báo"""
-    flash('Trang bạn tìm kiếm không tồn tại. Bạn đã được chuyển về trang chủ.', 'info')
-    return redirect(url_for('index'))
-
-@app.errorhandler(500)
-def internal_error(error):
-    """Xử lý lỗi 500 - redirect về trang chủ với thông báo"""
-    db.session.rollback()
-    flash('Đã xảy ra lỗi hệ thống. Bạn đã được chuyển về trang chủ.', 'error')
-    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     # Lấy port từ environment variable hoặc dùng 5000 làm default
