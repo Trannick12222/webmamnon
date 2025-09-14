@@ -6,7 +6,7 @@
     
     <!-- SEO Meta Tags -->
     {% set seo_data = get_seo_settings(request.endpoint or 'home') %}
-    <title>{{ seo_data.meta_title or (block('title') + ' - Trường Mầm non Hoa Hướng Dương') }}</title>
+    <title>{{ seo_data.meta_title or block('title') }}</title>
     
     {% if seo_data.meta_description %}
     <meta name="description" content="{{ seo_data.meta_description }}">
