@@ -1,0 +1,23 @@
+User-agent: *
+Allow: /
+
+# Disallow admin pages
+Disallow: /admin/
+Disallow: /admin/*
+
+# Disallow API endpoints that shouldn't be indexed
+Disallow: /proxy-image
+Disallow: /health
+
+# Allow important pages
+Allow: /
+Allow: /gioi-thieu
+Allow: /chuong-trinh
+Allow: /tin-tuc
+Allow: /lien-he
+Allow: /su-kien
+Allow: /blog
+Allow: /thu-vien
+
+# Sitemap location
+Sitemap: https://mamnon.hoahuongduong.org/sitemap.xml

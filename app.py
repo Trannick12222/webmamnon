@@ -41,7 +41,9 @@ db = SQLAlchemy(app)
 
 @app.after_request
 def after_request(response):
-    response.headers['Content-Type'] = 'text/html; charset=utf-8'
+    # Chỉ set Content-Type cho HTML responses, không override XML responses
+    if not response.content_type or response.content_type.startswith('text/html'):
+        response.headers['Content-Type'] = 'text/html; charset=utf-8'
     return response
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -3941,6 +3943,39 @@ def sitemap():
     # Trả về XML response với đúng content-type
     response = Response(xml_content, mimetype='application/xml')
     response.headers['Content-Type'] = 'application/xml; charset=utf-8'
+    return response
+
+@app.route('/robots.txt')
+def robots():
+    """Serve robots.txt file"""
+    from flask import Response
+    
+    robots_content = """User-agent: *
+Allow: /
+
+# Disallow admin pages
+Disallow: /admin/
+Disallow: /admin/*
+
+# Disallow API endpoints that shouldn't be indexed
+Disallow: /proxy-image
+Disallow: /health
+
+# Allow important pages
+Allow: /
+Allow: /gioi-thieu
+Allow: /chuong-trinh
+Allow: /tin-tuc
+Allow: /lien-he
+Allow: /su-kien
+Allow: /blog
+Allow: /thu-vien
+
+# Sitemap location
+Sitemap: https://mamnon.hoahuongduong.org/sitemap.xml"""
+    
+    response = Response(robots_content, mimetype='text/plain')
+    response.headers['Content-Type'] = 'text/plain; charset=utf-8'
     return response
 
 if __name__ == '__main__':
