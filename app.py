@@ -3843,21 +3843,21 @@ def sitemap():
     xml_content = '''<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'''
     
-    # Các trang tĩnh chính
-    static_pages = [
-        ('/', '1.0', 'daily'),
-        ('/gioi-thieu', '0.9', 'weekly'),
-        ('/chuong-trinh', '0.9', 'weekly'),
-        ('/tin-tuc', '0.8', 'daily'),
-        ('/lien-he', '0.7', 'monthly'),
-        ('/su-kien', '0.8', 'weekly'),
-        ('/blog', '0.8', 'daily'),
-        ('/thu-vien', '0.7', 'weekly')
+    # Chỉ các trang chính (không bao gồm chi tiết)
+    main_pages = [
+        ('/', '1.0', 'daily'),           # Trang chủ
+        ('/gioi-thieu', '0.9', 'weekly'),    # Giới thiệu
+        ('/chuong-trinh', '0.9', 'weekly'),  # Danh sách chương trình
+        ('/tin-tuc', '0.8', 'daily'),        # Danh sách tin tức
+        ('/lien-he', '0.7', 'monthly'),      # Liên hệ
+        ('/su-kien', '0.8', 'weekly'),       # Danh sách sự kiện
+        ('/blog', '0.8', 'daily'),           # Danh sách blog
+        ('/thu-vien-anh', '0.7', 'weekly')   # Thư viện ảnh
     ]
     
-    # Thêm các trang tĩnh
+    # Thêm các trang chính
     today = datetime.now().strftime('%Y-%m-%d')
-    for url, priority, changefreq in static_pages:
+    for url, priority, changefreq in main_pages:
         xml_content += f'''
   <url>
     <loc>{base_url}{url}</loc>
@@ -3866,57 +3866,8 @@ def sitemap():
     <priority>{priority}</priority>
   </url>'''
     
-    try:
-        # Thêm các tin tức (sử dụng is_published thay vì is_active)
-        news_items = News.query.filter_by(is_published=True).all()
-        for news in news_items:
-            lastmod = news.created_at.strftime('%Y-%m-%d') if news.created_at else today
-            xml_content += f'''
-  <url>
-    <loc>{base_url}/tin-tuc/{news.id}</loc>
-    <lastmod>{lastmod}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>'''
-        
-        # Thêm các chương trình (sử dụng is_active)
-        programs = Program.query.filter_by(is_active=True).all()
-        for program in programs:
-            lastmod = program.created_at.strftime('%Y-%m-%d') if program.created_at else today
-            xml_content += f'''
-  <url>
-    <loc>{base_url}/chuong-trinh/{program.id}</loc>
-    <lastmod>{lastmod}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>'''
-        
-        # Thêm các sự kiện (sử dụng is_active)
-        events = Event.query.filter_by(is_active=True).all()
-        for event in events:
-            lastmod = event.created_at.strftime('%Y-%m-%d') if event.created_at else today
-            xml_content += f'''
-  <url>
-    <loc>{base_url}/su-kien/{event.id}</loc>
-    <lastmod>{lastmod}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>'''
-        
-        # Thêm các bài blog (sử dụng is_published)
-        posts = Post.query.filter_by(is_published=True).all()
-        for post in posts:
-            lastmod = post.updated_at.strftime('%Y-%m-%d') if post.updated_at else today
-            xml_content += f'''
-  <url>
-    <loc>{base_url}/blog/{post.id}</loc>
-    <lastmod>{lastmod}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>'''
-            
-    except Exception as e:
-        print(f"Error generating dynamic sitemap content: {e}")
+    # Không thêm các trang chi tiết để giữ sitemap đơn giản và tránh 404
+    # Chỉ bao gồm các trang chính quan trọng
     
     # Kết thúc XML
     xml_content += '''
