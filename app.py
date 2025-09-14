@@ -1612,6 +1612,173 @@ def admin_programs_delete(id):
     flash('Chương trình đã được xóa!', 'success')
     return redirect(url_for('admin_programs'))
 
+# Program Info Management Routes
+@app.route('/admin/program-info')
+@login_required
+def admin_program_info():
+    program_info = ProgramInfo.query.order_by(ProgramInfo.order_index.asc(), ProgramInfo.created_at.desc()).all()
+    return render_template('admin/program_info/list.html', program_info=program_info)
+
+@app.route('/admin/program-info/create', methods=['GET', 'POST'])
+@login_required
+def admin_program_info_create():
+    if request.method == 'POST':
+        program_info = ProgramInfo(
+            title=request.form['title'],
+            icon_class=request.form.get('icon_class', 'fas fa-users'),
+            icon_bg_gradient=request.form.get('icon_bg_gradient', 'from-purple-400 to-pink-500'),
+            order_index=int(request.form.get('order_index', 0))
+        )
+        
+        db.session.add(program_info)
+        db.session.commit()
+        flash('Thông tin chương trình đã được tạo thành công!', 'success')
+        return redirect(url_for('admin_program_info'))
+    
+    return render_template('admin/program_info/create.html')
+
+@app.route('/admin/program-info/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
+def admin_program_info_edit(id):
+    program_info = ProgramInfo.query.get_or_404(id)
+    
+    if request.method == 'POST':
+        program_info.title = request.form['title']
+        program_info.icon_class = request.form.get('icon_class', 'fas fa-users')
+        program_info.icon_bg_gradient = request.form.get('icon_bg_gradient', 'from-purple-400 to-pink-500')
+        program_info.order_index = int(request.form.get('order_index', 0))
+        
+        db.session.commit()
+        flash('Thông tin chương trình đã được cập nhật!', 'success')
+        return redirect(url_for('admin_program_info'))
+    
+    return render_template('admin/program_info/edit.html', program_info=program_info)
+
+@app.route('/admin/program-info/delete/<int:id>', methods=['POST'])
+@login_required
+def admin_program_info_delete(id):
+    program_info = ProgramInfo.query.get_or_404(id)
+    db.session.delete(program_info)
+    db.session.commit()
+    flash('Thông tin chương trình đã được xóa!', 'success')
+    return redirect(url_for('admin_program_info'))
+
+# Program Features Management Routes
+@app.route('/admin/program-features')
+@login_required
+def admin_program_features():
+    program_features = ProgramFeature.query.order_by(ProgramFeature.order_index.asc(), ProgramFeature.created_at.desc()).all()
+    return render_template('admin/program_features/list.html', program_features=program_features)
+
+@app.route('/admin/program-features/create', methods=['GET', 'POST'])
+@login_required
+def admin_program_features_create():
+    if request.method == 'POST':
+        program_feature = ProgramFeature(
+            title=request.form['title'],
+            icon_class=request.form.get('icon_class', 'fas fa-check-circle'),
+            background_gradient=request.form.get('background_gradient', 'from-green-100 to-emerald-100'),
+            text_color=request.form.get('text_color', 'text-green-800'),
+            border_color=request.form.get('border_color', 'border-green-200'),
+            order_index=int(request.form.get('order_index', 0))
+        )
+        
+        db.session.add(program_feature)
+        db.session.commit()
+        flash('Điểm nổi bật đã được tạo thành công!', 'success')
+        return redirect(url_for('admin_program_features'))
+    
+    return render_template('admin/program_features/create.html')
+
+@app.route('/admin/program-features/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
+def admin_program_features_edit(id):
+    program_feature = ProgramFeature.query.get_or_404(id)
+    
+    if request.method == 'POST':
+        program_feature.title = request.form['title']
+        program_feature.icon_class = request.form.get('icon_class', 'fas fa-check-circle')
+        program_feature.background_gradient = request.form.get('background_gradient', 'from-green-100 to-emerald-100')
+        program_feature.text_color = request.form.get('text_color', 'text-green-800')
+        program_feature.border_color = request.form.get('border_color', 'border-green-200')
+        program_feature.order_index = int(request.form.get('order_index', 0))
+        
+        db.session.commit()
+        flash('Điểm nổi bật đã được cập nhật!', 'success')
+        return redirect(url_for('admin_program_features'))
+    
+    return render_template('admin/program_features/edit.html', program_feature=program_feature)
+
+@app.route('/admin/program-features/delete/<int:id>', methods=['POST'])
+@login_required
+def admin_program_features_delete(id):
+    program_feature = ProgramFeature.query.get_or_404(id)
+    db.session.delete(program_feature)
+    db.session.commit()
+    flash('Điểm nổi bật đã được xóa!', 'success')
+    return redirect(url_for('admin_program_features'))
+
+# Age Groups Management Routes
+@app.route('/admin/age-groups')
+@login_required
+def admin_age_groups():
+    age_groups = AgeGroup.query.order_by(AgeGroup.order_index.asc(), AgeGroup.created_at.desc()).all()
+    return render_template('admin/age_groups/list.html', age_groups=age_groups)
+
+@app.route('/admin/age-groups/create', methods=['GET', 'POST'])
+@login_required
+def admin_age_groups_create():
+    if request.method == 'POST':
+        age_group = AgeGroup(
+            name=request.form['name'],
+            age_range=request.form['age_range'],
+            description=request.form.get('description', ''),
+            skills=request.form.get('skills', ''),
+            icon_class=request.form.get('icon_class', 'fas fa-baby'),
+            icon_bg_color=request.form.get('icon_bg_color', 'bg-pink-100'),
+            icon_text_color=request.form.get('icon_text_color', 'text-pink-600'),
+            order_index=int(request.form.get('order_index', 0)),
+            is_active=True
+        )
+        
+        db.session.add(age_group)
+        db.session.commit()
+        flash('Nhóm độ tuổi đã được tạo thành công!', 'success')
+        return redirect(url_for('admin_age_groups'))
+    
+    return render_template('admin/age_groups/create.html')
+
+@app.route('/admin/age-groups/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
+def admin_age_groups_edit(id):
+    age_group = AgeGroup.query.get_or_404(id)
+    
+    if request.method == 'POST':
+        age_group.name = request.form['name']
+        age_group.age_range = request.form['age_range']
+        age_group.description = request.form.get('description', '')
+        age_group.skills = request.form.get('skills', '')
+        age_group.icon_class = request.form.get('icon_class', 'fas fa-baby')
+        age_group.icon_bg_color = request.form.get('icon_bg_color', 'bg-pink-100')
+        age_group.icon_text_color = request.form.get('icon_text_color', 'text-pink-600')
+        age_group.order_index = int(request.form.get('order_index', 0))
+        age_group.is_active = bool(request.form.get('is_active', True))
+        
+        db.session.commit()
+        flash('Nhóm độ tuổi đã được cập nhật!', 'success')
+        return redirect(url_for('admin_age_groups'))
+    
+    return render_template('admin/age_groups/edit.html', age_group=age_group)
+
+@app.route('/admin/age-groups/delete/<int:id>', methods=['POST'])
+@login_required
+def admin_age_groups_delete(id):
+    age_group = AgeGroup.query.get_or_404(id)
+    db.session.delete(age_group)
+    db.session.commit()
+    flash('Nhóm độ tuổi đã được xóa!', 'success')
+    return redirect(url_for('admin_age_groups'))
+
 @app.route('/admin/gallery')
 @login_required
 def admin_gallery():

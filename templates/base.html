@@ -72,6 +72,24 @@
         .bg-accent { background-color: var(--accent-color); }
         .text-accent { color: var(--accent-color); }
         
+        /* Custom Tailwind Color Classes for Gradients */
+        .from-primary { 
+            --tw-gradient-from: var(--primary-color);
+            --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(255, 107, 53, 0));
+        }
+        .to-secondary { 
+            --tw-gradient-to: var(--secondary-color);
+        }
+        .bg-gradient-to-r {
+            background-image: linear-gradient(to right, var(--tw-gradient-stops));
+        }
+        .bg-gradient-to-br {
+            background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
+        }
+        .bg-gradient-to-t {
+            background-image: linear-gradient(to top, var(--tw-gradient-stops));
+        }
+        
         /* Fixed Colors Support for Stats */
         .bg-orange-500 { background-color: #f97316; }
         .bg-orange-400 { background-color: #fb923c; }
