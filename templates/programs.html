@@ -223,9 +223,15 @@
                 <!-- Special Program Image -->
                 {% if special_program.image_path %}
                 <div class="mt-4 rounded-lg overflow-hidden">
-                    <img src="/static/{{ special_program.image_path }}" 
-                         alt="{{ special_program.title }}" 
-                         class="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300">
+                    {% if special_program.image_path.startswith('uploads/') %}
+                        <img src="/static/{{ special_program.image_path }}" 
+                             alt="{{ special_program.title }}" 
+                             class="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300">
+                    {% else %}
+                        <img src="/static/uploads/{{ special_program.image_path }}" 
+                             alt="{{ special_program.title }}" 
+                             class="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300">
+                    {% endif %}
                 </div>
                 {% endif %}
 

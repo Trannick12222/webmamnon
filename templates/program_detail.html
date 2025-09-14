@@ -78,7 +78,7 @@
                 <div class="order-2 lg:order-1">
                     {% if program.featured_image %}
                     <div class="relative rounded-3xl overflow-hidden shadow-2xl group">
-                        <img src="{{ url_for('static', filename=program.featured_image.replace('uploads/', '')) }}" 
+                        <img src="/static/{{ program.featured_image }}" 
                              alt="{{ program.name }}" 
                              class="w-full h-96 object-cover transition-transform duration-500 group-hover:scale-110">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
