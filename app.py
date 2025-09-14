@@ -1043,24 +1043,11 @@ def programs():
 
 @app.route('/chuong-trinh/<int:id>')
 def program_detail(id):
-    # Redirect cứng cho chương trình ID 7 (từ Google sitemap cũ)
-    if id == 7:
-        # Trả về 410 Gone thay vì redirect để báo Google URL đã bị xóa vĩnh viễn
-        return '''<!DOCTYPE html>
-<html>
-<head>
-    <meta name="robots" content="noindex, nofollow">
-    <title>Trang không còn tồn tại</title>
-    <script>
-        window.location.href = "/";
-    </script>
-</head>
-<body>
-    <p>Trang này đã được chuyển về trang chủ...</p>
-</body>
-</html>''', 410  # 410 = Gone permanently
-    
-    program = Program.query.get_or_404(id)
+    program = Program.query.get(id)
+    if not program or not program.is_active:
+        # Redirect về trang chương trình nếu không tồn tại
+        flash('Chương trình này không tồn tại hoặc đã bị gỡ bỏ.', 'warning')
+        return redirect(url_for('programs'))
     return render_template('program_detail.html', program=program)
 
 @app.route('/tin-tuc')
@@ -1072,9 +1059,9 @@ def news():
 
 @app.route('/tin-tuc/<int:id>')
 def news_detail(id):
-    article = News.query.get_or_404(id)
-    related_news = News.query.filter(News.id != id, News.is_published == True).limit(3).all()
-    return render_template('news_detail.html', article=article, related_news=related_news)
+    # Redirect tất cả tin tức về trang chủ
+    flash('Bạn đã được chuyển về trang chủ. Vui lòng xem tin tức mới nhất.', 'info')
+    return redirect(url_for('index'))
 
 @app.route('/thu-vien-anh')
 def gallery():
@@ -1175,18 +1162,9 @@ def events():
 
 @app.route('/su-kien/<int:event_id>')
 def event_detail(event_id):
-    event = Event.query.get_or_404(event_id)
-    
-    # Get related events (exclude current event)
-    related_events = Event.query.filter_by(is_active=True).filter(Event.id != event_id).limit(3).all()
-    
-    # Get current time for status comparison
-    current_time = datetime.utcnow()
-    
-    return render_template('event_detail.html', 
-                         event=event, 
-                         related_events=related_events,
-                         current_time=current_time)
+    # Redirect tất cả sự kiện về trang chủ
+    flash('Bạn đã được chuyển về trang chủ. Vui lòng xem sự kiện sắp tới.', 'info')
+    return redirect(url_for('index'))
 
 @app.route('/lien-he', methods=['GET', 'POST'])
 def contact():
@@ -1542,22 +1520,9 @@ def blog():
 @app.route('/blog/<int:id>')
 def blog_detail(id):
     """Blog post detail page"""
-    post = Post.query.get_or_404(id)
-    
-    # Check if post is published
-    if not post.is_published:
-        abort(404)
-    
-    # Get related posts from same category
-    related_posts = []
-    if post.category:
-        related_posts = Post.query.filter(
-            Post.category_id == post.category_id,
-            Post.id != post.id,
-            Post.is_published == True
-        ).limit(3).all()
-    
-    return render_template('blog_detail.html', post=post, related_posts=related_posts)
+    # Redirect tất cả blog về trang chủ
+    flash('Bạn đã được chuyển về trang chủ. Vui lòng xem các bài viết mới nhất.', 'info')
+    return redirect(url_for('index'))
 
 @app.route('/admin/programs')
 @login_required
@@ -3914,13 +3879,11 @@ def sitemap():
     <priority>0.6</priority>
   </url>'''
         
-        # Thêm các chương trình (sử dụng is_active, loại trừ ID 7)
+        # Thêm các chương trình (sử dụng is_active)
         programs = Program.query.filter_by(is_active=True).all()
         for program in programs:
-            # Loại trừ ID 7 khỏi sitemap vì đã redirect về trang chủ
-            if program.id != 7:
-                lastmod = program.created_at.strftime('%Y-%m-%d') if program.created_at else today
-                xml_content += f'''
+            lastmod = program.created_at.strftime('%Y-%m-%d') if program.created_at else today
+            xml_content += f'''
   <url>
     <loc>{base_url}/chuong-trinh/{program.id}</loc>
     <lastmod>{lastmod}</lastmod>
@@ -3979,9 +3942,6 @@ Disallow: /admin/*
 # Disallow API endpoints that shouldn't be indexed
 Disallow: /proxy-image
 Disallow: /health
-
-# Disallow specific old URLs from Google index
-Disallow: /chuong-trinh/7
 
 # Allow important pages
 Allow: /

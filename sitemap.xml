@@ -28,7 +28,7 @@
     <loc>https://mamnon.hoahuongduong.org/gioi-thieu</loc>
     <lastmod>2025-09-14</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.5</priority>
   </url>
   
   <!-- Chương trình -->
@@ -36,7 +36,7 @@
     <loc>https://mamnon.hoahuongduong.org/chuong-trinh</loc>
     <lastmod>2025-09-14</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.5</priority>
   </url>
   
   <!-- Tin tức -->
@@ -44,7 +44,7 @@
     <loc>https://mamnon.hoahuongduong.org/tin-tuc</loc>
     <lastmod>2025-09-14</lastmod>
     <changefreq>daily</changefreq>
-    <priority>0.8</priority>
+    <priority>0.5</priority>
   </url>
   
   <!-- Liên hệ -->
@@ -52,7 +52,7 @@
     <loc>https://mamnon.hoahuongduong.org/lien-he</loc>
     <lastmod>2025-09-14</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.5</priority>
   </url>
   
   <!-- Sự kiện -->
@@ -60,7 +60,7 @@
     <loc>https://mamnon.hoahuongduong.org/su-kien</loc>
     <lastmod>2025-09-14</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.5</priority>
   </url>
   
   <!-- Blog -->
@@ -68,7 +68,7 @@
     <loc>https://mamnon.hoahuongduong.org/blog</loc>
     <lastmod>2025-09-14</lastmod>
     <changefreq>daily</changefreq>
-    <priority>0.8</priority>
+    <priority>0.5</priority>
   </url>
   
   <!-- Thư viện ảnh -->
@@ -76,6 +76,6 @@
     <loc>https://mamnon.hoahuongduong.org/thu-vien</loc>
     <lastmod>2025-09-14</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.5</priority>
   </url>
 </urlset>
