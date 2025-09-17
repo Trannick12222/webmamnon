@@ -188,10 +188,9 @@
             </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
             {% for special_program in special_programs %}
-            <a href="/chuong-trinh-dac-biet/{{ special_program.id }}" class="block">
-            <div class="relative p-6 rounded-2xl bg-gradient-to-br {{ special_program.background_gradient or 'from-blue-50 to-purple-50' }} border {{ special_program.border_color or 'border-blue-200' }} card-hover group cursor-pointer">
+            <div class="relative p-6 rounded-2xl bg-gradient-to-br {{ special_program.background_gradient or 'from-blue-50 to-purple-50' }} border {{ special_program.border_color or 'border-blue-200' }} card-hover group cursor-pointer h-full flex flex-col">
                 <!-- Icon -->
                 <div class="w-16 h-16 {{ special_program.icon_bg_color or 'bg-blue-500' }} rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                     <i class="{{ special_program.icon_class or 'fas fa-star' }} text-white text-2xl"></i>
@@ -237,7 +236,7 @@
                 {% endif %}
 
                 <!-- CTA -->
-                <div class="mt-6">
+                <div class="mt-auto pt-6">
                     <a href="/chuong-trinh-dac-biet/{{ special_program.id }}" 
                        class="inline-flex items-center text-primary hover:text-secondary font-medium transition-colors duration-200">
                         Tìm hiểu thêm
@@ -245,7 +244,6 @@
                     </a>
                 </div>
             </div>
-            </a>
             {% endfor %}
         </div>
     </div>

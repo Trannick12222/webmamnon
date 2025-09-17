@@ -1040,7 +1040,7 @@ def test_image():
 @app.route('/chuong-trinh')
 def programs():
     programs = Program.query.filter_by(is_active=True).all()
-    special_programs = SpecialProgram.query.filter_by(is_active=True).order_by(SpecialProgram.order_index.asc(), SpecialProgram.created_at.asc()).all()
+    special_programs = SpecialProgram.query.filter_by(is_active=True).order_by(SpecialProgram.order_index.asc(), SpecialProgram.id.asc()).all()
     
     # Get CTA data for programs page
     programs_cta = CallToAction.query.filter_by(section_name='programs_cta', is_active=True).first()
