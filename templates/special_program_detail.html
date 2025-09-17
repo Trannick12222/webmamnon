@@ -90,9 +90,9 @@
             </div>
             
             <!-- Features -->
-            {% if special_program.features %}
+            {% if special_program.features and special_program.features.strip() and special_program.features != "Không có nổi bật" %}
                 {% set features_list = special_program.features|from_json %}
-                {% if features_list %}
+                {% if features_list and features_list|length > 0 %}
                 <div class="bg-white rounded-2xl p-8 shadow-lg border {{ special_program.border_color or 'border-blue-200' }} mb-12">
                     <h2 class="text-2xl font-bold text-gray-800 mb-6 font-patrick">
                         <i class="fas fa-check-circle text-green-500 mr-3"></i>
@@ -107,6 +107,27 @@
                         {% endfor %}
                     </div>
                 </div>
+                {% else %}
+                    <!-- Handle plain text features -->
+                    {% set text_features = special_program.features.split('\n') %}
+                    {% if text_features|length > 0 and text_features[0].strip() %}
+                    <div class="bg-white rounded-2xl p-8 shadow-lg border {{ special_program.border_color or 'border-blue-200' }} mb-12">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-6 font-patrick">
+                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                            Điểm nổi bật
+                        </h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {% for feature in text_features %}
+                                {% if feature.strip() %}
+                                <div class="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg">
+                                    <i class="fas fa-star text-{{ special_program.icon_bg_color.replace('bg-', '') or 'blue-500' }} mt-1"></i>
+                                    <span class="text-gray-700">{{ feature.strip() }}</span>
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
                 {% endif %}
             {% endif %}
             
