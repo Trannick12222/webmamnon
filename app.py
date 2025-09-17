@@ -771,7 +771,17 @@ def inject_unread_contacts():
         get_seo_settings=get_seo_settings
     )
 
-# Custom Jinja2 filter to extract YouTube video ID
+# Custom Jinja2 filters
+def from_json(value):
+    """Parse JSON string to Python object"""
+    import json
+    try:
+        if isinstance(value, str):
+            return json.loads(value)
+        return value
+    except (json.JSONDecodeError, TypeError):
+        return []
+
 def extract_youtube_id(url):
     """Extract YouTube video ID from URL"""
     import re
@@ -780,6 +790,7 @@ def extract_youtube_id(url):
     return match.group(1) if match and len(match.group(1)) == 11 else None
 
 app.jinja_env.filters['youtube_id'] = extract_youtube_id
+app.jinja_env.filters['from_json'] = from_json
 
 def normalize_path(path):
     """Normalize file path to use forward slashes for URLs"""
