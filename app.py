@@ -771,17 +771,7 @@ def inject_unread_contacts():
         get_seo_settings=get_seo_settings
     )
 
-# Custom Jinja2 filters
-def from_json(value):
-    """Parse JSON string to Python object"""
-    import json
-    try:
-        if isinstance(value, str):
-            return json.loads(value)
-        return value
-    except (json.JSONDecodeError, TypeError):
-        return []
-
+# Custom Jinja2 filter to extract YouTube video ID
 def extract_youtube_id(url):
     """Extract YouTube video ID from URL"""
     import re
@@ -790,7 +780,6 @@ def extract_youtube_id(url):
     return match.group(1) if match and len(match.group(1)) == 11 else None
 
 app.jinja_env.filters['youtube_id'] = extract_youtube_id
-app.jinja_env.filters['from_json'] = from_json
 
 def normalize_path(path):
     """Normalize file path to use forward slashes for URLs"""
@@ -1040,7 +1029,7 @@ def test_image():
 @app.route('/chuong-trinh')
 def programs():
     programs = Program.query.filter_by(is_active=True).all()
-    special_programs = SpecialProgram.query.filter_by(is_active=True).order_by(SpecialProgram.order_index.asc(), SpecialProgram.id.asc()).all()
+    special_programs = SpecialProgram.query.filter_by(is_active=True).order_by(SpecialProgram.order_index.asc(), SpecialProgram.created_at.asc()).all()
     
     # Get CTA data for programs page
     programs_cta = CallToAction.query.filter_by(section_name='programs_cta', is_active=True).first()
@@ -1052,27 +1041,24 @@ def programs():
             print(f"Full path: {os.path.join(app.config['UPLOAD_FOLDER'], program.featured_image.replace('uploads/', ''))}")
     return render_template('programs.html', programs=programs, special_programs=special_programs, programs_cta=programs_cta)
 
-@app.route('/chuong-trinh-dac-biet/<int:id>')
-def special_program_detail(id):
-    """Trang chi tiết chương trình đặc biệt"""
-    special_program = SpecialProgram.query.get_or_404(id)
-    
-    # Lấy các chương trình đặc biệt khác để gợi ý
-    other_programs = SpecialProgram.query.filter(
-        SpecialProgram.is_active == True,
-        SpecialProgram.id != id
-    ).order_by(SpecialProgram.order_index.asc()).limit(3).all()
-    
-    return render_template('special_program_detail.html', 
-                         special_program=special_program, 
-                         other_programs=other_programs)
-
 @app.route('/chuong-trinh/<int:id>')
 def program_detail(id):
     program = Program.query.get(id)
     if not program or not program.is_active:
         return redirect(url_for('programs'))
     return render_template('program_detail.html', program=program)
+
+@app.route('/chuong-trinh-dac-biet/<int:id>')
+def special_program_detail(id):
+    """Trang chi tiết chương trình đặc biệt"""
+    special_program = SpecialProgram.query.get_or_404(id)
+    other_programs = SpecialProgram.query.filter(
+        SpecialProgram.is_active == True,
+        SpecialProgram.id != id
+    ).order_by(SpecialProgram.order_index.asc()).limit(3).all()
+    return render_template('special_program_detail.html', 
+                         special_program=special_program, 
+                         other_programs=other_programs)
 
 @app.route('/tin-tuc')
 def news():
@@ -3429,8 +3415,6 @@ def admin_special_programs_create():
         image_path = None
         if 'image' in request.files and request.files['image'].filename:
             image_path = save_image(request.files['image'], 'special_programs')
-        elif request.form.get('cropped_image_data'):
-            image_path = save_cropped_image(request.form.get('cropped_image_data'), 'special_programs')
         
         special_program = SpecialProgram(
             title=title,
@@ -3480,12 +3464,6 @@ def admin_special_programs_edit(id):
             # Delete old image before saving new one
             delete_old_image(special_program.image_path)
             special_program.image_path = save_image(request.files['image'], 'special_programs')
-        
-        # Handle cropped image data
-        elif request.form.get('cropped_image_data'):
-            # Delete old image before saving new one
-            delete_old_image(special_program.image_path)
-            special_program.image_path = save_cropped_image(request.form.get('cropped_image_data'), 'special_programs')
         
         db.session.commit()
         flash('Chương trình đặc biệt đã được cập nhật!', 'success')
@@ -3972,6 +3950,18 @@ def nl2br(value):
     return Markup(str(value).replace('\n', '<br>\n'))
 
 app.jinja_env.filters['nl2br'] = nl2br
+
+def from_json(value):
+    """Parse JSON string to Python object"""
+    import json
+    try:
+        if isinstance(value, str):
+            return json.loads(value)
+        return value
+    except (json.JSONDecodeError, TypeError):
+        return []
+
+app.jinja_env.filters['from_json'] = from_json
 
 @app.route('/proxy-image')
 def proxy_image():
