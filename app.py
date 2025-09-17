@@ -1052,6 +1052,21 @@ def programs():
             print(f"Full path: {os.path.join(app.config['UPLOAD_FOLDER'], program.featured_image.replace('uploads/', ''))}")
     return render_template('programs.html', programs=programs, special_programs=special_programs, programs_cta=programs_cta)
 
+@app.route('/chuong-trinh-dac-biet/<int:id>')
+def special_program_detail(id):
+    """Trang chi tiết chương trình đặc biệt"""
+    special_program = SpecialProgram.query.get_or_404(id)
+    
+    # Lấy các chương trình đặc biệt khác để gợi ý
+    other_programs = SpecialProgram.query.filter(
+        SpecialProgram.is_active == True,
+        SpecialProgram.id != id
+    ).order_by(SpecialProgram.order_index.asc()).limit(3).all()
+    
+    return render_template('special_program_detail.html', 
+                         special_program=special_program, 
+                         other_programs=other_programs)
+
 @app.route('/chuong-trinh/<int:id>')
 def program_detail(id):
     program = Program.query.get(id)
@@ -3414,6 +3429,8 @@ def admin_special_programs_create():
         image_path = None
         if 'image' in request.files and request.files['image'].filename:
             image_path = save_image(request.files['image'], 'special_programs')
+        elif request.form.get('cropped_image_data'):
+            image_path = save_cropped_image(request.form.get('cropped_image_data'), 'special_programs')
         
         special_program = SpecialProgram(
             title=title,
@@ -3463,6 +3480,12 @@ def admin_special_programs_edit(id):
             # Delete old image before saving new one
             delete_old_image(special_program.image_path)
             special_program.image_path = save_image(request.files['image'], 'special_programs')
+        
+        # Handle cropped image data
+        elif request.form.get('cropped_image_data'):
+            # Delete old image before saving new one
+            delete_old_image(special_program.image_path)
+            special_program.image_path = save_cropped_image(request.form.get('cropped_image_data'), 'special_programs')
         
         db.session.commit()
         flash('Chương trình đặc biệt đã được cập nhật!', 'success')

@@ -5,6 +5,11 @@
 {% block page_title %}Thêm chương trình đặc biệt{% endblock %}
 {% block page_description %}Tạo chương trình đặc biệt mới cho trang chương trình{% endblock %}
 
+{% block extra_css %}
+<!-- Cropper.js CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+{% endblock %}
+
 {% block content %}
 <div class="max-w-6xl mx-auto">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -44,14 +49,93 @@
                     <p class="text-sm text-gray-500 mt-1">Mỗi tính năng trên một dòng, có thể bắt đầu bằng dấu •</p>
                 </div>
 
-                <!-- Image Upload -->
+                <!-- Image Upload with Cropping -->
                 <div>
                     <label for="image" class="block text-sm font-medium text-gray-700 mb-2">
                         Hình ảnh chương trình
                     </label>
                     <input type="file" id="image" name="image" accept="image/*"
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                           onchange="handleImageSelect(event)">
                     <p class="text-sm text-gray-500 mt-1">Tùy chọn. Kích thước khuyến nghị: 400x300px</p>
+                    
+                    <!-- Image Cropping Modal -->
+                    <div id="cropModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+                        <div class="bg-white rounded-lg p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-semibold text-gray-800">Cắt và chỉnh sửa ảnh</h3>
+                                <button type="button" onclick="closeCropModal()" class="text-gray-400 hover:text-gray-600">
+                                    <i class="fas fa-times text-xl"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <!-- Cropping Area -->
+                                <div>
+                                    <h4 class="text-sm font-medium text-gray-700 mb-2">Chọn vùng cắt:</h4>
+                                    <div class="border border-gray-300 rounded-lg overflow-hidden">
+                                        <img id="cropImage" src="" alt="Crop" style="max-width: 100%; display: block;">
+                                    </div>
+                                    
+                                    <!-- Crop Controls -->
+                                    <div class="mt-4 flex flex-wrap gap-2">
+                                        <button type="button" onclick="setAspectRatio(4/3)" class="px-3 py-1 bg-blue-100 text-blue-700 rounded text-sm hover:bg-blue-200">
+                                            4:3
+                                        </button>
+                                        <button type="button" onclick="setAspectRatio(16/9)" class="px-3 py-1 bg-blue-100 text-blue-700 rounded text-sm hover:bg-blue-200">
+                                            16:9
+                                        </button>
+                                        <button type="button" onclick="setAspectRatio(1)" class="px-3 py-1 bg-blue-100 text-blue-700 rounded text-sm hover:bg-blue-200">
+                                            1:1
+                                        </button>
+                                        <button type="button" onclick="setAspectRatio(NaN)" class="px-3 py-1 bg-gray-100 text-gray-700 rounded text-sm hover:bg-gray-200">
+                                            Tự do
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Preview Area -->
+                                <div>
+                                    <h4 class="text-sm font-medium text-gray-700 mb-2">Xem trước:</h4>
+                                    <div class="border border-gray-300 rounded-lg p-4 bg-gray-50">
+                                        <div id="cropPreview" class="mx-auto bg-white rounded shadow-sm overflow-hidden" style="width: 200px; height: 150px; background-size: cover; background-position: center;"></div>
+                                    </div>
+                                    
+                                    <!-- Preview Info -->
+                                    <div class="mt-2 text-xs text-gray-500 text-center">
+                                        Kích thước xuất ra: 400×300px
+                                    </div>
+                                    
+                                    <!-- Action Buttons -->
+                                    <div class="mt-4 flex gap-2">
+                                        <button type="button" onclick="applyCrop()" class="flex-1 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">
+                                            <i class="fas fa-check mr-2"></i>
+                                            Áp dụng
+                                        </button>
+                                        <button type="button" onclick="closeCropModal()" class="flex-1 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition">
+                                            <i class="fas fa-times mr-2"></i>
+                                            Hủy
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Cropped Image Preview -->
+                    <div id="croppedPreview" class="mt-4 hidden">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Ảnh đã cắt:</label>
+                        <div class="relative inline-block">
+                            <img id="croppedImage" src="" alt="Cropped" class="w-32 h-24 object-cover rounded-lg border">
+                            <button type="button" onclick="removeCroppedImage()" 
+                                    class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full text-xs hover:bg-red-600 transition">
+                                ×
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Hidden input for cropped image data -->
+                    <input type="hidden" id="croppedImageData" name="cropped_image_data" value="">
                 </div>
 
                 <!-- Design Settings -->
@@ -177,7 +261,7 @@
                 </div>
                 
                 <div id="preview-image" class="mt-4 hidden">
-                    <img id="preview-img" src="" alt="Preview" class="w-full h-32 object-cover rounded-lg">
+                    <img id="preview-img" src="" alt="Preview" class="w-full h-40 object-cover rounded-lg">
                 </div>
             </div>
         </div>
@@ -299,5 +383,136 @@ document.addEventListener('DOMContentLoaded', function() {
     featuresInput.addEventListener('input', updatePreview);
     iconSelect.addEventListener('change', updatePreview);
 });
+
+// Image Cropping Functions
+let cropImage;
+let specialProgramCropper;
+
+function handleImageSelect(event) {
+    const file = event.target.files[0];
+    if (file) {
+        if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('cropImage').src = e.target.result;
+                openCropModal();
+            };
+            reader.readAsDataURL(file);
+        } else {
+            alert('Vui lòng chọn file ảnh!');
+            event.target.value = '';
+        }
+    }
+}
+
+function openCropModal() {
+    const modal = document.getElementById('cropModal');
+    cropImage = document.getElementById('cropImage');
+    
+    modal.classList.remove('hidden');
+    
+    // Initialize cropper
+    setTimeout(() => {
+        if (specialProgramCropper) {
+            specialProgramCropper.destroy();
+        }
+        
+        specialProgramCropper = new Cropper(cropImage, {
+            aspectRatio: 4/3,
+            viewMode: 1,
+            dragMode: 'move',
+            autoCropArea: 0.8,
+            restore: false,
+            guides: true,
+            center: true,
+            highlight: false,
+            cropBoxMovable: true,
+            cropBoxResizable: true,
+            toggleDragModeOnDblclick: false,
+            preview: '#cropPreview',
+            crop: function(event) {
+                // Update preview to match exact crop dimensions
+                updateCropPreview();
+            }
+        });
+    }, 100);
+}
+
+function closeCropModal() {
+    const modal = document.getElementById('cropModal');
+    modal.classList.add('hidden');
+    
+    if (specialProgramCropper) {
+        specialProgramCropper.destroy();
+        specialProgramCropper = null;
+    }
+    
+    // Reset file input
+    document.getElementById('image').value = '';
+}
+
+function applyCrop() {
+    if (specialProgramCropper) {
+        const canvas = specialProgramCropper.getCroppedCanvas({
+            width: 400,
+            height: 300,
+            imageSmoothingQuality: 'high'
+        });
+        
+        const croppedDataURL = canvas.toDataURL('image/jpeg', 0.9);
+        
+        // Show cropped image preview
+        document.getElementById('croppedImage').src = croppedDataURL;
+        document.getElementById('croppedPreview').classList.remove('hidden');
+        
+        // Store cropped image data
+        document.getElementById('croppedImageData').value = croppedDataURL;
+        
+        // Update main preview
+        document.getElementById('preview-img').src = croppedDataURL;
+        document.getElementById('preview-image').classList.remove('hidden');
+        
+        closeCropModal();
+    }
+}
+
+function setAspectRatio(ratio) {
+    if (specialProgramCropper) {
+        specialProgramCropper.setAspectRatio(ratio);
+        // Update preview after changing aspect ratio
+        setTimeout(() => {
+            updateCropPreview();
+        }, 100);
+    }
+}
+
+function updateCropPreview() {
+    if (specialProgramCropper) {
+        const canvas = specialProgramCropper.getCroppedCanvas({
+            width: 200,
+            height: 150,
+            imageSmoothingQuality: 'high'
+        });
+        
+        const previewElement = document.getElementById('cropPreview');
+        
+        // Update preview background with cropped image
+        previewElement.style.backgroundImage = `url(${canvas.toDataURL()})`;
+        previewElement.style.backgroundSize = 'cover';
+        previewElement.style.backgroundPosition = 'center';
+    }
+}
+
+function removeCroppedImage() {
+    document.getElementById('croppedPreview').classList.add('hidden');
+    document.getElementById('croppedImageData').value = '';
+    document.getElementById('image').value = '';
+    
+    // Hide preview image
+    document.getElementById('preview-image').classList.add('hidden');
+}
 </script>
+
+<!-- Cropper.js JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
 {% endblock %}
