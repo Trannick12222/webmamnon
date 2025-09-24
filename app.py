@@ -697,6 +697,88 @@ def switch_theme(theme_id):
         print(f"Error switching theme: {e}")
         return False
 
+def generate_article_schema(article):
+    """Generate Article schema for news/blog posts"""
+    import json
+    
+    schema = {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": article.title,
+        "description": article.excerpt or article.content[:200] + "..." if len(article.content) > 200 else article.content,
+        "author": {
+            "@type": "Organization",
+            "name": "Trường Mầm non Hoa Hướng Dương"
+        },
+        "publisher": {
+            "@type": "EducationalOrganization", 
+            "name": "Trường Mầm non Hoa Hướng Dương",
+            "logo": {
+                "@type": "ImageObject",
+                "url": f"{request.url_root.rstrip('/')}/static/images/mnhhd.jpg"
+            }
+        },
+        "datePublished": article.created_at.isoformat(),
+        "dateModified": getattr(article, 'updated_at', article.created_at).isoformat(),
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": request.url
+        },
+        "url": request.url,
+        "inLanguage": "vi-VN"
+    }
+    
+    # Add image if exists
+    if hasattr(article, 'featured_image') and article.featured_image:
+        schema["image"] = {
+            "@type": "ImageObject",
+            "url": f"{request.url_root.rstrip('/')}/static/uploads/news/{article.featured_image}",
+            "width": "800",
+            "height": "600"
+        }
+    
+    return json.dumps(schema, ensure_ascii=False, indent=2)
+
+def generate_event_schema(event):
+    """Generate Event schema for events"""
+    import json
+    
+    schema = {
+        "@context": "https://schema.org",
+        "@type": "Event",
+        "name": event.title,
+        "description": event.description or "Sự kiện tại Trường Mầm non Hoa Hướng Dương",
+        "startDate": event.event_date.isoformat(),
+        "eventStatus": "https://schema.org/EventScheduled",
+        "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+        "organizer": {
+            "@type": "EducationalOrganization",
+            "name": "Trường Mầm non Hoa Hướng Dương",
+            "url": request.url_root.rstrip('/')
+        },
+        "url": request.url,
+        "inLanguage": "vi-VN"
+    }
+    
+    # Add location if exists
+    if event.location:
+        schema["location"] = {
+            "@type": "Place",
+            "name": event.location,
+            "address": event.location
+        }
+    
+    # Add image if exists
+    if event.featured_image:
+        schema["image"] = {
+            "@type": "ImageObject",
+            "url": f"{request.url_root.rstrip('/')}/static/{event.featured_image}",
+            "width": "800", 
+            "height": "600"
+        }
+    
+    return json.dumps(schema, ensure_ascii=False, indent=2)
+
 def get_seo_settings(page_type, page_id=None):
     """Lấy SEO settings cho trang cụ thể"""
     # Tìm SEO settings cho trang cụ thể
@@ -951,6 +1033,9 @@ def index():
     # Get system settings for school information
     system_settings = SystemSettings.query.first()
     
+    # Get SEO settings for homepage
+    seo_data = get_seo_settings('home')
+    
     return render_template('index.html', 
                          featured_programs=featured_programs,
                          latest_news=latest_news,
@@ -963,7 +1048,8 @@ def index():
                          about_section=about_section,
                          about_stats=about_stats,
                          home_stats=home_stats,
-                         system_settings=system_settings)
+                         system_settings=system_settings,
+                         seo_data=seo_data)
 
 @app.route('/health')
 def health_check():
@@ -988,13 +1074,17 @@ def about():
     # Add home stats data (same as homepage)
     home_stats = HomeStats.query.filter_by(is_active=True).order_by(HomeStats.order_index.asc()).all()
     
+    # Get SEO settings for about page
+    seo_data = get_seo_settings('about')
+    
     return render_template('about.html', 
                          team_members=team_members,
                          mission_content=mission_content,
                          mission_items=mission_items,
                          history_section=history_section,
                          history_events=history_events,
-                         about_stats=home_stats)
+                         about_stats=home_stats,
+                         seo_data=seo_data)
 
 @app.route('/debug-programs')
 def debug_programs():
@@ -1039,7 +1129,10 @@ def programs():
         if program.featured_image:
             print(f"Program {program.name} has image: {program.featured_image}")
             print(f"Full path: {os.path.join(app.config['UPLOAD_FOLDER'], program.featured_image.replace('uploads/', ''))}")
-    return render_template('programs.html', programs=programs, special_programs=special_programs, programs_cta=programs_cta)
+    # Get SEO settings for programs page
+    seo_data = get_seo_settings('programs')
+    
+    return render_template('programs.html', programs=programs, special_programs=special_programs, programs_cta=programs_cta, seo_data=seo_data)
 
 @app.route('/chuong-trinh/<int:id>')
 def program_detail(id):
@@ -1065,13 +1158,31 @@ def news():
     page = request.args.get('page', 1, type=int)
     news = News.query.filter_by(is_published=True).order_by(News.created_at.desc()).paginate(
         page=page, per_page=6, error_out=False)
-    return render_template('news.html', news=news)
+    # Get SEO settings for news page
+    seo_data = get_seo_settings('news')
+    
+    return render_template('news.html', news=news, seo_data=seo_data)
 
 @app.route('/tin-tuc/<int:id>')
 def news_detail(id):
-    # Redirect tất cả tin tức về trang chủ
-    flash('Bạn đã được chuyển về trang chủ. Vui lòng xem tin tức mới nhất.', 'info')
-    return redirect(url_for('index'))
+    article = News.query.get_or_404(id)
+    
+    # Lấy tin tức liên quan
+    related_news = News.query.filter(
+        News.id != id,
+        News.is_published == True
+    ).order_by(News.created_at.desc()).limit(3).all()
+    
+    # Get SEO settings for this specific news article
+    seo_data = get_seo_settings('news', article.id)
+    
+    # Generate dynamic schema for this article
+    seo_data['schema_markup'] = generate_article_schema(article)
+    
+    return render_template('news_detail.html', 
+                         article=article, 
+                         related_news=related_news,
+                         seo_data=seo_data)
 
 @app.route('/thu-vien-anh')
 def gallery():
@@ -1168,13 +1279,35 @@ def share_image():
 def events():
     upcoming = Event.query.filter_by(is_active=True).filter(Event.event_date > datetime.utcnow()).all()
     past = Event.query.filter_by(is_active=True).filter(Event.event_date <= datetime.utcnow()).all()
-    return render_template('events.html', upcoming=upcoming, past=past)
+    
+    # Get SEO settings for events page
+    seo_data = get_seo_settings('events')
+    
+    return render_template('events.html', upcoming=upcoming, past=past, seo_data=seo_data)
 
 @app.route('/su-kien/<int:event_id>')
 def event_detail(event_id):
-    # Redirect tất cả sự kiện về trang chủ
-    flash('Bạn đã được chuyển về trang chủ. Vui lòng xem sự kiện sắp tới.', 'info')
-    return redirect(url_for('index'))
+    event = Event.query.get_or_404(event_id)
+    
+    # Lấy các sự kiện liên quan (cùng thời gian hoặc sắp tới)
+    related_events = Event.query.filter(
+        Event.id != event_id,
+        Event.is_active == True
+    ).order_by(Event.event_date.desc()).limit(3).all()
+    
+    current_time = datetime.utcnow()
+    
+    # Get SEO settings for this specific event
+    seo_data = get_seo_settings('events', event.id)
+    
+    # Generate dynamic schema for this event
+    seo_data['schema_markup'] = generate_event_schema(event)
+    
+    return render_template('event_detail.html', 
+                         event=event, 
+                         related_events=related_events,
+                         current_time=current_time,
+                         seo_data=seo_data)
 
 @app.route('/lien-he', methods=['GET', 'POST'])
 def contact():
@@ -1530,9 +1663,24 @@ def blog():
 @app.route('/blog/<int:id>')
 def blog_detail(id):
     """Blog post detail page"""
-    # Redirect tất cả blog về trang chủ
-    flash('Bạn đã được chuyển về trang chủ. Vui lòng xem các bài viết mới nhất.', 'info')
-    return redirect(url_for('index'))
+    post = Post.query.get_or_404(id)
+    
+    # Lấy bài viết liên quan (cùng category hoặc mới nhất)
+    related_posts = Post.query.filter(
+        Post.id != id,
+        Post.is_published == True
+    ).order_by(Post.created_at.desc()).limit(3).all()
+    
+    # Get SEO settings for this specific blog post
+    seo_data = get_seo_settings('blog', post.id)
+    
+    # Generate dynamic schema for this blog post
+    seo_data['schema_markup'] = generate_article_schema(post)
+    
+    return render_template('blog_detail.html', 
+                         post=post, 
+                         related_posts=related_posts,
+                         seo_data=seo_data)
 
 @app.route('/admin/programs')
 @login_required
@@ -4019,66 +4167,173 @@ def proxy_image():
             'error': str(e)
         }), 500
 
-# DISABLED: Dynamic sitemap route - Now using static sitemap.xml
-# @app.route('/sitemap.xml')
-# def sitemap():
-#     """Generate dynamic sitemap.xml - DISABLED to use static file"""
-#     # This route has been disabled to use static sitemap.xml file instead
-#     # Static sitemap only contains main pages, no sub-pages
-#     pass
-
 @app.route('/sitemap.xml')
-def serve_static_sitemap():
-    """Serve static sitemap.xml file"""
-    from flask import send_from_directory, Response
-    import os
+def dynamic_sitemap():
+    """Generate dynamic sitemap.xml with all pages"""
+    from flask import Response
+    from datetime import datetime
+    import xml.etree.ElementTree as ET
     
     try:
-        # Đọc file sitemap.xml tĩnh
+        # Create sitemap root element
+        urlset = ET.Element('urlset')
+        urlset.set('xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9')
+        
+        # Base URL - adjust this to your domain
+        base_url = request.url_root.rstrip('/')
+        
+        # Add main pages with proper priority and frequency
+        main_pages = [
+            {'url': '/', 'priority': '1.0', 'changefreq': 'daily'},
+            {'url': '/gioi-thieu', 'priority': '0.9', 'changefreq': 'monthly'},
+            {'url': '/chuong-trinh', 'priority': '0.9', 'changefreq': 'weekly'},
+            {'url': '/tin-tuc', 'priority': '0.8', 'changefreq': 'daily'},
+            {'url': '/su-kien', 'priority': '0.8', 'changefreq': 'weekly'},
+            {'url': '/blog', 'priority': '0.8', 'changefreq': 'daily'},
+            {'url': '/thu-vien-anh', 'priority': '0.7', 'changefreq': 'weekly'},
+            {'url': '/lien-he', 'priority': '0.6', 'changefreq': 'monthly'},
+        ]
+        
+        for page in main_pages:
+            url_elem = ET.SubElement(urlset, 'url')
+            ET.SubElement(url_elem, 'loc').text = base_url + page['url']
+            ET.SubElement(url_elem, 'lastmod').text = datetime.now().strftime('%Y-%m-%d')
+            ET.SubElement(url_elem, 'changefreq').text = page['changefreq']
+            ET.SubElement(url_elem, 'priority').text = page['priority']
+        
+        # Add individual news articles (limit to recent ones for sitemap performance)
+        news_articles = News.query.filter_by(is_published=True).order_by(News.created_at.desc()).limit(50).all()
+        for article in news_articles:
+            url_elem = ET.SubElement(urlset, 'url')
+            ET.SubElement(url_elem, 'loc').text = f"{base_url}/tin-tuc/{article.id}"
+            # Use updated_at if available, otherwise created_at
+            lastmod_date = getattr(article, 'updated_at', article.created_at)
+            ET.SubElement(url_elem, 'lastmod').text = lastmod_date.strftime('%Y-%m-%d')
+            ET.SubElement(url_elem, 'changefreq').text = 'monthly'
+            ET.SubElement(url_elem, 'priority').text = '0.6'
+        
+        # Add individual events (only active and future/recent events)
+        from datetime import timedelta
+        recent_cutoff = datetime.utcnow() - timedelta(days=90)  # Last 90 days
+        events = Event.query.filter(
+            Event.is_active == True,
+            Event.event_date >= recent_cutoff
+        ).order_by(Event.event_date.desc()).limit(30).all()
+        
+        for event in events:
+            url_elem = ET.SubElement(urlset, 'url')
+            ET.SubElement(url_elem, 'loc').text = f"{base_url}/su-kien/{event.id}"
+            ET.SubElement(url_elem, 'lastmod').text = event.created_at.strftime('%Y-%m-%d')
+            # Higher priority for upcoming events
+            if event.event_date > datetime.utcnow():
+                ET.SubElement(url_elem, 'priority').text = '0.7'
+                ET.SubElement(url_elem, 'changefreq').text = 'weekly'
+            else:
+                ET.SubElement(url_elem, 'priority').text = '0.5'
+                ET.SubElement(url_elem, 'changefreq').text = 'yearly'
+        
+        # Add individual blog posts (recent ones)
+        blog_posts = Post.query.filter_by(is_published=True).order_by(Post.created_at.desc()).limit(50).all()
+        for post in blog_posts:
+            url_elem = ET.SubElement(urlset, 'url')
+            ET.SubElement(url_elem, 'loc').text = f"{base_url}/blog/{post.id}"
+            lastmod_date = getattr(post, 'updated_at', post.created_at)
+            ET.SubElement(url_elem, 'lastmod').text = lastmod_date.strftime('%Y-%m-%d')
+            ET.SubElement(url_elem, 'changefreq').text = 'monthly'
+            ET.SubElement(url_elem, 'priority').text = '0.6'
+        
+        # Add individual programs (all active programs)
+        programs = Program.query.filter_by(is_active=True).all()
+        for program in programs:
+            url_elem = ET.SubElement(urlset, 'url')
+            ET.SubElement(url_elem, 'loc').text = f"{base_url}/chuong-trinh/{program.id}"
+            ET.SubElement(url_elem, 'lastmod').text = program.created_at.strftime('%Y-%m-%d')
+            ET.SubElement(url_elem, 'changefreq').text = 'monthly'
+            ET.SubElement(url_elem, 'priority').text = '0.7'
+        
+        # Convert to string
+        ET.indent(urlset, space="  ", level=0)
+        xml_str = ET.tostring(urlset, encoding='utf-8', xml_declaration=True).decode('utf-8')
+        
+        # Create response
+        response = Response(xml_str, mimetype='application/xml')
+        response.headers['Content-Type'] = 'application/xml; charset=utf-8'
+        
+        return response
+        
+    except Exception as e:
+        print(f"Error generating dynamic sitemap: {e}")
+        # Fallback to static sitemap if dynamic fails
         sitemap_path = os.path.join(app.root_path, 'sitemap.xml')
         if os.path.exists(sitemap_path):
             with open(sitemap_path, 'r', encoding='utf-8') as f:
                 content = f.read()
-            
             response = Response(content, mimetype='application/xml')
             response.headers['Content-Type'] = 'application/xml; charset=utf-8'
             return response
         else:
-            # Fallback nếu file không tồn tại
-            return Response("Sitemap not found", status=404)
-    except Exception as e:
-        print(f"Error serving static sitemap: {e}")
-        return Response("Error loading sitemap", status=500)
+            return Response("Sitemap generation failed", status=500)
 
 @app.route('/robots.txt')
 def robots():
-    """Serve robots.txt file"""
+    """Serve dynamic robots.txt file"""
     from flask import Response
     
-    robots_content = """User-agent: *
+    # Get base URL dynamically
+    base_url = request.url_root.rstrip('/')
+    
+    robots_content = f"""User-agent: *
 Allow: /
 
-# Disallow admin pages
+# Disallow admin and sensitive pages
 Disallow: /admin/
 Disallow: /admin/*
+Disallow: /login
+Disallow: /logout
 
-# Disallow API endpoints that shouldn't be indexed
+# Disallow API endpoints and utility routes
 Disallow: /proxy-image
 Disallow: /health
+Disallow: /debug-*
+Disallow: /test-*
+Disallow: /_uploads/
+Disallow: /static/uploads/
 
-# Allow important pages
+# Disallow search and filter parameters
+Disallow: /*?*
+Disallow: /*/search
+Disallow: /*/filter
+
+# Allow important pages explicitly
 Allow: /
 Allow: /gioi-thieu
 Allow: /chuong-trinh
+Allow: /chuong-trinh/*
 Allow: /tin-tuc
-Allow: /lien-he
+Allow: /tin-tuc/*
 Allow: /su-kien
+Allow: /su-kien/*
 Allow: /blog
-Allow: /thu-vien
+Allow: /blog/*
+Allow: /thu-vien-anh
+Allow: /lien-he
+
+# Allow static resources
+Allow: /static/css/*
+Allow: /static/js/*
+Allow: /static/images/*
+Allow: /static/fonts/*
+
+# Crawl delay for politeness
+Crawl-delay: 1
 
 # Sitemap location
-Sitemap: https://mamnon.hoahuongduong.org/sitemap.xml"""
-    
+Sitemap: {base_url}/sitemap.xml
+
+# Additional sitemaps (if needed in future)
+# Sitemap: {base_url}/sitemap-news.xml
+# Sitemap: {base_url}/sitemap-images.xml"""
+
     response = Response(robots_content, mimetype='text/plain')
     response.headers['Content-Type'] = 'text/plain; charset=utf-8'
     return response

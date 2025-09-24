@@ -1,23 +1,51 @@
 User-agent: *
 Allow: /
 
-# Disallow admin pages
+# Disallow admin and sensitive pages
 Disallow: /admin/
 Disallow: /admin/*
+Disallow: /login
+Disallow: /logout
 
-# Disallow API endpoints that shouldn't be indexed
+# Disallow API endpoints and utility routes
 Disallow: /proxy-image
 Disallow: /health
+Disallow: /debug-*
+Disallow: /test-*
+Disallow: /_uploads/
+Disallow: /static/uploads/
 
-# Allow important pages
+# Disallow search and filter parameters
+Disallow: /*?*
+Disallow: /*/search
+Disallow: /*/filter
+
+# Allow important pages explicitly
 Allow: /
 Allow: /gioi-thieu
 Allow: /chuong-trinh
+Allow: /chuong-trinh/*
 Allow: /tin-tuc
-Allow: /lien-he
+Allow: /tin-tuc/*
 Allow: /su-kien
+Allow: /su-kien/*
 Allow: /blog
-Allow: /thu-vien
+Allow: /blog/*
+Allow: /thu-vien-anh
+Allow: /lien-he
+
+# Allow static resources
+Allow: /static/css/*
+Allow: /static/js/*
+Allow: /static/images/*
+Allow: /static/fonts/*
+
+# Crawl delay for politeness
+Crawl-delay: 1
 
 # Sitemap location
 Sitemap: https://mamnon.hoahuongduong.org/sitemap.xml
+
+# Additional sitemaps (if needed in future)
+# Sitemap: https://mamnon.hoahuongduong.org/sitemap-news.xml
+# Sitemap: https://mamnon.hoahuongduong.org/sitemap-images.xml
