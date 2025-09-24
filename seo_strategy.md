@@ -3,40 +3,44 @@
 ## 🎯 Target Keywords (Từ khóa mục tiêu)
 
 ### Keywords chính (Primary):
-- "trường mầm non tphcm" (1,300 searches/month)
-- "trường mầm non quận [X]" (800 searches/month) 
-- "mầm non chất lượng cao" (590 searches/month)
-- "trường mầm non uy tín" (480 searches/month)
+- "trường mầm non lâm hà" (150 searches/month)
+- "trường mầm non lâm đồng" (280 searches/month) 
+- "mầm non chất lượng cao lâm hà" (80 searches/month)
+- "trường mầm non uy tín lâm đồng" (60 searches/month)
 
 ### Keywords phụ (Secondary):
-- "học phí mầm non tphcm" (320 searches/month)
-- "chương trình mầm non" (260 searches/month)  
-- "đăng ký mầm non" (210 searches/month)
-- "tuyển sinh mầm non 2025" (180 searches/month)
+- "học phí mầm non lâm hà" (45 searches/month)
+- "chương trình mầm non lâm đồng" (120 searches/month)  
+- "đăng ký mầm non lâm hà" (35 searches/month)
+- "tuyển sinh mầm non 2025 lâm đồng" (25 searches/month)
 
 ### Long-tail keywords:
-- "trường mầm non tốt nhất quận [X]"
-- "mầm non có xe đưa đón"
-- "học phí mầm non bao nhiêu"
-- "chuẩn bị cho bé vào mầm non"
+- "trường mầm non tốt nhất lâm hà"
+- "mầm non có xe đưa đón lâm đồng"
+- "học phí mầm non bao nhiêu ở lâm hà"
+- "trường mầm non cao nguyên lâm đồng"
+- "giáo dục mầm non miền núi lâm đồng"
 
 ## 📝 Content Strategy
 
 ### 1. Blog Content (Tạo 2-3 bài/tuần)
 - **Parenting Tips:** "10 cách chuẩn bị tâm lý cho bé vào mầm non"
 - **Educational:** "Phương pháp Montessori trong giáo dục mầm non"
-- **Local SEO:** "Top 5 trường mầm non tốt nhất quận [X]"
-- **FAQ Content:** "Học phí mầm non 2025 - So sánh chi tiết"
+- **Local SEO:** "Top 5 trường mầm non tốt nhất Lâm Hà"
+- **FAQ Content:** "Học phí mầm non Lâm Hà 2025 - So sánh chi tiết"
 
 ### 2. Service Pages Optimization
-- Tối ưu trang "Chương trình học" với keywords
+- Tối ưu trang "Chương trình học" với keywords địa phương
 - Tạo landing page cho từng độ tuổi
-- Page "Tuyển sinh" với từ khóa seasonal
+- Page "Tuyển sinh Lâm Hà" với từ khóa seasonal
 
 ### 3. Local Content
-- "Hoạt động ngoại khóa gần trường"
-- "Đưa đón học sinh khu vực [địa chỉ]"
-- "Tham quan trường mầm non [tên quận]"
+- "Hoạt động ngoại khóa tại Lâm Hà"
+- "Đưa đón học sinh khu vực Lâm Hà - Lâm Đồng"
+- "Tham quan trường mầm non Lâm Hà"
+- "Giáo dục trẻ em trên cao nguyên Lâm Đồng"
+- "Khí hậu mát mẻ Lâm Đồng có tốt cho trẻ nhỏ?"
+- "Cuộc sống ở Lâm Hà với gia đình có con nhỏ"
 
 ## 🔗 Link Building Strategy
 
