@@ -152,19 +152,9 @@
                             </div>
                             <div>
                                 <h3 class="text-lg font-semibold text-gray-800 mb-2">Điện thoại</h3>
-                                <p class="text-gray-600">Hotline: 
-                                    <a href="tel:{{ (global_system_settings.school_phone if global_system_settings and global_system_settings.school_phone else '02838234567')|replace('-', '') }}" 
-                                       class="text-primary hover:text-secondary">
-                                        {% if global_system_settings and global_system_settings.school_phone %}
-                                            {{ global_system_settings.school_phone }}
-                                        {% else %}
-                                            028-3823-4567
-                                        {% endif %}
-                                    </a>
-                                </p>
                                 {% for setting in global_contact_settings %}
-                                    {% if setting.setting_key == 'phone_mobile' %}
-                                        <p class="text-gray-600">Di động: 
+                                    {% if setting.setting_key == 'phone_main' %}
+                                        <p class="text-gray-600">Hotline: 
                                             <a href="tel:{{ setting.setting_value|replace('-', '')|replace(' ', '') }}" 
                                                class="text-primary hover:text-secondary">
                                                 {{ setting.setting_value }}
@@ -181,18 +171,8 @@
                             </div>
                             <div>
                                 <h3 class="text-lg font-semibold text-gray-800 mb-2">Email</h3>
-                                <p class="text-gray-600">
-                                    <a href="mailto:{% if global_system_settings and global_system_settings.school_email %}{{ global_system_settings.school_email }}{% else %}info@hoahuongduong.edu.vn{% endif %}" 
-                                       class="text-primary hover:text-secondary">
-                                        {% if global_system_settings and global_system_settings.school_email %}
-                                            {{ global_system_settings.school_email }}
-                                        {% else %}
-                                            info@hoahuongduong.edu.vn
-                                        {% endif %}
-                                    </a>
-                                </p>
                                 {% for setting in global_contact_settings %}
-                                    {% if setting.setting_key == 'email_admissions' %}
+                                    {% if setting.setting_key == 'email_main' %}
                                         <p class="text-gray-600">
                                             <a href="mailto:{{ setting.setting_value }}" class="text-primary hover:text-secondary">
                                                 {{ setting.setting_value }}
