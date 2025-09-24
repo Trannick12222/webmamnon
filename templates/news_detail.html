@@ -40,7 +40,11 @@
                 <!-- Featured Image -->
                 {% if article.featured_image %}
                 <div class="aspect-video">
-                    <img src="{{ url_for('static', filename='uploads/news/' + article.featured_image) }}" 
+                    {% if article.featured_image.startswith('http') %}
+                    <img src="{{ article.featured_image }}" 
+                    {% else %}
+                    <img src="/static/{{ article.featured_image }}" 
+                    {% endif %}
                          alt="{{ article.title }}" 
                          class="w-full h-full object-cover">
                 </div>
@@ -120,7 +124,11 @@
                         <a href="/tin-tuc/{{ news.id }}" class="block">
                             {% if news.featured_image %}
                             <div class="aspect-video mb-3 rounded-lg overflow-hidden">
-                                <img src="{{ url_for('static', filename='uploads/news/' + news.featured_image) }}" 
+                                {% if news.featured_image.startswith('http') %}
+                                <img src="{{ news.featured_image }}" 
+                                {% else %}
+                                <img src="/static/{{ news.featured_image }}" 
+                                {% endif %}
                                      alt="{{ news.title }}" 
                                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                             </div>
