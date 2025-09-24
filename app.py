@@ -705,7 +705,7 @@ def generate_article_schema(article):
         "@context": "https://schema.org",
         "@type": "Article",
         "headline": article.title,
-        "description": article.excerpt or article.content[:200] + "..." if len(article.content) > 200 else article.content,
+        "description": getattr(article, 'excerpt', None) or getattr(article, 'summary', None) or article.content[:200] + "..." if len(article.content) > 200 else article.content,
         "author": {
             "@type": "Organization",
             "name": "Trường Mầm non Hoa Hướng Dương"
