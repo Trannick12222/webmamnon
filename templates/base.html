@@ -376,7 +376,11 @@
                         {% elif global_system_settings and global_system_settings.school_phone %}
                             <span><i class="fas fa-phone mr-2"></i>{{ global_system_settings.school_phone }}</span>
                         {% else %}
-                            <span><i class="fas fa-phone mr-2"></i>028-3823-4567</span>
+                            {% for setting in global_contact_settings %}
+                                {% if setting.setting_key == 'phone_main' %}
+                                    <span><i class="fas fa-phone mr-2"></i>{{ setting.setting_value }}</span>
+                                {% endif %}
+                            {% endfor %}
                         {% endif %}
                         
                         <!-- Display email - prioritize ContactSettings, fallback to SystemSettings -->
@@ -565,7 +569,11 @@
                         {% else %}
                             <div class="flex items-center">
                                 <i class="fas fa-phone text-primary mr-3"></i>
-                                <span class="text-gray-300 text-sm">028-3823-4567</span>
+                                {% for setting in global_contact_settings %}
+                                    {% if setting.setting_key == 'phone_main' %}
+                                        <span class="text-gray-300 text-sm">{{ setting.setting_value }}</span>
+                                    {% endif %}
+                                {% endfor %}
                             </div>
                         {% endif %}
                         
@@ -706,10 +714,16 @@
                             <i class="fas fa-directions mr-2"></i>
                             Chỉ đường
                         </a>
-                        <a href="tel:{{ global_contact_settings.phone if global_contact_settings else '028-3823-4567' }}" 
-                           class="inline-flex items-center px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium rounded-lg shadow-lg">
-                            <i class="fas fa-phone mr-2"></i>
-                            Gọi điện
+        {% set main_phone = '' %}
+        {% for setting in global_contact_settings %}
+            {% if setting.setting_key == 'phone_main' %}
+                {% set main_phone = setting.setting_value %}
+            {% endif %}
+        {% endfor %}
+        <a href="tel:{{ main_phone|replace('-', '')|replace(' ', '') if main_phone else '0946971978' }}" 
+           class="inline-flex items-center px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium rounded-lg shadow-lg">
+            <i class="fas fa-phone mr-2"></i>
+            Gọi điện
                         </a>
                     </div>
                 </div>
