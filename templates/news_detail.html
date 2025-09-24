@@ -173,14 +173,19 @@
                     Bạn có thắc mắc về chương trình học hoặc muốn đăng ký cho bé?
                 </p>
                 <div class="space-y-2 mb-6">
-                    <div class="flex items-center">
-                        <i class="fas fa-phone-alt mr-3"></i>
-                        <span>0123 456 789</span>
-                    </div>
-                    <div class="flex items-center">
-                        <i class="fas fa-envelope mr-3"></i>
-                        <span>info@hoahuongduong.edu.vn</span>
-                    </div>
+                    {% for setting in global_contact_settings %}
+                        {% if setting.setting_key == 'phone_main' %}
+                        <div class="flex items-center">
+                            <i class="fas fa-phone-alt mr-3"></i>
+                            <span>{{ setting.setting_value }}</span>
+                        </div>
+                        {% elif setting.setting_key == 'email_main' %}
+                        <div class="flex items-center">
+                            <i class="fas fa-envelope mr-3"></i>
+                            <span>{{ setting.setting_value }}</span>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
                 </div>
                 <a href="/lien-he" 
                    class="bg-white text-primary px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition inline-block w-full text-center">
