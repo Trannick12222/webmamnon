@@ -162,7 +162,16 @@
                                         {% endif %}
                                     </a>
                                 </p>
-                                <p class="text-gray-600">Di động: <a href="tel:0901234567" class="text-primary hover:text-secondary">090-123-4567</a></p>
+                                {% for setting in global_contact_settings %}
+                                    {% if setting.setting_key == 'phone_mobile' %}
+                                        <p class="text-gray-600">Di động: 
+                                            <a href="tel:{{ setting.setting_value|replace('-', '')|replace(' ', '') }}" 
+                                               class="text-primary hover:text-secondary">
+                                                {{ setting.setting_value }}
+                                            </a>
+                                        </p>
+                                    {% endif %}
+                                {% endfor %}
                             </div>
                         </div>
                         
@@ -182,11 +191,15 @@
                                         {% endif %}
                                     </a>
                                 </p>
-                                <p class="text-gray-600">
-                                    <a href="mailto:tuyensinh@hoahuongduong.edu.vn" class="text-primary hover:text-secondary">
-                                        tuyensinh@hoahuongduong.edu.vn
-                                    </a>
-                                </p>
+                                {% for setting in global_contact_settings %}
+                                    {% if setting.setting_key == 'email_admissions' %}
+                                        <p class="text-gray-600">
+                                            <a href="mailto:{{ setting.setting_value }}" class="text-primary hover:text-secondary">
+                                                {{ setting.setting_value }}
+                                            </a>
+                                        </p>
+                                    {% endif %}
+                                {% endfor %}
                             </div>
                         </div>
                         
