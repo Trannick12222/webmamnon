@@ -7,7 +7,15 @@
 {% block content %}
 <div class="admin-card p-6">
     <div class="flex items-center justify-between mb-6">
-        <h2 class="text-xl font-semibold text-gray-800">Thư viện ảnh</h2>
+        <div class="flex items-center space-x-4">
+            <h2 class="text-xl font-semibold text-gray-800">Thư viện ảnh</h2>
+            {% if total_library_size != '0 B' %}
+            <div class="bg-gray-100 px-3 py-1 rounded-full text-sm text-gray-700 flex items-center">
+                <i class="fas fa-hdd mr-2 text-gray-600"></i>
+                <span class="font-medium">{{ total_library_size }}</span>
+            </div>
+            {% endif %}
+        </div>
         <div style="display: flex; align-items: center; gap: 10px;">
             <a href="{{ url_for('admin_albums') }}" 
                class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200">
@@ -39,9 +47,17 @@
     {% if albums %}
     <!-- Albums Section -->
     <div class="mb-8">
-        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-            <i class="fas fa-folder text-blue-500 mr-2"></i>
-            Album ({{ albums|length }})
+        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center justify-between">
+            <div class="flex items-center">
+                <i class="fas fa-folder text-blue-500 mr-2"></i>
+                Album ({{ albums|length }})
+            </div>
+            {% if albums %}
+            <div class="text-sm text-gray-600 flex items-center">
+                <i class="fas fa-database mr-1"></i>
+                Tổng: {{ total_albums_size }}
+            </div>
+            {% endif %}
         </h3>
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -59,8 +75,15 @@
                     {% endif %}
                     
                     <!-- Album badge -->
-                    <div class="absolute top-2 right-2 bg-blue-600 text-white px-2 py-1 rounded-full text-xs font-medium">
-                        <i class="fas fa-folder mr-1"></i>{{ album.images|length }} ảnh
+                    <div class="absolute top-2 right-2 space-y-1">
+                        <div class="bg-blue-600 text-white px-2 py-1 rounded-full text-xs font-medium">
+                            <i class="fas fa-folder mr-1"></i>{{ album.images|length }} ảnh
+                        </div>
+                        {% if album_sizes[album.id].size_bytes > 0 %}
+                        <div class="bg-green-600 text-white px-2 py-1 rounded-full text-xs font-medium">
+                            <i class="fas fa-hdd mr-1"></i>{{ album_sizes[album.id].size_formatted }}
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
                 
@@ -98,8 +121,14 @@
                         </div>
                     </div>
                     
-                    <div class="text-xs text-gray-500 mt-2">
-                        Tạo lúc: {{ album.created_at.strftime('%d/%m/%Y %H:%M') }}
+                    <div class="text-xs text-gray-500 mt-2 space-y-1">
+                        <div>Tạo lúc: {{ album.created_at.strftime('%d/%m/%Y %H:%M') }}</div>
+                        {% if album_sizes[album.id].size_bytes > 0 %}
+                        <div class="flex items-center">
+                            <i class="fas fa-database mr-1"></i>
+                            <span>Dung lượng: {{ album_sizes[album.id].size_formatted }}</span>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -111,9 +140,17 @@
     {% if images.items %}
     <!-- Standalone Images Section -->
     <div>
-        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-            <i class="fas fa-image text-green-500 mr-2"></i>
-            Ảnh đơn lẻ ({{ images.total }})
+        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center justify-between">
+            <div class="flex items-center">
+                <i class="fas fa-image text-green-500 mr-2"></i>
+                Ảnh đơn lẻ ({{ images.total }})
+            </div>
+            {% if images.items %}
+            <div class="text-sm text-gray-600 flex items-center">
+                <i class="fas fa-database mr-1"></i>
+                Tổng: {{ standalone_total_size }}
+            </div>
+            {% endif %}
         </h3>
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

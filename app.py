@@ -101,6 +101,7 @@ class Gallery(db.Model):
     category = db.Column(db.String(100))
     is_featured = db.Column(db.Boolean, default=False)
     album_id = db.Column(db.Integer, db.ForeignKey('gallery_album.id'), nullable=True)
+    sort_order = db.Column(db.Integer, default=0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 class GalleryAlbum(db.Model):
@@ -113,7 +114,7 @@ class GalleryAlbum(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     # Relationships
-    images = db.relationship('Gallery', backref='album', lazy=True, foreign_keys=[Gallery.album_id])
+    images = db.relationship('Gallery', backref='album', lazy=True, foreign_keys=[Gallery.album_id], order_by=[Gallery.sort_order, Gallery.created_at])
     cover_image = db.relationship('Gallery', foreign_keys=[cover_image_id], post_update=True)
 
 class News(db.Model):
@@ -949,6 +950,47 @@ def save_cropped_image(base64_data, folder='uploads'):
     except Exception as e:
         print(f"Error saving cropped image: {e}")
         return None
+
+def get_file_size(file_path):
+    """Get file size in bytes, returns 0 if file doesn't exist"""
+    try:
+        if file_path.startswith('http'):
+            # For external URLs, we can't get exact file size without downloading
+            # Return 0 or estimate based on typical image sizes
+            return 0
+        
+        full_path = os.path.join('static', file_path)
+        if os.path.exists(full_path):
+            return os.path.getsize(full_path)
+        return 0
+    except Exception as e:
+        print(f"Error getting file size for {file_path}: {e}")
+        return 0
+
+def format_file_size(size_bytes):
+    """Convert bytes to human readable format"""
+    if size_bytes == 0:
+        return "0 B"
+    
+    size_names = ["B", "KB", "MB", "GB"]
+    i = 0
+    size = float(size_bytes)
+    
+    while size >= 1024.0 and i < len(size_names) - 1:
+        size /= 1024.0
+        i += 1
+    
+    if i == 0:  # Bytes
+        return f"{int(size)} {size_names[i]}"
+    else:
+        return f"{size:.1f} {size_names[i]}"
+
+def calculate_album_size(album):
+    """Calculate total size of all images in an album"""
+    total_size = 0
+    for image in album.images:
+        total_size += get_file_size(image.image_path)
+    return total_size
 
 def track_page_visit():
     """Track page visit for analytics"""
@@ -1951,7 +1993,32 @@ def admin_gallery():
     # Lấy tất cả album
     albums = GalleryAlbum.query.order_by(GalleryAlbum.created_at.desc()).all()
     
-    return render_template('admin/gallery/list.html', images=standalone_images, albums=albums)
+    # Tính dung lượng cho từng album
+    album_sizes = {}
+    total_size = 0
+    for album in albums:
+        size_bytes = calculate_album_size(album)
+        album_sizes[album.id] = {
+            'size_bytes': size_bytes,
+            'size_formatted': format_file_size(size_bytes)
+        }
+        total_size += size_bytes
+    
+    # Tính dung lượng cho ảnh đơn lẻ
+    standalone_total_size = 0
+    for image in standalone_images.items:
+        standalone_total_size += get_file_size(image.image_path)
+    
+    # Tính tổng dung lượng toàn bộ thư viện
+    total_library_size = total_size + standalone_total_size
+    
+    return render_template('admin/gallery/list.html', 
+                         images=standalone_images, 
+                         albums=albums, 
+                         album_sizes=album_sizes,
+                         total_albums_size=format_file_size(total_size),
+                         standalone_total_size=format_file_size(standalone_total_size),
+                         total_library_size=format_file_size(total_library_size))
 
 @app.route('/admin/gallery/create', methods=['GET', 'POST'])
 @login_required
@@ -1978,13 +2045,20 @@ def admin_gallery_create():
                 if file and allowed_file(file.filename):
                     image_path = save_image(file, 'gallery')
                     if image_path:
+                        # Get next sort_order for this album (if it's part of an album)
+                        sort_order = 0
+                        if album:
+                            max_sort_order = db.session.query(db.func.max(Gallery.sort_order)).filter_by(album_id=album.id).scalar() or 0
+                            sort_order = max_sort_order + 1
+                        
                         gallery_item = Gallery(
                             title=request.form.get('title', file.filename) if len(files) == 1 else file.filename,
                             image_path=image_path,
                             description=request.form.get('description') if len(files) == 1 else None,
                             category=request.form.get('category'),
                             is_featured=bool(request.form.get('is_featured')) if len(files) == 1 else False,
-                            album_id=album.id if album else None
+                            album_id=album.id if album else None,
+                            sort_order=sort_order
                         )
                         db.session.add(gallery_item)
                         db.session.flush()  # Để có gallery_item.id
@@ -2055,11 +2129,14 @@ def admin_album_edit(id):
                 if file and allowed_file(file.filename):
                     image_path = save_image(file, 'gallery')
                     if image_path:
+                        # Get next sort_order for this album
+                        max_sort_order = db.session.query(db.func.max(Gallery.sort_order)).filter_by(album_id=album.id).scalar() or 0
                         gallery_item = Gallery(
                             title=file.filename,
                             image_path=image_path,
                             category=album.category,
-                            album_id=album.id
+                            album_id=album.id,
+                            sort_order=max_sort_order + 1
                         )
                         db.session.add(gallery_item)
                         added_count += 1
@@ -2125,6 +2202,31 @@ def admin_album_set_cover(album_id, image_id):
     
     flash('Đã đặt ảnh bìa cho album!', 'success')
     return redirect(url_for('admin_album_detail', id=album_id))
+
+@app.route('/admin/albums/<int:album_id>/update-sort-order', methods=['POST'])
+@login_required
+def admin_album_update_sort_order(album_id):
+    album = GalleryAlbum.query.get_or_404(album_id)
+    
+    try:
+        # Get image IDs in new order from request
+        image_ids = request.json.get('image_ids', [])
+        
+        if not image_ids:
+            return jsonify({'success': False, 'message': 'Không có dữ liệu sắp xếp'}), 400
+        
+        # Update sort_order for each image
+        for index, image_id in enumerate(image_ids):
+            image = Gallery.query.filter_by(id=image_id, album_id=album_id).first()
+            if image:
+                image.sort_order = index + 1
+        
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Đã cập nhật thứ tự ảnh'})
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
 
 # User Submitted Images Routes
 @app.route('/admin/user-images')
